@@ -1,0 +1,46 @@
+name: Publish README video asset
+
+on:
+  push:
+    branches:
+      - agent/sharpen-readme-video
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    if: github.event.head_commit.message == 'Publish README video asset'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Rehydrate and verify video
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VIDEO_BLOB_SHA: 8b7c8bd852a73626a544b34f75b06f4b797c4173
+          VIDEO_SHA256: 023b7815c231eb54e6089b401e63c43d3b766b9ffc95aa1a89bea13d03916058
+          VIDEO_SIZE: '1622547'
+        shell: bash
+        run: |
+          set -euo pipefail
+          video="$RUNNER_TEMP/aim-for-the-head-quickstart-1080p.mp4"
+          gh api "repos/${GITHUB_REPOSITORY}/git/blobs/${VIDEO_BLOB_SHA}" --jq '.content' \
+            | tr -d '\n' \
+            | base64 --decode > "$video"
+          test "$(stat -c '%s' "$video")" -eq "$VIDEO_SIZE"
+          echo "$VIDEO_SHA256  $video" | sha256sum --check
+
+      - name: Publish durable release asset
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          video="$RUNNER_TEMP/aim-for-the-head-quickstart-1080p.mp4"
+          if gh release view readme-video-v1 >/dev/null 2>&1; then
+            gh release upload readme-video-v1 "$video" --clobber
+          else
+            gh release create readme-video-v1 "$video" \
+              --target "$GITHUB_SHA" \
+              --title "README demo (1080p)" \
+              --notes "Crisp 1080p H.264 walkthrough for the repository README. The media is stored as a release asset and is not part of Git history or repository clones."
+          fi

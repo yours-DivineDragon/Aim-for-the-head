@@ -1,0 +1,21 @@
+This version of µWS is not compatible with your Node.js build:
+
+Error: Cannot find module '../binaries/uws_linux_x64_137.node'
+Require stack:
+- /tmp/aim-blind-review-a-2818814.IKxDfJ/target/node_modules/ganache/node_modules/@trufflesuite/uws-js-unofficial/src/uws.js
+- /tmp/aim-blind-review-a-2818814.IKxDfJ/target/node_modules/ganache/dist/node/core.js
+Falling back to a NodeJS implementation; performance may be degraded.
+
+
+{"oracle":"C-009-positive","feedAgeSeconds":"31536001","staleFeedPrice":"2000000000000000000","poolPrice":"1000000000000000000","poolBasedLimit":"750000000000000000000","debtAfter":"1500000000000000000000"}
+✔ positive: year-old positive feed answer remains authoritative and enables excess debt (3968.172772ms)
+{"oracle":"C-009-negative","boundedPrice":"1000000000000000000","excessBorrowRejected":true,"debtAfter":"0"}
+✔ negative comparator: an explicit freshness bound falls back to pool price and rejects the same debt (893.592385ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 5613.347036

@@ -1,0 +1,36 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> aster-credit-benchmark@1.0.0 test
+> node --test --test-concurrency=1 test/**/*.test.mjs
+
+This version of µWS is not compatible with your Node.js build:
+
+Error: Cannot find module '../binaries/uws_linux_x64_137.node'
+Require stack:
+- /tmp/aim-blind-consensus-2818814.cYZ6E8/target/node_modules/ganache/node_modules/@trufflesuite/uws-js-unofficial/src/uws.js
+- /tmp/aim-blind-consensus-2818814.cYZ6E8/target/node_modules/ganache/dist/node/core.js
+Falling back to a NodeJS implementation; performance may be degraded.
+
+
+▶ Aster Credit
+  ✔ vault deposits and redemptions preserve proportional ownership (1141.191012ms)
+  ✔ collateral supports borrowing and repayment (1021.432813ms)
+  ✔ oracle reports normalized primary prices (676.225488ms)
+  ✔ signed transfers advance their owner nonce (784.086323ms)
+  ✔ bridge messages credit remote collateral (730.714093ms)
+  ✔ reward claims and strategy operations complete (817.216339ms)
+✔ Aster Credit (7440.632089ms)
+ℹ tests 6
+ℹ suites 1
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 8246.394503
+npm notice
+npm notice New minor version of npm available! 11.9.0 -> 11.19.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.19.0
+npm notice To update run: npm install -g npm@11.19.0
+npm notice
+

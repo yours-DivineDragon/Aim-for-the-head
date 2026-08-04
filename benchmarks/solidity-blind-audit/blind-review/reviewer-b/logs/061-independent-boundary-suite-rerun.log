@@ -1,0 +1,25 @@
+This version of µWS is not compatible with your Node.js build:
+
+Error: Cannot find module '../binaries/uws_linux_x64_137.node'
+Require stack:
+- /tmp/aim-blind-review-b-2818814.ykfBRN/target/node_modules/ganache/node_modules/@trufflesuite/uws-js-unofficial/src/uws.js
+- /tmp/aim-blind-review-b-2818814.ykfBRN/target/node_modules/ganache/dist/node/core.js
+Falling back to a NodeJS implementation; performance may be degraded.
+
+
+{"check":"C-001-recursion-scale","borrowCount":"8","borrowLimit":"750000000000000000000","marketLiquidityAfter":"0","attackerStable":"6000000000000000000000","debtAfter":"6000000000000000000000"}
+✔ C-001 boundary: repeated callbacks drain all available market liquidity (3817.488332ms)
+{"check":"C-002-gate-boundaries","directCallerRejected":true,"unconfiguredChainRejected":true,"mismatchingRemoteAcceptedOnConfiguredChain":true,"bridgeCredit":"100000000000000000000"}
+✔ C-002 boundary: messenger and configured-chain gates hold, but remote-sender gate is absent (453.731363ms)
+{"check":"C-004-four-encodings","distinctRawSignatures":4,"authorizedAmount":"20000000000000000000","paid":"80000000000000000000"}
+✔ C-004 boundary: v aliases plus high-s malleability pay one payload four times (405.686352ms)
+{"check":"C-010-approval-prerequisite","replayWithoutSecondApprovalRejected":true,"replayAfterSecondApprovalSucceeded":true,"received":"50000000000000000000"}
+✔ C-010 boundary: replay on a second router requires its own token approval (346.081883ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 5750.743076

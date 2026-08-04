@@ -1,0 +1,26 @@
+utc_start=2026-08-04T13:10:45Z
+command=bash run/evidence/C-006/reproduce.sh
+purpose=independent-clean-process-reproduction
+This version of µWS is not compatible with your Node.js build:
+
+Error: Cannot find module '../binaries/uws_linux_x64_137.node'
+Require stack:
+- /tmp/aim-blind-hunt-75d19f5c.XA7jKe/target/node_modules/ganache/node_modules/@trufflesuite/uws-js-unofficial/src/uws.js
+- /tmp/aim-blind-hunt-75d19f5c.XA7jKe/target/node_modules/ganache/dist/node/core.js
+Falling back to a NodeJS implementation; performance may be degraded.
+
+
+{"oracle":"C-006-positive","callerIsGuardian":false,"initialFactor":"7500","factorAfter":"9500","initialLimit":"750000000000000000000","debtAfter":"949000000000000000000","attackerStable":"949000000000000000000"}
+✔ positive: ordinary borrower raises global collateral factor and extracts above configured limit (3189.390869ms)
+{"oracle":"C-006-negative","unauthorizedDecreaseRejected":true,"factorAfter":"7500"}
+✔ negative: the same ordinary caller is rejected when lowering the parameter (448.710249ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4365.222234
+exit=0
+utc_end=2026-08-04T13:10:50Z

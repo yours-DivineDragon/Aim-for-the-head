@@ -1,0 +1,207 @@
+{
+  "records": [
+    {
+      "dimension": "source-read",
+      "evidence": [
+        "regression-v2/maps/business-flow-and-state-machine-model.md"
+      ],
+      "item": "complete Solidity and entry-point census",
+      "note": "All public target contracts and their direct support interfaces were mapped.",
+      "schema_version": 1,
+      "sequence": 1,
+      "status": "inspected",
+      "timestamp": "2026-08-04T16:53:23Z"
+    },
+    {
+      "dimension": "attack-surface",
+      "evidence": [
+        "regression-v2/submission/candidates.json"
+      ],
+      "item": "lending vault oracle pool bridge signature and strategy surfaces",
+      "note": "Every ranked surface has a positive execution and a discriminating control.",
+      "schema_version": 1,
+      "sequence": 2,
+      "status": "tested",
+      "timestamp": "2026-08-04T16:53:23Z"
+    },
+    {
+      "dimension": "trust-boundary",
+      "evidence": [
+        "regression-v2/maps/interface-promise-versus-runtime-delta-matrix.md",
+        "regression-v2/maps/callback-and-action-sequence-matrix.md"
+      ],
+      "item": "public callback token feed messenger signature and initialization boundaries",
+      "note": "",
+      "schema_version": 1,
+      "sequence": 3,
+      "status": "tested",
+      "timestamp": "2026-08-04T16:53:23Z"
+    },
+    {
+      "dimension": "state-invariant",
+      "evidence": [
+        "regression-v2/maps/asset-liability-conservation-ledger.md"
+      ],
+      "item": "solvency authorization replay accounting and lifecycle invariants",
+      "note": "",
+      "schema_version": 1,
+      "sequence": 4,
+      "status": "tested",
+      "timestamp": "2026-08-04T16:53:23Z"
+    },
+    {
+      "dimension": "runtime-corpus",
+      "evidence": [
+        "regression-v2/evidence/execution-summary.json"
+      ],
+      "item": "ordinary suite retained packets and deep regression corpus",
+      "note": "",
+      "schema_version": 1,
+      "sequence": 5,
+      "status": "tested",
+      "timestamp": "2026-08-04T16:53:23Z"
+    },
+    {
+      "dimension": "config-build",
+      "evidence": [
+        "regression-v2/evidence/ordinary-suite.log",
+        "regression-v2/evidence/source-manifest.log"
+      ],
+      "item": "pinned optimized compiler and deterministic local chain",
+      "note": "",
+      "schema_version": 1,
+      "sequence": 6,
+      "status": "tested",
+      "timestamp": "2026-08-04T16:53:23Z"
+    },
+    {
+      "dimension": "historical-family",
+      "evidence": [
+        "BASELINE_RECORD.md",
+        "IMPROVEMENT_STUDY.md"
+      ],
+      "item": "revealed-target contamination and baseline family comparison",
+      "note": "Used only to label the regression and later adjudicate it; no blind or novelty claim is made.",
+      "schema_version": 1,
+      "sequence": 7,
+      "status": "inspected",
+      "timestamp": "2026-08-04T16:53:24Z"
+    },
+    {
+      "dimension": "falsification",
+      "evidence": [
+        "regression-v2/evidence/deep-regressions.log",
+        "regression-v2/evidence/retained-exact-regressions.log"
+      ],
+      "item": "matched condition-changing controls for every claim",
+      "note": "",
+      "schema_version": 1,
+      "sequence": 8,
+      "status": "tested",
+      "timestamp": "2026-08-04T16:53:24Z"
+    },
+    {
+      "dimension": "business-invariant",
+      "evidence": [
+        "regression-v2/maps/business-flow-and-state-machine-model.md"
+      ],
+      "item": "business-flow-and-state-machine-model",
+      "note": "",
+      "schema_version": 1,
+      "sequence": 9,
+      "status": "tested",
+      "timestamp": "2026-08-04T16:53:24Z"
+    },
+    {
+      "dimension": "business-invariant",
+      "evidence": [
+        "regression-v2/maps/asset-liability-conservation-ledger.md"
+      ],
+      "item": "asset-liability-conservation-ledger",
+      "note": "",
+      "schema_version": 1,
+      "sequence": 10,
+      "status": "tested",
+      "timestamp": "2026-08-04T16:53:24Z"
+    },
+    {
+      "dimension": "consumer-propagation",
+      "evidence": [
+        "regression-v2/maps/mutable-value-to-downstream-consumer-map.md"
+      ],
+      "item": "mutable-value-to-downstream-consumer-map",
+      "note": "",
+      "schema_version": 1,
+      "sequence": 11,
+      "status": "tested",
+      "timestamp": "2026-08-04T16:53:24Z"
+    },
+    {
+      "dimension": "boundary-arithmetic",
+      "evidence": [
+        "regression-v2/maps/rounding-unit-and-zero-boundaries.md",
+        "regression-v2/evidence/deep-regressions.log"
+      ],
+      "item": "rounding-unit-and-zero-boundaries",
+      "note": "",
+      "schema_version": 1,
+      "sequence": 12,
+      "status": "tested",
+      "timestamp": "2026-08-04T16:53:24Z"
+    },
+    {
+      "dimension": "external-semantics",
+      "evidence": [
+        "regression-v2/maps/interface-promise-versus-runtime-delta-matrix.md",
+        "regression-v2/evidence/deep-regressions.log"
+      ],
+      "item": "interface-promise-versus-runtime-delta-matrix",
+      "note": "",
+      "schema_version": 1,
+      "sequence": 13,
+      "status": "tested",
+      "timestamp": "2026-08-04T16:53:24Z"
+    },
+    {
+      "dimension": "sequence-interleaving",
+      "evidence": [
+        "regression-v2/maps/callback-and-action-sequence-matrix.md",
+        "regression-v2/evidence/deep-regressions.log"
+      ],
+      "item": "callback-and-action-sequence-matrix",
+      "note": "",
+      "schema_version": 1,
+      "sequence": 14,
+      "status": "tested",
+      "timestamp": "2026-08-04T16:53:24Z"
+    },
+    {
+      "dimension": "exploit-composition",
+      "evidence": [
+        "regression-v2/maps/primitive-join-graph.md",
+        "regression-v2/evidence/deep-regressions.log"
+      ],
+      "item": "primitive-join-graph",
+      "note": "",
+      "schema_version": 1,
+      "sequence": 15,
+      "status": "tested",
+      "timestamp": "2026-08-04T16:53:24Z"
+    },
+    {
+      "dimension": "economic-closure",
+      "evidence": [
+        "regression-v2/maps/funding-repayment-profit-and-system-loss-ledger.md",
+        "regression-v2/evidence/deep-regressions.log"
+      ],
+      "item": "funding-repayment-profit-and-system-loss-ledger",
+      "note": "",
+      "schema_version": 1,
+      "sequence": 16,
+      "status": "tested",
+      "timestamp": "2026-08-04T16:53:24Z"
+    }
+  ],
+  "schema_version": 1,
+  "updated_at": "2026-08-04T16:53:24Z"
+}

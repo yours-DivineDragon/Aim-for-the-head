@@ -1,0 +1,1158 @@
+{
+  "schema": "blind-claim-consensus",
+  "schema_version": 1,
+  "generated_at_utc": "2026-08-04T14:08:32.246Z",
+  "benchmark_mode": "authorized_report_only_blind_claim_validation",
+  "inputs": {
+    "target_commit": "75d19f5c283c5e2fe6b1a5913b1ca4b82462c21d",
+    "source_manifest_digest": "9ac26ede2c9b8e3f45910a1e8207c10ec418999106571061211fc339ad84c926",
+    "reviewer_json_sha256": {
+      "a": "c5636dc70ae013b37fe6fe9d50c0c989215f68778b13c2cd63a893eb73a9098f",
+      "b": "3787d7d3317df045f7f0714dca2746987c52311315f3c643db3d0ba781e83527"
+    },
+    "candidate_manifest_sha256": "82a3a57f53ab8dd36ee9560ef9007d77e734fc519d5cf166812c7bf904e970e1",
+    "source_manifest_file_sha256": "bef96bd19bdeccda8b5816f69b703e3bab11756125fb8d0740694383e7ba2920",
+    "review_package_tree_sha256": {
+      "rule": "sha256 of sorted, newline-terminated sha256sum-formatted entries for every regular file in the named package, with paths relative to the consensus workspace",
+      "a": "21fabe5a069d0bebec4a9587b806b7ff5db236165d7fc3dd84d352563ae7c349",
+      "b": "f5ed991ab8dba2062896309843ae2a7f629d39b4c89058cc39a34a94ec602c35"
+    },
+    "input_hash_inventory": {
+      "path": "input-hashes.sha256",
+      "review_package_files": 100,
+      "candidate_manifest_files": 1
+    }
+  },
+  "manifest_attestation": {
+    "command": "node --input-type=module -e '<inline SHA-256 verifier>'",
+    "working_directory": "target",
+    "declared_file_count": 22,
+    "checked_file_count": 22,
+    "mismatch_count": 0,
+    "expected_combined_digest": "9ac26ede2c9b8e3f45910a1e8207c10ec418999106571061211fc339ad84c926",
+    "computed_combined_digest": "9ac26ede2c9b8e3f45910a1e8207c10ec418999106571061211fc339ad84c926",
+    "match": true,
+    "pre_rerun_exit_code": 0,
+    "post_rerun_exit_code": 0,
+    "logs": [
+      "logs/manifest-pre.log",
+      "logs/manifest-post.log"
+    ],
+    "commit_identifier_check": {
+      "expected": "75d19f5c283c5e2fe6b1a5913b1ca4b82462c21d",
+      "candidate_manifest_value": "75d19f5c283c5e2fe6b1a5913b1ca4b82462c21d",
+      "match": true,
+      "note": "Git history was not accessed under blind-isolation rules."
+    },
+    "candidate_manifest_check": {
+      "declared_candidate_count": 11,
+      "observed_candidate_count": 11,
+      "source_digest_match": true
+    }
+  },
+  "ordinary_suite_attestation": {
+    "command": "npm test",
+    "working_directory": "target",
+    "fresh_process": true,
+    "exit_code": 0,
+    "tests": 6,
+    "passed": 6,
+    "failed": 0,
+    "log": "logs/ordinary-suite.log",
+    "note": "Ganache emitted its expected native uWS compatibility warning and used its NodeJS fallback; the suite passed."
+  },
+  "reviewer_comparison": {
+    "compared_candidate_count": 11,
+    "summary": {
+      "reproduction_status_disagreements": [],
+      "scope_disagreements": [],
+      "demonstrated_impact_differences": [
+        "C-004",
+        "C-006",
+        "C-007",
+        "C-009"
+      ],
+      "severity_disagreements": [
+        "C-005",
+        "C-006",
+        "C-010"
+      ],
+      "duplicate_clustering_disagreements": [],
+      "material_disagreement_candidates": [
+        "C-004",
+        "C-005",
+        "C-006",
+        "C-007",
+        "C-009",
+        "C-010"
+      ]
+    },
+    "candidates": [
+      {
+        "id": "C-001",
+        "reproduction": {
+          "a": "reproduced",
+          "b": "reproduced"
+        },
+        "scope": {
+          "a": "in_scope",
+          "b": "in_scope"
+        },
+        "impact": {
+          "a": "supported",
+          "b": "supported"
+        },
+        "severity": {
+          "a": "critical",
+          "b": "critical"
+        },
+        "duplicates": {
+          "a": null,
+          "b": null
+        },
+        "root_cause_material_agreement": true,
+        "explicit_differences": []
+      },
+      {
+        "id": "C-002",
+        "reproduction": {
+          "a": "reproduced",
+          "b": "reproduced"
+        },
+        "scope": {
+          "a": "in_scope",
+          "b": "in_scope"
+        },
+        "impact": {
+          "a": "supported",
+          "b": "supported"
+        },
+        "severity": {
+          "a": "critical",
+          "b": "critical"
+        },
+        "duplicates": {
+          "a": null,
+          "b": null
+        },
+        "root_cause_material_agreement": true,
+        "explicit_differences": []
+      },
+      {
+        "id": "C-003",
+        "reproduction": {
+          "a": "reproduced",
+          "b": "reproduced"
+        },
+        "scope": {
+          "a": "in_scope",
+          "b": "in_scope"
+        },
+        "impact": {
+          "a": "supported",
+          "b": "supported"
+        },
+        "severity": {
+          "a": "high",
+          "b": "high"
+        },
+        "duplicates": {
+          "a": null,
+          "b": null
+        },
+        "root_cause_material_agreement": true,
+        "explicit_differences": []
+      },
+      {
+        "id": "C-004",
+        "reproduction": {
+          "a": "reproduced",
+          "b": "reproduced"
+        },
+        "scope": {
+          "a": "in_scope",
+          "b": "in_scope"
+        },
+        "impact": {
+          "a": "supported; described two relevant encodings and a twofold payout",
+          "b": "supported; independently described four accepted raw encodings and a fourfold payout"
+        },
+        "severity": {
+          "a": "high",
+          "b": "high"
+        },
+        "duplicates": {
+          "a": null,
+          "b": null
+        },
+        "root_cause_material_agreement": true,
+        "explicit_differences": [
+          "demonstrated_impact_amplification_bound"
+        ]
+      },
+      {
+        "id": "C-005",
+        "reproduction": {
+          "a": "reproduced",
+          "b": "reproduced"
+        },
+        "scope": {
+          "a": "in_scope",
+          "b": "in_scope"
+        },
+        "impact": {
+          "a": "supported",
+          "b": "supported"
+        },
+        "severity": {
+          "a": "critical",
+          "b": "high"
+        },
+        "duplicates": {
+          "a": null,
+          "b": null
+        },
+        "root_cause_material_agreement": true,
+        "explicit_differences": [
+          "severity"
+        ]
+      },
+      {
+        "id": "C-006",
+        "reproduction": {
+          "a": "reproduced",
+          "b": "reproduced"
+        },
+        "scope": {
+          "a": "in_scope",
+          "b": "in_scope"
+        },
+        "impact": {
+          "a": "supported, while expressly noting no immediate shortfall",
+          "b": "supported_with_limitation for the same no-immediate-shortfall boundary"
+        },
+        "severity": {
+          "a": "medium",
+          "b": "high"
+        },
+        "duplicates": {
+          "a": null,
+          "b": null
+        },
+        "root_cause_material_agreement": true,
+        "explicit_differences": [
+          "impact_support_label",
+          "severity"
+        ]
+      },
+      {
+        "id": "C-007",
+        "reproduction": {
+          "a": "reproduced",
+          "b": "reproduced"
+        },
+        "scope": {
+          "a": "in_scope",
+          "b": "in_scope"
+        },
+        "impact": {
+          "a": "supported, with permanent-stranding limitation",
+          "b": "supported_with_limitation for local denial; remote recovery absent"
+        },
+        "severity": {
+          "a": "medium",
+          "b": "medium"
+        },
+        "duplicates": {
+          "a": null,
+          "b": null
+        },
+        "root_cause_material_agreement": true,
+        "explicit_differences": [
+          "impact_support_label",
+          "prerequisite_support_label"
+        ]
+      },
+      {
+        "id": "C-008",
+        "reproduction": {
+          "a": "reproduced",
+          "b": "reproduced"
+        },
+        "scope": {
+          "a": "in_scope",
+          "b": "in_scope"
+        },
+        "impact": {
+          "a": "supported",
+          "b": "supported"
+        },
+        "severity": {
+          "a": "high",
+          "b": "high"
+        },
+        "duplicates": {
+          "a": null,
+          "b": null
+        },
+        "root_cause_material_agreement": true,
+        "explicit_differences": []
+      },
+      {
+        "id": "C-009",
+        "reproduction": {
+          "a": "reproduced",
+          "b": "reproduced"
+        },
+        "scope": {
+          "a": "in_scope",
+          "b": "in_scope"
+        },
+        "impact": {
+          "a": "supported, with current-value comparator boundary",
+          "b": "supported_with_limitation for the same comparator boundary"
+        },
+        "severity": {
+          "a": "high",
+          "b": "high"
+        },
+        "duplicates": {
+          "a": null,
+          "b": null
+        },
+        "root_cause_material_agreement": true,
+        "explicit_differences": [
+          "impact_support_label"
+        ]
+      },
+      {
+        "id": "C-010",
+        "reproduction": {
+          "a": "reproduced",
+          "b": "reproduced"
+        },
+        "scope": {
+          "a": "in_scope",
+          "b": "in_scope"
+        },
+        "impact": {
+          "a": "supported",
+          "b": "supported"
+        },
+        "severity": {
+          "a": "high",
+          "b": "medium"
+        },
+        "duplicates": {
+          "a": null,
+          "b": null
+        },
+        "root_cause_material_agreement": true,
+        "explicit_differences": [
+          "severity"
+        ]
+      },
+      {
+        "id": "C-011",
+        "reproduction": {
+          "a": "reproduced",
+          "b": "reproduced"
+        },
+        "scope": {
+          "a": "in_scope",
+          "b": "in_scope"
+        },
+        "impact": {
+          "a": "supported",
+          "b": "supported"
+        },
+        "severity": {
+          "a": "low",
+          "b": "low"
+        },
+        "duplicates": {
+          "a": null,
+          "b": null
+        },
+        "root_cause_material_agreement": true,
+        "explicit_differences": []
+      }
+    ]
+  },
+  "consensus_execution": {
+    "methodology": "Every material reviewer difference was covered by a fresh-process submitted reproduction, a consensus-owned boundary test, or both. A critical, high, and low agreement sample was also rerun. Decisions use observed execution and the benchmark trust model rather than vote count.",
+    "reruns": [
+      {
+        "category": "material_disagreement",
+        "candidates": [
+          "C-004",
+          "C-005",
+          "C-006",
+          "C-010"
+        ],
+        "command": "node --test --test-concurrency=1 consensus-output/checks/material-disagreements.test.mjs",
+        "working_directory": ".",
+        "fresh_process": true,
+        "exit_code": 0,
+        "tests": {
+          "passed": 4,
+          "failed": 0
+        },
+        "log": "logs/material-disagreement-boundaries.log"
+      },
+      {
+        "category": "material_disagreement",
+        "candidates": [
+          "C-005"
+        ],
+        "command": "bash run/evidence/C-005/reproduce.sh",
+        "working_directory": "target",
+        "fresh_process": true,
+        "exit_code": 0,
+        "tests": {
+          "passed": 2,
+          "failed": 0
+        },
+        "log": "logs/disagreement-C-005.log"
+      },
+      {
+        "category": "material_disagreement",
+        "candidates": [
+          "C-006"
+        ],
+        "command": "bash run/evidence/C-006/reproduce.sh",
+        "working_directory": "target",
+        "fresh_process": true,
+        "exit_code": 0,
+        "tests": {
+          "passed": 2,
+          "failed": 0
+        },
+        "log": "logs/disagreement-C-006.log"
+      },
+      {
+        "category": "material_disagreement",
+        "candidates": [
+          "C-007"
+        ],
+        "command": "bash run/evidence/C-007/reproduce.sh",
+        "working_directory": "target",
+        "fresh_process": true,
+        "exit_code": 0,
+        "tests": {
+          "passed": 2,
+          "failed": 0
+        },
+        "log": "logs/agreement-sample-C-007.log"
+      },
+      {
+        "category": "material_disagreement",
+        "candidates": [
+          "C-009"
+        ],
+        "command": "bash run/evidence/C-009/reproduce.sh",
+        "working_directory": "target",
+        "fresh_process": true,
+        "exit_code": 0,
+        "tests": {
+          "passed": 2,
+          "failed": 0
+        },
+        "log": "logs/impact-label-C-009.log"
+      },
+      {
+        "category": "material_disagreement",
+        "candidates": [
+          "C-010"
+        ],
+        "command": "bash run/evidence/C-010/reproduce.sh",
+        "working_directory": "target",
+        "fresh_process": true,
+        "exit_code": 0,
+        "tests": {
+          "passed": 2,
+          "failed": 0
+        },
+        "log": "logs/disagreement-C-010.log"
+      },
+      {
+        "category": "agreement_sample",
+        "candidates": [
+          "C-001"
+        ],
+        "command": "bash run/evidence/C-001/reproduce.sh",
+        "working_directory": "target",
+        "fresh_process": true,
+        "exit_code": 0,
+        "tests": {
+          "passed": 2,
+          "failed": 0
+        },
+        "log": "logs/agreement-sample-C-001.log"
+      },
+      {
+        "category": "agreement_sample",
+        "candidates": [
+          "C-008"
+        ],
+        "command": "bash run/evidence/C-008/reproduce.sh",
+        "working_directory": "target",
+        "fresh_process": true,
+        "exit_code": 0,
+        "tests": {
+          "passed": 2,
+          "failed": 0
+        },
+        "log": "logs/agreement-sample-C-008.log"
+      },
+      {
+        "category": "agreement_sample",
+        "candidates": [
+          "C-011"
+        ],
+        "command": "bash run/evidence/C-011/reproduce.sh",
+        "working_directory": "target",
+        "fresh_process": true,
+        "exit_code": 0,
+        "tests": {
+          "passed": 2,
+          "failed": 0
+        },
+        "log": "logs/agreement-sample-C-011.log"
+      }
+    ],
+    "harness": "checks/material-disagreements.test.mjs",
+    "package_layout_incidents": [
+      {
+        "command": "node --test --test-concurrency=1 reviews/a/independent-discrimination.test.mjs",
+        "exit_code": 1,
+        "log": "logs/package-layout-attempt-a.log",
+        "cause": "The frozen reviewer harness retained a relative import for its original review workspace and failed module resolution before tests ran.",
+        "bearing": "none; no target code ran and relevant boundaries were reimplemented under consensus-output."
+      },
+      {
+        "command": "node --test --test-concurrency=1 reviews/b/checks/reviewer_b_independent.test.mjs",
+        "exit_code": 1,
+        "log": "logs/package-layout-attempt-b.log",
+        "cause": "The frozen reviewer harness retained a relative import for its original review workspace and failed module resolution before tests ran.",
+        "bearing": "none; no target code ran and relevant boundaries were reimplemented under consensus-output."
+      }
+    ]
+  },
+  "disagreement_resolutions": [
+    {
+      "candidate_id": "C-004",
+      "fields": [
+        "demonstrated_impact"
+      ],
+      "reviewer_a": "Two relevant encodings/twofold payout stated.",
+      "reviewer_b": "Four raw encodings/fourfold payout demonstrated.",
+      "resolution": "Four distinct accepted raw encodings exist: low-s/high-s each with 27/28 or normalized 0/1 v form. One 20e18 claim paid 80e18.",
+      "commands": [
+        {
+          "command_index": 0,
+          "exit_code": 0,
+          "log": "logs/material-disagreement-boundaries.log"
+        }
+      ]
+    },
+    {
+      "candidate_id": "C-005",
+      "fields": [
+        "severity"
+      ],
+      "reviewer_a": "critical",
+      "reviewer_b": "high",
+      "resolution": "High. Complete module takeover and full module-held asset loss are demonstrated, including arbitrary execute, but system-wide protocol liquidity or downstream authority is not modeled.",
+      "commands": [
+        {
+          "command_index": 0,
+          "exit_code": 0,
+          "log": "logs/disagreement-C-005.log"
+        },
+        {
+          "command_index": 1,
+          "exit_code": 0,
+          "log": "logs/material-disagreement-boundaries.log"
+        }
+      ]
+    },
+    {
+      "candidate_id": "C-006",
+      "fields": [
+        "demonstrated_impact_label",
+        "severity"
+      ],
+      "reviewer_a": "impact supported; medium",
+      "reviewer_b": "impact supported_with_limitation; high",
+      "resolution": "Impact is supported with limitation; severity is Medium. The unauthorized global change is real, but 949e18 debt remained below 1,000e18 contemporaneous collateral value and showed no immediate shortfall.",
+      "commands": [
+        {
+          "command_index": 0,
+          "exit_code": 0,
+          "log": "logs/disagreement-C-006.log"
+        },
+        {
+          "command_index": 1,
+          "exit_code": 0,
+          "log": "logs/material-disagreement-boundaries.log"
+        }
+      ]
+    },
+    {
+      "candidate_id": "C-007",
+      "fields": [
+        "demonstrated_impact_label",
+        "prerequisite_support_label"
+      ],
+      "reviewer_a": "Local denial supported, with permanent-stranding limitation.",
+      "reviewer_b": "Supported_with_limitation and prerequisites partially supported because remote semantics are absent.",
+      "resolution": "Local denial of an otherwise-valid cross-chain credit is reproduced; permanent source-side stranding, recovery behavior, and deliberate nonce control remain unproven limitations.",
+      "commands": [
+        {
+          "command_index": 0,
+          "exit_code": 0,
+          "log": "logs/agreement-sample-C-007.log"
+        }
+      ]
+    },
+    {
+      "candidate_id": "C-009",
+      "fields": [
+        "demonstrated_impact_label"
+      ],
+      "reviewer_a": "Supported with current-value comparator boundary.",
+      "reviewer_b": "Supported_with_limitation for the same boundary.",
+      "resolution": "Supported_with_limitation. The stale two-dollar feed enabled 1,500e18 debt versus a 750e18 one-dollar pool comparator, while the target lacks an external market-price source.",
+      "commands": [
+        {
+          "command_index": 0,
+          "exit_code": 0,
+          "log": "logs/impact-label-C-009.log"
+        }
+      ]
+    },
+    {
+      "candidate_id": "C-010",
+      "fields": [
+        "severity"
+      ],
+      "reviewer_a": "high",
+      "reviewer_b": "medium",
+      "resolution": "Medium. Direct duplicate transfer is reproduced, but router B rejects before its own token approval; exploitation needs multiple approved router instances with aligned nonces.",
+      "commands": [
+        {
+          "command_index": 0,
+          "exit_code": 0,
+          "log": "logs/disagreement-C-010.log"
+        },
+        {
+          "command_index": 1,
+          "exit_code": 0,
+          "log": "logs/material-disagreement-boundaries.log"
+        }
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "id": "C-001",
+      "title": "Borrow callback reentrancy finalizes debt after value transfer",
+      "source_locations": [
+        "contracts/LendingMarket.sol:53-59",
+        "contracts/LendingMarket.sol:106-108"
+      ],
+      "final_status": "reproduced",
+      "root_cause": {
+        "supported": true,
+        "statement": "LendingMarket.borrow transfers stable and invokes an attacker-controlled receiver callback before incrementing the caller's debt, with no reentrancy guard; nested frames therefore validate against stale debt."
+      },
+      "prerequisites": {
+        "supported": true,
+        "required": [
+          "An ordinary user can deploy a callback receiver and make it the beneficiary of legitimate collateral.",
+          "The callback account is healthy for one borrow.",
+          "The market has stable liquidity and callback data is nonempty."
+        ],
+        "limitations": "Recursion depth is bounded by available liquidity and gas."
+      },
+      "impact": {
+        "support": "supported",
+        "observed": "The consensus sample produced 1,500e18 debt and stable against a 750e18 limit. Both reviewers also validated deeper recursion scaling to available market liquidity.",
+        "limitations": "The attacker must supply legitimate collateral sufficient for one healthy borrow."
+      },
+      "scope": {
+        "decision": "in_scope",
+        "rationale": "An untrusted protocol-user contract exploits the production borrowing path without trusted-role misconduct or mock-only powers."
+      },
+      "final_severity": {
+        "level": "critical",
+        "rationale": "One transaction can over-borrow far beyond the collateral limit and scale to draining market stable liquidity, causing immediate insolvency."
+      },
+      "duplicate_cluster": null,
+      "rationale": "Positive and negative controls passed in both reviews and the fresh agreement sample."
+    },
+    {
+      "id": "C-002",
+      "title": "Bridge credit does not authenticate remote application sender",
+      "source_locations": [
+        "contracts/BridgeGateway.sol:29-44",
+        "contracts/LendingMarket.sol:78-81"
+      ],
+      "final_status": "reproduced",
+      "root_cause": {
+        "supported": true,
+        "statement": "BridgeGateway authenticates the messenger and source chain but never compares messenger.xDomainMessageSender() with remoteGateway[sourceChain]; it reads the sender only for the event."
+      },
+      "prerequisites": {
+        "supported": true,
+        "required": [
+          "An untrusted remote application can originate a message on a configured source chain.",
+          "The trusted messenger honestly relays and reports that mismatching application sender.",
+          "The local gateway is the market bridge and the market has stable liquidity."
+        ],
+        "limitations": "No messenger compromise or false source context is required."
+      },
+      "impact": {
+        "support": "supported",
+        "observed": "A mismatching remote application created 1,000e18 bridge collateral and enabled a 750e18 stable borrow without locked local collateral.",
+        "limitations": "The unbacked-credit conclusion relies only on the benchmark assumption that remote applications are untrusted."
+      },
+      "scope": {
+        "decision": "in_scope",
+        "rationale": "Remote applications are explicitly untrusted and the messenger remains honest."
+      },
+      "final_severity": {
+        "level": "critical",
+        "rationale": "Any untrusted application on a configured source chain can mint arbitrary unbacked collateral credit and drain local market liquidity."
+      },
+      "duplicate_cluster": null,
+      "rationale": "Both reviewers reproduced the positive and sender-authentication comparator cases with materially identical conclusions."
+    },
+    {
+      "id": "C-003",
+      "title": "Permit relayer can redirect signed transfer",
+      "source_locations": [
+        "contracts/PermitRouter.sol:10-11",
+        "contracts/PermitRouter.sol:17-30"
+      ],
+      "final_status": "reproduced",
+      "root_cause": {
+        "supported": true,
+        "statement": "recipient controls transferFrom's destination but is absent from TRANSFER_TYPEHASH and the signed payload, so signature validity is invariant under recipient substitution."
+      },
+      "prerequisites": {
+        "supported": true,
+        "required": [
+          "The owner approved the router for the amount.",
+          "A relayer possesses a valid unexpired owner signature for the current token, amount, nonce, and deadline.",
+          "The owner intended a fixed recipient."
+        ],
+        "limitations": "Loss cannot exceed the signed amount, available balance, and allowance."
+      },
+      "impact": {
+        "support": "supported",
+        "observed": "A relayer redirected the full 25e18 signed amount to itself, left the intended recipient at zero, and consumed the owner's nonce.",
+        "limitations": "A valid signature and token approval are required."
+      },
+      "scope": {
+        "decision": "in_scope",
+        "rationale": "A permissionless relayer changes security-relevant unsigned calldata in the scoped router."
+      },
+      "final_severity": {
+        "level": "high",
+        "rationale": "The omission enables direct theft of the entire authorized transfer amount, subject to a legitimate signature and approval."
+      },
+      "duplicate_cluster": null,
+      "rationale": "Both reviewers agreed on reproduction, scope, impact, severity, and distinct remediation."
+    },
+    {
+      "id": "C-004",
+      "title": "ECDSA malleability bypasses reward replay protection",
+      "source_locations": [
+        "contracts/lib/SignatureCodec.sol:9-23",
+        "contracts/RewardsDistributor.sol:24-30"
+      ],
+      "final_status": "reproduced",
+      "root_cause": {
+        "supported": true,
+        "statement": "SignatureCodec accepts low-s/high-s equivalents and 27/28 versus 0/1 v aliases, while RewardsDistributor keys replay state by raw signature bytes instead of claim identity."
+      },
+      "prerequisites": {
+        "supported": true,
+        "required": [
+          "One legitimate authority-signed claim is available.",
+          "The distributor holds enough reward tokens for repeated payouts.",
+          "A claimant or relayer can transform public signature values."
+        ],
+        "limitations": "No authority key compromise is needed; the accepted raw-encoding set is finite."
+      },
+      "impact": {
+        "support": "supported",
+        "observed": "The consensus boundary run accepted four distinct raw encodings for one 20e18 authorization and paid 80e18.",
+        "limitations": "Amplification is bounded to four accepted raw encodings per authorization under this codec, and by distributor balance."
+      },
+      "scope": {
+        "decision": "in_scope",
+        "rationale": "The authority remains honest; exploitation uses public signature data and scoped verifier/replay logic."
+      },
+      "final_severity": {
+        "level": "high",
+        "rationale": "A legitimate claim can be multiplied fourfold without the signing key, directly overdrawing distributor funds, but exploitation requires a valid authorization and has a finite per-claim multiplier."
+      },
+      "duplicate_cluster": null,
+      "rationale": "The consensus boundary execution resolved the reviewers' two-versus-four amplification disagreement in favor of four accepted raw encodings."
+    },
+    {
+      "id": "C-005",
+      "title": "StrategyModule can be reinitialized and seized",
+      "source_locations": [
+        "contracts/StrategyModule.sol:14-19",
+        "contracts/StrategyModule.sol:22-32"
+      ],
+      "final_status": "reproduced",
+      "root_cause": {
+        "supported": true,
+        "statement": "initialize is permissionless, overwrites vault and operator on every call, and never enforces the initialized flag that it sets."
+      },
+      "prerequisites": {
+        "supported": true,
+        "required": [
+          "A module has been honestly initialized.",
+          "The module holds tokens or possesses useful operational authority.",
+          "Any untrusted account can submit a transaction."
+        ],
+        "limitations": "Concrete loss depends on assets and downstream authority assigned to the module."
+      },
+      "impact": {
+        "support": "supported",
+        "observed": "An arbitrary account replaced both roles, drained the full 10e18 module token balance, and independently used the seized vault role for arbitrary execute.",
+        "limitations": "The frozen target does not connect the module to all protocol liquidity or model downstream privileged integrations."
+      },
+      "scope": {
+        "decision": "in_scope",
+        "rationale": "An untrusted caller violates the documented vault/operator trust boundary through the production initializer."
+      },
+      "final_severity": {
+        "level": "high",
+        "rationale": "Permissionless complete module takeover causes direct loss of all module-held assets and control of its call capability; critical system-wide loss is not demonstrated by the frozen integration."
+      },
+      "duplicate_cluster": null,
+      "rationale": "Fresh submitted and consensus boundary runs confirmed role overwrite, sweep, and execute; the deployment-bound impact resolves severity to high."
+    },
+    {
+      "id": "C-006",
+      "title": "Any user can raise the global collateral factor",
+      "source_locations": [
+        "contracts/LendingMarket.sol:74-75",
+        "contracts/LendingMarket.sol:89-93"
+      ],
+      "final_status": "reproduced",
+      "root_cause": {
+        "supported": true,
+        "statement": "The non-guardian branch reverts only when nextFactorBps is less than or equal to the current value, accidentally authorizing any non-guardian increase up to 9,500 bps."
+      },
+      "prerequisites": {
+        "supported": true,
+        "required": [
+          "The current factor is below 9,500 bps.",
+          "An ordinary borrower has collateral.",
+          "The market has stable liquidity."
+        ],
+        "limitations": "The hard cap remains 9,500 bps and the guardian can later restore the parameter."
+      },
+      "impact": {
+        "support": "supported_with_limitation",
+        "observed": "A non-guardian raised the global factor from 7,500 to 9,500 and borrowed 949e18 rather than the former 750e18 limit.",
+        "limitations": "Fresh boundary execution measured 1,000e18 contemporaneous collateral value versus 949e18 debt: the unauthorized change removes most of the solvency buffer but creates no immediate shortfall at the unchanged fair price."
+      },
+      "scope": {
+        "decision": "in_scope",
+        "rationale": "A public caller bypasses the documented guardian-only risk-control boundary."
+      },
+      "final_severity": {
+        "level": "medium",
+        "rationale": "The issue globally weakens a solvency control and enables materially higher leverage, but immediate theft or bad debt is not demonstrated and requires an additional adverse price move or loss mechanism."
+      },
+      "duplicate_cluster": null,
+      "rationale": "Fresh reproduction and boundary execution support the access-control defect and limited immediate impact; this resolves the severity disagreement to medium."
+    },
+    {
+      "id": "C-007",
+      "title": "Bridge replay nonce is global across source chains",
+      "source_locations": [
+        "contracts/BridgeGateway.sol:11-12",
+        "contracts/BridgeGateway.sol:36-41"
+      ],
+      "final_status": "reproduced",
+      "root_cause": {
+        "supported": true,
+        "statement": "processedNonce is keyed only by uint64 nonce even though configured source chains have independent domains, so one chain consumes the same numeric nonce for every chain."
+      },
+      "prerequisites": {
+        "supported": true,
+        "required": [
+          "At least two source chains are configured.",
+          "Their independent message streams use the same numeric nonce.",
+          "A valid relay on one source chain executes before the colliding relay."
+        ],
+        "limitations": "The frozen target does not define remote nonce allocation, source escrow, retry, or reissue behavior."
+      },
+      "impact": {
+        "support": "supported_with_limitation",
+        "observed": "A valid chain-10 nonce-7 relay credited its beneficiary, while an otherwise-valid chain-20 nonce-7 relay reverted and credited zero.",
+        "limitations": "Local denial of the second credit is demonstrated; permanent source-side collateral stranding and deliberate attacker control of nonce ordering are not."
+      },
+      "scope": {
+        "decision": "in_scope",
+        "rationale": "The collision occurs in scoped gateway state under honest messenger context."
+      },
+      "final_severity": {
+        "level": "medium",
+        "rationale": "The flaw can block legitimate cross-chain credits across domains, but proves denial rather than direct theft and lacks remote recovery semantics."
+      },
+      "duplicate_cluster": null,
+      "rationale": "The fresh rerun confirms the local denial and comparator while preserving the reviewers' stated remote-system limitation."
+    },
+    {
+      "id": "C-008",
+      "title": "Manipulable reserve spot price is trusted during feed fallback",
+      "source_locations": [
+        "contracts/ReserveOracle.sol:17-20",
+        "contracts/ReservePool.sol:27-29",
+        "contracts/ReservePool.sol:43-71",
+        "contracts/LendingMarket.sol:69-75"
+      ],
+      "final_status": "reproduced",
+      "root_cause": {
+        "supported": true,
+        "statement": "On a nonpositive primary answer, ReserveOracle immediately consumes the permissionlessly manipulable current ReservePool ratio without a TWAP, delay, or deviation bound."
+      },
+      "prerequisites": {
+        "supported": true,
+        "required": [
+          "The honest primary feed is unavailable or returns nonpositive.",
+          "The reserve pool and lending market have liquidity.",
+          "The attacker can fund a swap material relative to pool depth."
+        ],
+        "limitations": "The feed-failure condition is not attacker-controlled in the reproduction and the attack requires significant temporary capital."
+      },
+      "impact": {
+        "support": "supported",
+        "observed": "After spending 10,000e18 quote, the attacker manipulated fallback price to about 3.994, borrowed about 14,955e18, and exceeded the one-dollar collateral limit by more than 11,210e18.",
+        "limitations": "Feasibility depends on feed failure, pool depth, fees, and available lending liquidity."
+      },
+      "scope": {
+        "decision": "in_scope",
+        "rationale": "Feed failure is an operating condition; swaps, vault deposits, and borrowing are permissionless production paths."
+      },
+      "final_severity": {
+        "level": "high",
+        "rationale": "A capitalized ordinary user can create profitable, materially undercollateralized debt during feed failure, with condition and capital requirements keeping it below critical."
+      },
+      "duplicate_cluster": null,
+      "rationale": "Both reviewers agreed, and the fresh high-severity agreement sample reproduced the positive and primary-feed negative control."
+    },
+    {
+      "id": "C-009",
+      "title": "Positive primary price is accepted indefinitely",
+      "source_locations": [
+        "contracts/interfaces/ProtocolInterfaces.sol:25-31",
+        "contracts/ReserveOracle.sol:17-20",
+        "contracts/LendingMarket.sol:69-75"
+      ],
+      "final_status": "reproduced",
+      "root_cause": {
+        "supported": true,
+        "statement": "ReserveOracle ignores updatedAt, roundId, and answeredInRound and accepts every positive answer without a maximum age or round-completeness check."
+      },
+      "prerequisites": {
+        "supported": true,
+        "required": [
+          "The last positive feed answer becomes stale and materially exceeds current collateral value.",
+          "An ordinary borrower has collateral.",
+          "The market has stable liquidity."
+        ],
+        "limitations": "The attacker need not and cannot control the configured feed; exploitation is conditional on an honest update outage and price divergence."
+      },
+      "impact": {
+        "support": "supported_with_limitation",
+        "observed": "A year-old two-dollar answer enabled 1,500e18 debt where the reproduction's contemporaneous one-dollar pool comparator permitted 750e18.",
+        "limitations": "The target has no external market-price source; the unmanipulated pool ratio is the deterministic current-value comparator."
+      },
+      "scope": {
+        "decision": "in_scope",
+        "rationale": "Time passing and honest feed outage are system conditions, not trusted-role misconduct."
+      },
+      "final_severity": {
+        "level": "high",
+        "rationale": "A stale positive overvaluation can produce immediate, substantial undercollateralized borrowing, though it depends on feed outage and price divergence."
+      },
+      "duplicate_cluster": null,
+      "rationale": "The fresh rerun confirms the stale-answer path and freshness-bound comparator; the impact is supported with the shared comparator limitation."
+    },
+    {
+      "id": "C-010",
+      "title": "Permit signature replays across router instances",
+      "source_locations": [
+        "contracts/PermitRouter.sol:10-13",
+        "contracts/PermitRouter.sol:26-29"
+      ],
+      "final_status": "reproduced",
+      "root_cause": {
+        "supported": true,
+        "statement": "The signed payload omits address(this) and block.chainid while each router instance maintains an independent owner nonce, so nonce-aligned instances hash and accept the same signature."
+      },
+      "prerequisites": {
+        "supported": true,
+        "required": [
+          "The owner approved at least two router instances for the token and amount.",
+          "The owner's nonces on those instances are aligned.",
+          "A relayer possesses one valid unexpired signature and the owner has sufficient balance."
+        ],
+        "limitations": "Without a second router approval the replay reverts; loss scales only across approved, nonce-aligned instances."
+      },
+      "impact": {
+        "support": "supported",
+        "observed": "One 25e18 authorization transferred 50e18 across two routers. The boundary run rejected router B before its own approval and accepted the unchanged signature after approval.",
+        "limitations": "Multiple deployed and approved routers with aligned nonce state are required."
+      },
+      "scope": {
+        "decision": "in_scope",
+        "rationale": "A permissionless relayer exploits missing verifier-domain separation in the scoped router."
+      },
+      "final_severity": {
+        "level": "medium",
+        "rationale": "The flaw causes a direct unauthorized extra transfer, but exploitation depends on the significant configuration prerequisite of multiple approved router instances with aligned nonces."
+      },
+      "duplicate_cluster": null,
+      "rationale": "Fresh candidate and boundary runs confirmed both the duplicate transfer and the second-approval prerequisite, resolving the severity disagreement to medium."
+    },
+    {
+      "id": "C-011",
+      "title": "First-share donation can deny vault deposits",
+      "source_locations": [
+        "contracts/AsterVault.sol:19-26",
+        "contracts/AsterVault.sol:52-56"
+      ],
+      "final_status": "reproduced",
+      "root_cause": {
+        "supported": true,
+        "statement": "With tiny supply and no virtual share/asset offset, a direct underlying donation inflates managed assets so convertToShares floors a comparable victim deposit to zero and deposit reverts."
+      },
+      "prerequisites": {
+        "supported": true,
+        "required": [
+          "The vault is empty or at a tiny share supply.",
+          "The attacker can order a seed and donation before a victim deposit.",
+          "The attacker temporarily commits underlying comparable to the blocked deposit."
+        ],
+        "limitations": "Repeated denial requires repeated ordering, gas, and opportunity cost."
+      },
+      "impact": {
+        "support": "supported",
+        "observed": "The victim deposit reverted and lost no assets; the attacker recovered its 1,000e18 donation plus one-wei seed with zero token loss.",
+        "limitations": "No victim theft, insolvency, or persistent freeze is shown."
+      },
+      "scope": {
+        "decision": "in_scope",
+        "rationale": "The attack uses ordinary token transfers, vault deposit/redeem functions, and transaction ordering."
+      },
+      "final_severity": {
+        "level": "low",
+        "rationale": "The effect is transient deposit griefing with no victim fund loss, recoverable attacker capital, and a narrow empty/tiny-supply state."
+      },
+      "duplicate_cluster": null,
+      "rationale": "Both reviewers and the fresh low-severity agreement sample reproduced the denial and no-donation comparator."
+    }
+  ],
+  "duplicate_clusters": [],
+  "duplicate_analysis": {
+    "criterion": "Candidates cluster only when root cause, impact, and required remediation are all materially identical.",
+    "result": "No duplicate clusters.",
+    "distinctions": [
+      {
+        "candidates": [
+          "C-002",
+          "C-007"
+        ],
+        "reason": "Remote-sender authentication and cross-chain nonce namespacing have different causes, impacts, and fixes."
+      },
+      {
+        "candidates": [
+          "C-003",
+          "C-010"
+        ],
+        "reason": "Recipient binding and verifier/chain domain separation have different prerequisites and remediations."
+      },
+      {
+        "candidates": [
+          "C-008",
+          "C-009"
+        ],
+        "reason": "Fallback spot manipulation and primary-feed freshness require independent controls."
+      }
+    ]
+  },
+  "aggregate_counts": {
+    "candidates": 11,
+    "status": {
+      "reproduced": 11,
+      "not_reproduced": 0,
+      "inconclusive": 0,
+      "out_of_scope": 0
+    },
+    "scope": {
+      "in_scope": 11,
+      "out_of_scope": 0
+    },
+    "severity": {
+      "critical": 2,
+      "high": 5,
+      "medium": 3,
+      "low": 1
+    },
+    "duplicate_clusters": 0,
+    "fresh_rerun_processes_exit_zero": 9,
+    "fresh_candidate_tests_passed": 16,
+    "fresh_consensus_boundary_tests_passed": 4,
+    "ordinary_tests_passed": 6
+  },
+  "validation_attestation": {
+    "json_parse_and_schema": {
+      "exit_code": 0,
+      "candidate_records_checked": 11,
+      "reviewer_comparisons_checked": 11,
+      "referenced_paths_checked": 22,
+      "missing_paths": 0,
+      "log": "logs/json-validation.log"
+    },
+    "input_hash_inventory_check": {
+      "command": "sha256sum -c consensus-output/input-hashes.sha256",
+      "exit_code": 0,
+      "files_checked": 101,
+      "failed": 0,
+      "log": "logs/input-hashes-check.log"
+    },
+    "immutable_json_hash_recheck": {
+      "exit_code": 0,
+      "match": true,
+      "log": "logs/final-input-hashes.log"
+    },
+    "review_package_tree_hash_recheck": {
+      "exit_code": 0,
+      "match": true,
+      "log": "logs/final-package-aggregates.log"
+    },
+    "output_inventory_log": "logs/output-inventory.log"
+  },
+  "isolation_statement": {
+    "complied": true,
+    "statement": "Consensus used only the frozen target/candidate evidence, the two frozen reviewer packages, and files created under consensus-output. No sealed, reveal, ground-truth, Git-history, other-workspace, issue-tracker, network, parent-artifact, rejected-lead, generator, human-assistance, or hidden-truth source was accessed or inferred. Frozen inputs were not modified.",
+    "network_used": false,
+    "human_assistance_used": false,
+    "git_history_accessed": false,
+    "frozen_inputs_modified": false,
+    "hidden_truth_inference_attempted": false
+  }
+}

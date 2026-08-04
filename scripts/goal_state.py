@@ -15,6 +15,7 @@ from typing import Any, Dict, List, Mapping, Optional, Sequence, Tuple
 
 
 SCHEMA_VERSION = 1
+WORKFLOW_VERSION = 2
 MODES = ("discovery", "variant", "invariant", "differential", "validation")
 LIFECYCLE_STATES = ("draft", "active", "paused", "blocked", "completed")
 TERMINAL_OUTCOMES = ("validated", "exhausted", "budget-limited", "blocked")
@@ -39,7 +40,7 @@ CLASSIFICATIONS = (
     "inconclusive",
     "tool-failure",
 )
-COVERAGE_DIMENSIONS = (
+LEGACY_COVERAGE_DIMENSIONS = (
     "source-read",
     "attack-surface",
     "trust-boundary",
@@ -49,8 +50,18 @@ COVERAGE_DIMENSIONS = (
     "historical-family",
     "falsification",
 )
+DEEP_HUNT_DIMENSIONS = (
+    "business-invariant",
+    "consumer-propagation",
+    "boundary-arithmetic",
+    "external-semantics",
+    "sequence-interleaving",
+    "exploit-composition",
+    "economic-closure",
+)
+COVERAGE_DIMENSIONS = LEGACY_COVERAGE_DIMENSIONS + DEEP_HUNT_DIMENSIONS
 COVERAGE_STATES = ("uninspected", "inspected", "tested", "blocked")
-EVIDENCE_GATES = (
+LEGACY_EVIDENCE_GATES = (
     "attacker-control",
     "reachability",
     "defense-analysis",
@@ -63,7 +74,9 @@ EVIDENCE_GATES = (
     "duplicate-check",
     "human-review",
 )
-CORE_GATES = frozenset(
+DEEP_REVIEW_GATES = ("downstream-impact", "composition-review")
+EVIDENCE_GATES = LEGACY_EVIDENCE_GATES + DEEP_REVIEW_GATES
+LEGACY_CORE_GATES = frozenset(
     (
         "attacker-control",
         "reachability",
@@ -75,9 +88,23 @@ CORE_GATES = frozenset(
         "independent-reproduction",
     )
 )
+CORE_GATES = LEGACY_CORE_GATES | frozenset(DEEP_REVIEW_GATES)
 ALLOWED_WAIVABLE_GATES = frozenset(("negative-control", "duplicate-check"))
 ALLOWED_OMITTED_GATES = frozenset(("duplicate-check", "human-review"))
 ALWAYS_REQUIRED_GATES = CORE_GATES | frozenset(("negative-control",))
+LEGACY_ALWAYS_REQUIRED_GATES = LEGACY_CORE_GATES | frozenset(("negative-control",))
+DEFAULT_MANDATORY_PASSES = {
+    "business-invariant": [
+        "business-flow-and-state-machine-model",
+        "asset-liability-conservation-ledger",
+    ],
+    "consumer-propagation": ["mutable-value-to-downstream-consumer-map"],
+    "boundary-arithmetic": ["rounding-unit-and-zero-boundaries"],
+    "external-semantics": ["interface-promise-versus-runtime-delta-matrix"],
+    "sequence-interleaving": ["callback-and-action-sequence-matrix"],
+    "exploit-composition": ["primitive-join-graph"],
+    "economic-closure": ["funding-repayment-profit-and-system-loss-ledger"],
+}
 PLACEHOLDER = "[REPLACE]"
 REQUIRED_FILES = (
     "contract.json",
@@ -215,10 +242,47 @@ def nested(data: Mapping[str, Any], *keys: str) -> Any:
     return value
 
 
+def workflow_version(contract: Mapping[str, Any]) -> int:
+    value = contract.get("workflow_version", 1)
+    return value if isinstance(value, int) and not isinstance(value, bool) else -1
+
+
+def gates_for_contract(contract: Mapping[str, Any]) -> Tuple[str, ...]:
+    if workflow_version(contract) >= WORKFLOW_VERSION:
+        return EVIDENCE_GATES
+    return LEGACY_EVIDENCE_GATES
+
+
+def required_gates_for_contract(contract: Mapping[str, Any]) -> frozenset[str]:
+    if workflow_version(contract) >= WORKFLOW_VERSION:
+        return ALWAYS_REQUIRED_GATES
+    return LEGACY_ALWAYS_REQUIRED_GATES
+
+
+def coverage_dimensions_for_contract(contract: Mapping[str, Any]) -> Tuple[str, ...]:
+    if workflow_version(contract) >= WORKFLOW_VERSION:
+        return COVERAGE_DIMENSIONS
+    return LEGACY_COVERAGE_DIMENSIONS
+
+
+def mandatory_passes(contract: Mapping[str, Any]) -> Dict[str, List[str]]:
+    value = nested(contract, "search_requirements", "mandatory_passes")
+    if not isinstance(value, dict):
+        return {}
+    result: Dict[str, List[str]] = {}
+    for dimension, items in value.items():
+        if isinstance(dimension, str) and nonempty_strings(items):
+            result[dimension] = list(items)
+    return result
+
+
 def contract_errors(contract: Mapping[str, Any]) -> List[str]:
     errors: List[str] = []
     if contract.get("schema_version") != SCHEMA_VERSION:
         errors.append(f"contract.schema_version must be {SCHEMA_VERSION}")
+    version = workflow_version(contract)
+    if version not in (1, WORKFLOW_VERSION):
+        errors.append(f"contract.workflow_version must be 1 or {WORKFLOW_VERSION}")
     if contract.get("mode") not in MODES:
         errors.append("contract.mode is invalid")
     if not isinstance(contract.get("objective"), str) or not contract["objective"].strip():
@@ -253,16 +317,26 @@ def contract_errors(contract: Mapping[str, Any]) -> List[str]:
     ):
         if not nonempty_strings(nested(contract, "threat_model", field)):
             errors.append(f"threat_model.{field} must contain at least one item")
+    if version >= WORKFLOW_VERSION:
+        for field in (
+            "business_flows",
+            "accounting_invariants",
+            "external_semantic_assumptions",
+            "attacker_funding_sources",
+        ):
+            if not nonempty_strings(nested(contract, "threat_model", field)):
+                errors.append(f"threat_model.{field} must contain at least one item")
     required_gates = nested(contract, "evidence_requirements", "required_gates")
     if not nonempty_strings(required_gates):
         errors.append("evidence_requirements.required_gates must be non-empty")
         required_gates = []
-    unknown_gates = sorted(set(required_gates) - set(EVIDENCE_GATES))
+    available_gates = set(gates_for_contract(contract))
+    unknown_gates = sorted(set(required_gates) - available_gates)
     if unknown_gates:
         errors.append("unknown required gates: " + ", ".join(unknown_gates))
     if len(required_gates) != len(set(required_gates)):
         errors.append("required_gates must not contain duplicates")
-    missing_always_required = sorted(ALWAYS_REQUIRED_GATES - set(required_gates))
+    missing_always_required = sorted(required_gates_for_contract(contract) - set(required_gates))
     if missing_always_required:
         errors.append(
             "required_gates omits non-optional gates: " + ", ".join(missing_always_required)
@@ -291,7 +365,7 @@ def contract_errors(contract: Mapping[str, Any]) -> List[str]:
     overlap = sorted(set(required_gates) & set(omitted))
     if overlap:
         errors.append("gates cannot be both required and omitted: " + ", ".join(overlap))
-    unaccounted = sorted(set(EVIDENCE_GATES) - set(required_gates) - set(omitted))
+    unaccounted = sorted(available_gates - set(required_gates) - set(omitted))
     if unaccounted:
         errors.append("gates require an explicit requirement or omission: " + ", ".join(unaccounted))
     waiver_policy = nested(contract, "evidence_requirements", "waiver_policy")
@@ -300,6 +374,38 @@ def contract_errors(contract: Mapping[str, Any]) -> List[str]:
     novelty = contract.get("novelty_policy")
     if not isinstance(novelty, str) or not novelty.strip():
         errors.append("novelty_policy must be non-empty")
+    if version >= WORKFLOW_VERSION:
+        search = contract.get("search_requirements")
+        if not isinstance(search, dict):
+            errors.append("search_requirements must be an object")
+        else:
+            raw_passes = search.get("mandatory_passes")
+            if not isinstance(raw_passes, dict) or not raw_passes:
+                errors.append("search_requirements.mandatory_passes must be a non-empty object")
+                raw_passes = {}
+            invalid_passes = sorted(set(raw_passes) - set(DEEP_HUNT_DIMENSIONS))
+            if invalid_passes:
+                errors.append("unknown mandatory passes: " + ", ".join(invalid_passes))
+            missing_passes = sorted(set(DEEP_HUNT_DIMENSIONS) - set(raw_passes))
+            if missing_passes:
+                errors.append("mandatory passes omitted: " + ", ".join(missing_passes))
+            for dimension, items in raw_passes.items():
+                if dimension in DEEP_HUNT_DIMENSIONS and not nonempty_strings(items):
+                    errors.append(
+                        f"search_requirements.mandatory_passes.{dimension} must contain items"
+                    )
+                elif (
+                    isinstance(items, list)
+                    and all(isinstance(item, str) for item in items)
+                    and len(items) != len(set(items))
+                ):
+                    errors.append(
+                        f"search_requirements.mandatory_passes.{dimension} has duplicates"
+                    )
+            for field in ("primitive_escalation_policy", "impact_priority_policy"):
+                value = search.get(field)
+                if not isinstance(value, str) or not value.strip():
+                    errors.append(f"search_requirements.{field} must be non-empty")
     budget = contract.get("budget")
     if not isinstance(budget, dict):
         errors.append("budget must be an object")
@@ -387,6 +493,29 @@ def current_coverage(records: Sequence[Mapping[str, Any]]) -> Dict[Tuple[str, st
         if isinstance(dimension, str) and isinstance(item, str):
             current[(dimension, item)] = record
     return current
+
+
+def mandatory_pass_errors(
+    contract: Mapping[str, Any], records: Sequence[Mapping[str, Any]]
+) -> List[str]:
+    if workflow_version(contract) < WORKFLOW_VERSION:
+        return []
+    current = current_coverage(records)
+    errors: List[str] = []
+    for dimension, items in mandatory_passes(contract).items():
+        for item in items:
+            record = current.get((dimension, item))
+            if record is None:
+                errors.append(f"mandatory hunt pass is unrecorded: {dimension}/{item}")
+                continue
+            if record.get("status") != "tested":
+                errors.append(
+                    f"mandatory hunt pass is not tested: {dimension}/{item} "
+                    f"({record.get('status')})"
+                )
+            if not nonempty_strings(record.get("evidence")):
+                errors.append(f"mandatory hunt pass lacks evidence: {dimension}/{item}")
+    return errors
 
 
 def sequence_errors(records: Sequence[Mapping[str, Any]], label: str) -> List[str]:
@@ -592,6 +721,7 @@ def append_event(
 def initial_contract(target: str, mode: str, objective: str) -> Dict[str, Any]:
     return {
         "schema_version": SCHEMA_VERSION,
+        "workflow_version": WORKFLOW_VERSION,
         "created_at": utc_now(),
         "authorization": {"confirmed": False, "basis": PLACEHOLDER},
         "target": {
@@ -612,6 +742,10 @@ def initial_contract(target: str, mode: str, objective: str) -> Dict[str, Any]:
             "security_invariants": [PLACEHOLDER],
             "required_impact": [PLACEHOLDER],
             "realistic_configurations": [PLACEHOLDER],
+            "business_flows": [PLACEHOLDER],
+            "accounting_invariants": [PLACEHOLDER],
+            "external_semantic_assumptions": [PLACEHOLDER],
+            "attacker_funding_sources": [PLACEHOLDER],
         },
         "evidence_requirements": {
             "required_gates": list(EVIDENCE_GATES),
@@ -622,12 +756,26 @@ def initial_contract(target: str, mode: str, objective: str) -> Dict[str, Any]:
             ),
         },
         "novelty_policy": PLACEHOLDER,
+        "search_requirements": {
+            "mandatory_passes": DEFAULT_MANDATORY_PASSES,
+            "primitive_escalation_policy": (
+                "Trace every manipulable value through all direct consumers and test joins with "
+                "other supported primitives before closing the primitive or its surface."
+            ),
+            "impact_priority_policy": (
+                "When the objective prefers the highest-impact result, complete the mandatory "
+                "composition and economic-closure passes before treating a lower-impact finding "
+                "as terminal."
+            ),
+        },
         "budget": {"deadline": None, "max_experiments": 50, "max_hours": None},
         "stop": {
             "finding_count": 1,
             "exhaustion_obligations": [
                 "Complete the prioritized surface queue",
                 "Record all coverage dimensions",
+                "Complete every mandatory deep-hunt pass",
+                "Resolve every supported primitive-to-consumer and primitive-to-primitive join",
                 "Report residual risks and untested surfaces",
             ],
             "blocked_rule": (
@@ -653,6 +801,8 @@ def threat_model_template(target: str) -> str:
 
 ## Assets and security properties
 - Assets: {PLACEHOLDER}
+- Business flows and intended value movement: {PLACEHOLDER}
+- Accounting identities and solvency/conservation properties: {PLACEHOLDER}
 - Confidentiality properties: {PLACEHOLDER}
 - Integrity properties: {PLACEHOLDER}
 - Availability properties: {PLACEHOLDER}
@@ -669,12 +819,15 @@ def threat_model_template(target: str) -> str:
 - Privilege transitions: {PLACEHOLDER}
 - Dangerous sinks or effects: {PLACEHOLDER}
 - External dependencies: {PLACEHOLDER}
+- External semantic promises versus assumptions: {PLACEHOLDER}
 
 ## Security invariants
 - Invariant: {PLACEHOLDER}
   - Why it matters: {PLACEHOLDER}
   - Expected enforcement points: {PLACEHOLDER}
   - Observable counterexample: {PLACEHOLDER}
+- Downstream consumers of attacker-mutable values: {PLACEHOLDER}
+- Candidate primitive joins and atomic funding sources: {PLACEHOLDER}
 
 ## Operating assumptions
 - Deployment defaults: {PLACEHOLDER}
@@ -707,10 +860,12 @@ def goal_template(target: str, mode: str, objective: str) -> str:
 
 ## Acceptance evidence
 - Required gates: see contract.json
+- Mandatory deep-hunt passes: see contract.json
 - Safe reproduction oracle: {PLACEHOLDER}
 - Release-like configuration: {PLACEHOLDER}
 - Negative control: {PLACEHOLDER}
 - Independent reproduction: {PLACEHOLDER}
+- Downstream impact and composition review: {PLACEHOLDER}
 
 ## Non-success
 - {PLACEHOLDER}
@@ -790,6 +945,10 @@ def terminal_payload_errors(
         expected = ", ".join(sorted(allowed_from_states[outcome]))
         errors.append(f"{outcome} may finish only from: {expected}")
     candidates = latest_candidates(load_jsonl(root / "candidates.jsonl"))
+    coverage = load_json(root / "coverage.json")
+    coverage_records = (
+        coverage.get("records") if isinstance(coverage.get("records"), list) else []
+    )
     validated_count = sum(
         1 for value in candidates.values() if value.get("status") == "validated"
     )
@@ -804,6 +963,7 @@ def terminal_payload_errors(
             errors.append(
                 f"only {validated_count} candidates are validated; contract requires {required_count}"
             )
+        errors.extend(mandatory_pass_errors(contract, coverage_records))
     else:
         if terminal.get("candidate_id") is not None:
             errors.append("non-validated outcome may not select a candidate_id")
@@ -821,11 +981,11 @@ def terminal_payload_errors(
         ]
         if not substantive_events:
             errors.append("non-finding outcome requires a substantive hunt event")
-        coverage = load_json(root / "coverage.json")
-        records = coverage.get("records") if isinstance(coverage.get("records"), list) else []
+        records = coverage_records
         if not records:
             errors.append("non-finding outcome requires coverage records")
         if outcome == "exhausted":
+            errors.extend(mandatory_pass_errors(contract, records))
             open_items = [
                 f"{dimension}/{item}"
                 for (dimension, item), record in current_coverage(records).items()
@@ -836,7 +996,9 @@ def terminal_payload_errors(
             represented_dimensions = {
                 dimension for dimension, _item in current_coverage(records)
             }
-            missing_dimensions = sorted(set(COVERAGE_DIMENSIONS) - represented_dimensions)
+            missing_dimensions = sorted(
+                set(coverage_dimensions_for_contract(contract)) - represented_dimensions
+            )
             if missing_dimensions:
                 errors.append(
                     "exhausted outcome has unaccounted coverage dimensions: "
@@ -1098,6 +1260,7 @@ def command_status(args: argparse.Namespace) -> None:
     root = state_dir(args.directory)
     ensure_integrity(root)
     state = load_json(root / "state.json")
+    contract = load_json(root / "contract.json")
     candidates = latest_candidates(load_jsonl(root / "candidates.jsonl"))
     coverage_data = load_json(root / "coverage.json")
     records = coverage_data.get("records") if isinstance(coverage_data.get("records"), list) else []
@@ -1109,8 +1272,19 @@ def command_status(args: argparse.Namespace) -> None:
             coverage_summary.setdefault(dimension, {}).get(status, 0) + 1
         )
     events = load_jsonl(root / "events.jsonl")
+    current = current_coverage(records)
+    pass_summary = {
+        f"{dimension}/{item}": (
+            current[(dimension, item)].get("status")
+            if (dimension, item) in current
+            else "unrecorded"
+        )
+        for dimension, items in mandatory_passes(contract).items()
+        for item in items
+    }
     summary = {
         "directory": str(root),
+        "workflow_version": workflow_version(contract),
         "status": state.get("status"),
         "outcome": state.get("outcome"),
         "counts": {
@@ -1127,6 +1301,7 @@ def command_status(args: argparse.Namespace) -> None:
             for candidate_id, record in sorted(candidates.items())
         },
         "coverage": coverage_summary,
+        "mandatory_passes": pass_summary,
         "last_event": events[-1] if events else None,
         "terminal": state.get("terminal"),
     }

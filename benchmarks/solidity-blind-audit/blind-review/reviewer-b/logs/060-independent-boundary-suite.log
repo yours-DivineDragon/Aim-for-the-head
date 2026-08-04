@@ -1,0 +1,103 @@
+This version of µWS is not compatible with your Node.js build:
+
+Error: Cannot find module '../binaries/uws_linux_x64_137.node'
+Require stack:
+- /tmp/aim-blind-review-b-2818814.ykfBRN/target/node_modules/ganache/node_modules/@trufflesuite/uws-js-unofficial/src/uws.js
+- /tmp/aim-blind-review-b-2818814.ykfBRN/target/node_modules/ganache/dist/node/core.js
+Falling back to a NodeJS implementation; performance may be degraded.
+
+
+✖ C-001 boundary: repeated callbacks drain all available market liquidity (130.286093ms)
+✖ C-002 boundary: messenger and configured-chain gates hold, but remote-sender gate is absent (0.629526ms)
+✖ C-004 boundary: v aliases plus high-s malleability pay one payload four times (0.06066ms)
+✖ C-010 boundary: replay on a second router requires its own token approval (0.04044ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 0
+ℹ fail 4
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 620.961463
+
+✖ failing tests:
+
+test at review-output/checks/reviewer_b_independent.test.mjs:68:1
+✖ C-001 boundary: repeated callbacks drain all available market liquidity (130.286093ms)
+  Error: TypeError: True expression's type bytes memory does not match false expression's type string memory.
+    --> review-output/checks/RecursiveBorrowReviewerB.sol:18:46:
+     |
+  18 |         market.borrow(amount, address(this), totalBorrows == 1 ? bytes("") : hex"01");
+     |                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  
+  
+  TypeError: True expression's type bytes memory does not match false expression's type string memory.
+    --> review-output/checks/RecursiveBorrowReviewerB.sol:26:46:
+     |
+  26 |         market.borrow(amount, address(this), next == 1 ? bytes("") : hex"01");
+     |                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  
+  
+      at compileAll (file:///tmp/aim-blind-review-b-2818814.ykfBRN/target/scripts/compiler.mjs:40:30)
+      at async TestContext.<anonymous> (file:///tmp/aim-blind-review-b-2818814.ykfBRN/review-output/checks/reviewer_b_independent.test.mjs:48:15)
+      at async TestHook.run (node:internal/test_runner/test:1125:7)
+
+test at review-output/checks/reviewer_b_independent.test.mjs:100:1
+✖ C-002 boundary: messenger and configured-chain gates hold, but remote-sender gate is absent (0.629526ms)
+  Error: TypeError: True expression's type bytes memory does not match false expression's type string memory.
+    --> review-output/checks/RecursiveBorrowReviewerB.sol:18:46:
+     |
+  18 |         market.borrow(amount, address(this), totalBorrows == 1 ? bytes("") : hex"01");
+     |                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  
+  
+  TypeError: True expression's type bytes memory does not match false expression's type string memory.
+    --> review-output/checks/RecursiveBorrowReviewerB.sol:26:46:
+     |
+  26 |         market.borrow(amount, address(this), next == 1 ? bytes("") : hex"01");
+     |                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  
+  
+      at compileAll (file:///tmp/aim-blind-review-b-2818814.ykfBRN/target/scripts/compiler.mjs:40:30)
+      at async TestContext.<anonymous> (file:///tmp/aim-blind-review-b-2818814.ykfBRN/review-output/checks/reviewer_b_independent.test.mjs:48:15)
+      at async TestHook.run (node:internal/test_runner/test:1125:7)
+
+test at review-output/checks/reviewer_b_independent.test.mjs:142:1
+✖ C-004 boundary: v aliases plus high-s malleability pay one payload four times (0.06066ms)
+  Error: TypeError: True expression's type bytes memory does not match false expression's type string memory.
+    --> review-output/checks/RecursiveBorrowReviewerB.sol:18:46:
+     |
+  18 |         market.borrow(amount, address(this), totalBorrows == 1 ? bytes("") : hex"01");
+     |                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  
+  
+  TypeError: True expression's type bytes memory does not match false expression's type string memory.
+    --> review-output/checks/RecursiveBorrowReviewerB.sol:26:46:
+     |
+  26 |         market.borrow(amount, address(this), next == 1 ? bytes("") : hex"01");
+     |                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  
+  
+      at compileAll (file:///tmp/aim-blind-review-b-2818814.ykfBRN/target/scripts/compiler.mjs:40:30)
+      at async TestContext.<anonymous> (file:///tmp/aim-blind-review-b-2818814.ykfBRN/review-output/checks/reviewer_b_independent.test.mjs:48:15)
+      at async TestHook.run (node:internal/test_runner/test:1125:7)
+
+test at review-output/checks/reviewer_b_independent.test.mjs:179:1
+✖ C-010 boundary: replay on a second router requires its own token approval (0.04044ms)
+  Error: TypeError: True expression's type bytes memory does not match false expression's type string memory.
+    --> review-output/checks/RecursiveBorrowReviewerB.sol:18:46:
+     |
+  18 |         market.borrow(amount, address(this), totalBorrows == 1 ? bytes("") : hex"01");
+     |                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  
+  
+  TypeError: True expression's type bytes memory does not match false expression's type string memory.
+    --> review-output/checks/RecursiveBorrowReviewerB.sol:26:46:
+     |
+  26 |         market.borrow(amount, address(this), next == 1 ? bytes("") : hex"01");
+     |                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  
+  
+      at compileAll (file:///tmp/aim-blind-review-b-2818814.ykfBRN/target/scripts/compiler.mjs:40:30)
+      at async TestContext.<anonymous> (file:///tmp/aim-blind-review-b-2818814.ykfBRN/review-output/checks/reviewer_b_independent.test.mjs:48:15)
+      at async TestHook.run (node:internal/test_runner/test:1125:7)

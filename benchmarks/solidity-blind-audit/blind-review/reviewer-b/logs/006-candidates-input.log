@@ -1,0 +1,424 @@
+{
+  "schema_version": 1,
+  "target_commit": "75d19f5c283c5e2fe6b1a5913b1ca4b82462c21d",
+  "source_manifest_digest": "9ac26ede2c9b8e3f45910a1e8207c10ec418999106571061211fc339ad84c926",
+  "configuration": "Node 24.14.0; solc-js 0.8.30 optimizer 200, EVM Paris; ethers 6.15.0; Ganache 7.9.2 Shanghai, chain ID 31337",
+  "novelty_claimed": false,
+  "human_review": "unavailable and forbidden by benchmark isolation",
+  "candidate_count": 11,
+  "candidates": [
+    {
+      "id": "C-001",
+      "status": "validated",
+      "title": "Borrow callback reentrancy finalizes debt after value transfer",
+      "severity": "Critical (unreviewed)",
+      "severity_rationale": "An untrusted collateral borrower can recursively extract stable liquidity while every nested health check observes stale debt; impact scales to market liquidity.",
+      "source_locations": [
+        "contracts/LendingMarket.sol:53-59",
+        "contracts/LendingMarket.sol:106-108"
+      ],
+      "root_cause": "Stable transfer and attacker-controlled receiver callback occur before debt is incremented, with no reentrancy guard or checks-effects-interactions ordering.",
+      "attacker_capabilities": "Ordinary borrower may deploy a callback receiver, deposit legitimate collateral, and choose nonempty borrow data.",
+      "preconditions": [
+        "Market has stable liquidity",
+        "Attacker has a legitimate collateral position and contract receiver"
+      ],
+      "transaction_sequence": [
+        "Deposit 1,000 shares for callback contract",
+        "Call borrow(750,self,data)",
+        "Callback reenters borrow(750,self,empty)",
+        "Both frames add debt only while unwinding"
+      ],
+      "demonstrated_impact": "Final debt and attacker stable balance are 1,500e18 while borrow limit remains 750e18.",
+      "reproduction": {
+        "command": "bash run/evidence/C-001/reproduce.sh",
+        "discovery_exit": 0,
+        "independent_exit": 0,
+        "release_like": true
+      },
+      "negative_case": "Empty callback data produces one borrow with debt exactly equal to the 750e18 limit.",
+      "evidence": [
+        "run/evidence/C-001/REPORT.md",
+        "run/evidence/C-001/repro.test.mjs",
+        "run/evidence/C-001/discovery.log",
+        "run/evidence/C-001/reproduction.log"
+      ]
+    },
+    {
+      "id": "C-002",
+      "status": "validated",
+      "title": "Bridge credit does not authenticate remote application sender",
+      "severity": "Critical (unreviewed)",
+      "severity_rationale": "Any remote application whose message is honestly relayed from a configured chain can mint arbitrary unbacked bridge collateral and drain market stable liquidity.",
+      "source_locations": [
+        "contracts/BridgeGateway.sol:29-44",
+        "contracts/LendingMarket.sol:78-81"
+      ],
+      "root_cause": "The gateway reads xDomainMessageSender only for an event and never compares it with remoteGateway[sourceChain].",
+      "attacker_capabilities": "Untrusted remote application may originate a message that the trusted messenger relays with its authentic mismatching source sender.",
+      "preconditions": [
+        "Source chain has any configured remote",
+        "Gateway is the market bridge",
+        "Market has stable liquidity"
+      ],
+      "transaction_sequence": [
+        "Admin configures remote A for chain 10",
+        "Remote B sends finalizeCollateral(10,41,attacker,1000e18)",
+        "Messenger relays authentic chain/sender context",
+        "Attacker borrows 750e18 against forged credit"
+      ],
+      "demonstrated_impact": "Mismatching sender receives 1,000e18 bridge credit and 750e18 stable without locked collateral.",
+      "reproduction": {
+        "command": "bash run/evidence/C-002/reproduce.sh",
+        "discovery_exit": 0,
+        "independent_exit": 0,
+        "release_like": true
+      },
+      "negative_case": "Corrected comparator binds source sender to configured gateway: wrong sender rejects with zero credit; correct sender succeeds.",
+      "evidence": [
+        "run/evidence/C-002/REPORT.md",
+        "run/evidence/C-002/repro.test.mjs",
+        "run/evidence/C-002/discovery.log",
+        "run/evidence/C-002/reproduction.log",
+        "run/evidence/C-002/harness-failure.log"
+      ]
+    },
+    {
+      "id": "C-003",
+      "status": "validated",
+      "title": "Permit relayer can redirect signed transfer",
+      "severity": "High (unreviewed)",
+      "severity_rationale": "A relayer can steal the entire signed and approved amount by substituting its own unsigned recipient.",
+      "source_locations": [
+        "contracts/PermitRouter.sol:10-11",
+        "contracts/PermitRouter.sol:17-30"
+      ],
+      "root_cause": "Recipient is omitted from both TRANSFER_TYPEHASH and the signed payload but is consumed by transferFrom.",
+      "attacker_capabilities": "Permissionless relayer possesses a legitimate owner signature and chooses public recipient calldata.",
+      "preconditions": [
+        "Owner approved router",
+        "Owner issued the contract-prescribed signature"
+      ],
+      "transaction_sequence": [
+        "Owner intends recipient R and signs 25e18 action",
+        "Relayer calls executeTransfer with recipient=relayer",
+        "Signer check passes",
+        "Router transfers owner tokens to relayer"
+      ],
+      "demonstrated_impact": "Intended recipient balance stays zero; attacker receives 25e18 and consumes owner nonce.",
+      "reproduction": {
+        "command": "bash run/evidence/C-003/reproduce.sh",
+        "discovery_exit": 0,
+        "independent_exit": 0,
+        "release_like": true
+      },
+      "negative_case": "Altering encoded amount by one wei invalidates signature and leaves balance/nonce zero.",
+      "evidence": [
+        "run/evidence/C-003/REPORT.md",
+        "run/evidence/C-003/repro.test.mjs",
+        "run/evidence/C-003/discovery.log",
+        "run/evidence/C-003/reproduction.log"
+      ]
+    },
+    {
+      "id": "C-004",
+      "status": "validated",
+      "title": "ECDSA malleability bypasses reward replay protection",
+      "severity": "High (unreviewed)",
+      "severity_rationale": "Every legitimate reward authorization can be paid twice using its equivalent high-s encoding, exceeding signer intent and draining distributor funds.",
+      "source_locations": [
+        "contracts/lib/SignatureCodec.sol:9-23",
+        "contracts/RewardsDistributor.sol:24-30"
+      ],
+      "root_cause": "Recovery accepts noncanonical high-s signatures while replay protection keys raw signature bytes rather than payload identity.",
+      "attacker_capabilities": "Claimant or relayer has one legitimate authority signature and can transform public ECDSA values without the private key.",
+      "preconditions": [
+        "Distributor holds at least twice the claim amount",
+        "One valid authority-signed claim exists"
+      ],
+      "transaction_sequence": [
+        "Submit canonical signature",
+        "Compute (r,n-s,flipped-v)",
+        "Submit alternate bytes for identical payload",
+        "Both distinct byte hashes are marked used"
+      ],
+      "demonstrated_impact": "One 20e18 authorization pays 40e18; both encodings recover the same authority.",
+      "reproduction": {
+        "command": "bash run/evidence/C-004/reproduce.sh",
+        "discovery_exit": 0,
+        "independent_exit": 0,
+        "release_like": true
+      },
+      "negative_case": "Byte-identical replay rejects and total paid remains 20e18.",
+      "evidence": [
+        "run/evidence/C-004/REPORT.md",
+        "run/evidence/C-004/repro.test.mjs",
+        "run/evidence/C-004/discovery.log",
+        "run/evidence/C-004/reproduction.log"
+      ]
+    },
+    {
+      "id": "C-005",
+      "status": "validated",
+      "title": "StrategyModule can be reinitialized and seized",
+      "severity": "Critical (unreviewed)",
+      "severity_rationale": "Any account can overwrite established vault/operator roles, sweep all held tokens, and acquire arbitrary-call authority.",
+      "source_locations": [
+        "contracts/StrategyModule.sol:14-19",
+        "contracts/StrategyModule.sol:22-32"
+      ],
+      "root_cause": "initialize has neither caller authorization nor a !initialized lifecycle guard and always overwrites both roles.",
+      "attacker_capabilities": "Any untrusted EOA can call the public initializer after honest setup.",
+      "preconditions": [
+        "Module is deployed, honestly initialized, and holds tokens or privileged integrations"
+      ],
+      "transaction_sequence": [
+        "Trusted deployer initializes intended roles",
+        "Attacker calls initialize(attacker,attacker)",
+        "Attacker calls sweep for full module balance"
+      ],
+      "demonstrated_impact": "Original roles are replaced and attacker drains all 10e18 test tokens; arbitrary execute authority is also acquired.",
+      "reproduction": {
+        "command": "bash run/evidence/C-005/reproduce.sh",
+        "discovery_exit": 0,
+        "independent_exit": 0,
+        "release_like": true
+      },
+      "negative_case": "Without reinitialization, direct attacker sweep rejects and module retains all tokens.",
+      "evidence": [
+        "run/evidence/C-005/REPORT.md",
+        "run/evidence/C-005/repro.test.mjs",
+        "run/evidence/C-005/discovery.log",
+        "run/evidence/C-005/reproduction.log"
+      ]
+    },
+    {
+      "id": "C-006",
+      "status": "validated",
+      "title": "Any user can raise the global collateral factor",
+      "severity": "High (unreviewed)",
+      "severity_rationale": "An ordinary borrower can weaken a guardian risk control globally and immediately borrow materially above the configured limit.",
+      "source_locations": [
+        "contracts/LendingMarket.sol:74-75",
+        "contracts/LendingMarket.sol:89-93"
+      ],
+      "root_cause": "The guardian conditional rejects non-guardians only for decreases, accidentally authorizing every increase up to 9,500 bps.",
+      "attacker_capabilities": "Any protocol user can call the public risk setter and borrow against ordinary collateral.",
+      "preconditions": [
+        "Factor is below 9,500 bps",
+        "Attacker has collateral",
+        "Market has stable liquidity"
+      ],
+      "transaction_sequence": [
+        "Establish 750e18 default borrow limit",
+        "Confirm 950e18 borrow rejects",
+        "Attacker sets factor to 9,500",
+        "Attacker borrows 949e18"
+      ],
+      "demonstrated_impact": "Debt/stable becomes 949e18, 199e18 above the original authorized limit; global factor is 9,500.",
+      "reproduction": {
+        "command": "bash run/evidence/C-006/reproduce.sh",
+        "discovery_exit": 0,
+        "independent_exit": 0,
+        "release_like": true
+      },
+      "negative_case": "The same non-guardian is rejected when lowering factor to 7,000, isolating the inverted direction.",
+      "evidence": [
+        "run/evidence/C-006/REPORT.md",
+        "run/evidence/C-006/repro.test.mjs",
+        "run/evidence/C-006/discovery.log",
+        "run/evidence/C-006/reproduction.log",
+        "run/evidence/C-006/harness-failure.log"
+      ]
+    },
+    {
+      "id": "C-007",
+      "status": "validated",
+      "title": "Bridge replay nonce is global across source chains",
+      "severity": "Medium (unreviewed)",
+      "severity_rationale": "A valid user message on one configured domain can block an unrelated same-nonce message on another, stranding collateral/credit across independent nonce sequences.",
+      "source_locations": [
+        "contracts/BridgeGateway.sol:11-12",
+        "contracts/BridgeGateway.sol:36-41"
+      ],
+      "root_cause": "processedNonce keys only uint64 nonce and omits sourceChain despite per-chain remote configuration.",
+      "attacker_capabilities": "Remote user can cause a legitimate configured-gateway bridge message on one source chain.",
+      "preconditions": [
+        "At least two source chains are configured",
+        "Their independent local nonce streams reuse a value"
+      ],
+      "transaction_sequence": [
+        "Chain 10 valid message uses nonce 7",
+        "Chain 20 valid message uses nonce 7",
+        "Second relay reverts PROCESSED"
+      ],
+      "demonstrated_impact": "Chain 10 beneficiary receives 1e18 credit; chain 20 victim receives zero despite authentic configured sender and chain.",
+      "reproduction": {
+        "command": "bash run/evidence/C-007/reproduce.sh",
+        "discovery_exit": 0,
+        "independent_exit": 0,
+        "release_like": true
+      },
+      "negative_case": "Chain-scoped replay-key comparator accepts both messages and credits both beneficiaries.",
+      "evidence": [
+        "run/evidence/C-007/REPORT.md",
+        "run/evidence/C-007/repro.test.mjs",
+        "run/evidence/C-007/discovery.log",
+        "run/evidence/C-007/reproduction.log"
+      ]
+    },
+    {
+      "id": "C-008",
+      "status": "validated",
+      "title": "Manipulable reserve spot price is trusted during feed fallback",
+      "severity": "High (unreviewed)",
+      "severity_rationale": "During an honest primary-feed failure, an ordinary funded swapper can inflate the fallback spot price and create profitable bad debt; conditional capital needs reduce it below Critical.",
+      "source_locations": [
+        "contracts/ReserveOracle.sol:17-20",
+        "contracts/ReservePool.sol:27-29",
+        "contracts/ReservePool.sol:43-71",
+        "contracts/LendingMarket.sol:69-75"
+      ],
+      "root_cause": "Oracle fallback consumes the instantaneous permissionlessly manipulable reserve ratio without TWAP, delay, or manipulation bound.",
+      "attacker_capabilities": "Ordinary funded user may swap, vault acquired collateral, deposit it, and borrow.",
+      "preconditions": [
+        "Primary feed returns nonpositive",
+        "Reserve pool and market have liquidity",
+        "Attacker can fund a swap comparable to pool depth"
+      ],
+      "transaction_sequence": [
+        "Swap 10,000e18 quote into 10,000/10,000 pool",
+        "Spot rises to ~3.994",
+        "Deposit ~4,992.49 acquired asset",
+        "Borrow manipulated ~14,955 limit"
+      ],
+      "demonstrated_impact": "Attacker ends with ~14,955 liquid stable after starting/spending 10,000; debt exceeds one-dollar safe limit (~3,744) by >11,210.",
+      "reproduction": {
+        "command": "bash run/evidence/C-008/reproduce.sh",
+        "discovery_exit": 0,
+        "independent_exit": 0,
+        "release_like": true
+      },
+      "negative_case": "Positive one-dollar primary feed ignores identical pool manipulation and rejects 10,000 borrow with debt zero.",
+      "evidence": [
+        "run/evidence/C-008/REPORT.md",
+        "run/evidence/C-008/repro.test.mjs",
+        "run/evidence/C-008/discovery.log",
+        "run/evidence/C-008/reproduction.log"
+      ]
+    },
+    {
+      "id": "C-009",
+      "status": "validated",
+      "title": "Positive primary price is accepted indefinitely",
+      "severity": "High (unreviewed)",
+      "severity_rationale": "A stale positive round after a price decline permits immediate borrowing far above current collateral value without attacker control of the feed.",
+      "source_locations": [
+        "contracts/interfaces/ProtocolInterfaces.sol:25-31",
+        "contracts/ReserveOracle.sol:17-20",
+        "contracts/LendingMarket.sol:69-75"
+      ],
+      "root_cause": "Oracle discards updatedAt/round metadata and treats every positive answer as valid forever.",
+      "attacker_capabilities": "Ordinary borrower can wait, deposit collateral, and borrow; cannot set the feed.",
+      "preconditions": [
+        "Last positive feed price is stale and above current value",
+        "Market has stable liquidity"
+      ],
+      "transaction_sequence": [
+        "Honest feed last reports 2 dollars",
+        "31,536,001 seconds elapse; pool value is 1 dollar",
+        "Attacker deposits 1,000 asset",
+        "Market lends 1,500 stable"
+      ],
+      "demonstrated_impact": "Debt is 1,500e18 against a current pool-based 750e18 limit.",
+      "reproduction": {
+        "command": "bash run/evidence/C-009/reproduce.sh",
+        "discovery_exit": 0,
+        "independent_exit": 0,
+        "release_like": true
+      },
+      "negative_case": "One-day freshness-bound comparator falls back to one-dollar pool value and rejects the same 1,500 borrow.",
+      "evidence": [
+        "run/evidence/C-009/REPORT.md",
+        "run/evidence/C-009/repro.test.mjs",
+        "run/evidence/C-009/discovery.log",
+        "run/evidence/C-009/reproduction.log"
+      ]
+    },
+    {
+      "id": "C-010",
+      "status": "validated",
+      "title": "Permit signature replays across router instances",
+      "severity": "High (unreviewed)",
+      "severity_rationale": "One valid transfer authorization can execute once per approved router deployment because verifier instances maintain independent nonce stores.",
+      "source_locations": [
+        "contracts/PermitRouter.sol:10-13",
+        "contracts/PermitRouter.sol:26-29"
+      ],
+      "root_cause": "Signed payload omits address(this) and block.chainid while nonce is local to each router.",
+      "attacker_capabilities": "Permissionless relayer possesses one valid signature and can submit it to approved router instances.",
+      "preconditions": [
+        "Owner approved at least two router instances",
+        "Both owner nonces match at signing"
+      ],
+      "transaction_sequence": [
+        "Owner signs 25e18 for router A payload",
+        "Relayer executes on A",
+        "Relayer replays same signature on B",
+        "Both nonce-zero checks pass"
+      ],
+      "demonstrated_impact": "One 25e18 authorization transfers 50e18 to the same recipient, with nonce one in each router.",
+      "reproduction": {
+        "command": "bash run/evidence/C-010/reproduce.sh",
+        "discovery_exit": 0,
+        "independent_exit": 0,
+        "release_like": true
+      },
+      "negative_case": "Comparator binds router address and chain: A succeeds, B rejects, B nonce remains zero, only 25e18 transfers.",
+      "evidence": [
+        "run/evidence/C-010/REPORT.md",
+        "run/evidence/C-010/repro.test.mjs",
+        "run/evidence/C-010/discovery.log",
+        "run/evidence/C-010/reproduction.log"
+      ]
+    },
+    {
+      "id": "C-011",
+      "status": "validated",
+      "title": "First-share donation can deny vault deposits",
+      "severity": "Low (unreviewed)",
+      "severity_rationale": "A front/back-running attacker can repeatedly deny deposits with recoverable capital, but causes no victim asset theft and temporarily commits capital comparable to the blocked amount.",
+      "source_locations": [
+        "contracts/AsterVault.sol:19-26",
+        "contracts/AsterVault.sol:52-56"
+      ],
+      "root_cause": "Initial exchange-rate math has no virtual shares/assets or minimum-liquidity offset, so direct donations inflate a one-share position until victim deposits round to zero.",
+      "attacker_capabilities": "Ordinary token holder can seed one share, directly transfer owned underlying, order around victim transaction, and redeem.",
+      "preconditions": [
+        "Vault is empty or reset to a tiny supply",
+        "Attacker temporarily has capital at least comparable to target deposit",
+        "Transaction ordering is available"
+      ],
+      "transaction_sequence": [
+        "Deposit one wei for one share",
+        "Donate 1,000e18 underlying",
+        "Victim 1,000e18 deposit reverts ZERO_SHARES",
+        "Redeem one share and recover all capital"
+      ],
+      "demonstrated_impact": "Victim receives zero shares/service while retaining funds; attacker recovers starting 1000e18+1 balance with zero capital loss aside from gas/opportunity cost.",
+      "reproduction": {
+        "command": "bash run/evidence/C-011/reproduce.sh",
+        "discovery_exit": 0,
+        "independent_exit": 0,
+        "release_like": true
+      },
+      "negative_case": "Without donation, identical victim deposit succeeds and mints 1,000e18 shares.",
+      "evidence": [
+        "run/evidence/C-011/REPORT.md",
+        "run/evidence/C-011/repro.test.mjs",
+        "run/evidence/C-011/discovery.log",
+        "run/evidence/C-011/reproduction.log"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,589 @@
+contracts/StrategyModule.sol:1:// SPDX-License-Identifier: MIT
+contracts/StrategyModule.sol:2:pragma solidity 0.8.30;
+contracts/StrategyModule.sol:4:import {IERC20} from "./interfaces/ProtocolInterfaces.sol";
+contracts/StrategyModule.sol:6:contract StrategyModule {
+contracts/StrategyModule.sol:7:    address public vault;
+contracts/StrategyModule.sol:8:    address public operator;
+contracts/StrategyModule.sol:9:    bool public initialized;
+contracts/StrategyModule.sol:11:    event Initialized(address indexed vault, address indexed operator);
+contracts/StrategyModule.sol:12:    event Swept(address indexed token, address indexed receiver, uint256 amount);
+contracts/StrategyModule.sol:14:    function initialize(address vault_, address operator_) external {
+contracts/StrategyModule.sol:15:        require(vault_ != address(0) && operator_ != address(0), "CONFIG");
+contracts/StrategyModule.sol:16:        vault = vault_;
+contracts/StrategyModule.sol:17:        operator = operator_;
+contracts/StrategyModule.sol:18:        initialized = true;
+contracts/StrategyModule.sol:19:        emit Initialized(vault_, operator_);
+contracts/StrategyModule.sol:20:    }
+contracts/StrategyModule.sol:22:    function sweep(IERC20 token, address receiver, uint256 amount) external {
+contracts/StrategyModule.sol:23:        require(msg.sender == operator, "OPERATOR");
+contracts/StrategyModule.sol:24:        require(token.transfer(receiver, amount), "TRANSFER");
+contracts/StrategyModule.sol:25:        emit Swept(address(token), receiver, amount);
+contracts/StrategyModule.sol:26:    }
+contracts/StrategyModule.sol:28:    function execute(address target, bytes calldata data) external returns (bytes memory result) {
+contracts/StrategyModule.sol:29:        require(msg.sender == vault, "VAULT");
+contracts/StrategyModule.sol:30:        (bool ok, bytes memory returned) = target.call(data);
+contracts/StrategyModule.sol:31:        require(ok, "EXECUTE");
+contracts/StrategyModule.sol:32:        return returned;
+contracts/StrategyModule.sol:33:    }
+contracts/StrategyModule.sol:34:}
+contracts/mocks/MockFeed.sol:1:// SPDX-License-Identifier: MIT
+contracts/mocks/MockFeed.sol:2:pragma solidity 0.8.30;
+contracts/mocks/MockFeed.sol:4:import {IAggregator} from "../interfaces/ProtocolInterfaces.sol";
+contracts/mocks/MockFeed.sol:6:contract MockFeed is IAggregator {
+contracts/mocks/MockFeed.sol:7:    uint8 public immutable override decimals;
+contracts/mocks/MockFeed.sol:8:    uint80 public roundId;
+contracts/mocks/MockFeed.sol:9:    int256 public answer;
+contracts/mocks/MockFeed.sol:10:    uint256 public startedAt;
+contracts/mocks/MockFeed.sol:11:    uint256 public updatedAt;
+contracts/mocks/MockFeed.sol:12:    uint80 public answeredInRound;
+contracts/mocks/MockFeed.sol:14:    constructor(uint8 decimals_, int256 initialAnswer) {
+contracts/mocks/MockFeed.sol:15:        decimals = decimals_;
+contracts/mocks/MockFeed.sol:16:        setRound(initialAnswer, block.timestamp);
+contracts/mocks/MockFeed.sol:17:    }
+contracts/mocks/MockFeed.sol:19:    function setRound(int256 nextAnswer, uint256 timestamp) public {
+contracts/mocks/MockFeed.sol:20:        roundId++;
+contracts/mocks/MockFeed.sol:21:        answer = nextAnswer;
+contracts/mocks/MockFeed.sol:22:        startedAt = timestamp;
+contracts/mocks/MockFeed.sol:23:        updatedAt = timestamp;
+contracts/mocks/MockFeed.sol:24:        answeredInRound = roundId;
+contracts/mocks/MockFeed.sol:25:    }
+contracts/mocks/MockFeed.sol:27:    function latestRoundData()
+contracts/mocks/MockFeed.sol:28:        external
+contracts/mocks/MockFeed.sol:29:        view
+contracts/mocks/MockFeed.sol:30:        override
+contracts/mocks/MockFeed.sol:31:        returns (uint80, int256, uint256, uint256, uint80)
+contracts/mocks/MockFeed.sol:32:    {
+contracts/mocks/MockFeed.sol:33:        return (roundId, answer, startedAt, updatedAt, answeredInRound);
+contracts/mocks/MockFeed.sol:34:    }
+contracts/mocks/MockFeed.sol:35:}
+contracts/mocks/MockTokens.sol:1:// SPDX-License-Identifier: MIT
+contracts/mocks/MockTokens.sol:2:pragma solidity 0.8.30;
+contracts/mocks/MockTokens.sol:4:import {IERC20Metadata} from "../interfaces/ProtocolInterfaces.sol";
+contracts/mocks/MockTokens.sol:6:contract MockERC20 is IERC20Metadata {
+contracts/mocks/MockTokens.sol:7:    string public name;
+contracts/mocks/MockTokens.sol:8:    string public symbol;
+contracts/mocks/MockTokens.sol:9:    uint8 public immutable override decimals;
+contracts/mocks/MockTokens.sol:10:    uint256 public override totalSupply;
+contracts/mocks/MockTokens.sol:11:    mapping(address => uint256) public override balanceOf;
+contracts/mocks/MockTokens.sol:12:    mapping(address => mapping(address => uint256)) public override allowance;
+contracts/mocks/MockTokens.sol:14:    event Transfer(address indexed from, address indexed to, uint256 amount);
+contracts/mocks/MockTokens.sol:15:    event Approval(address indexed owner, address indexed spender, uint256 amount);
+contracts/mocks/MockTokens.sol:17:    constructor(string memory name_, string memory symbol_, uint8 decimals_) {
+contracts/mocks/MockTokens.sol:18:        name = name_;
+contracts/mocks/MockTokens.sol:19:        symbol = symbol_;
+contracts/mocks/MockTokens.sol:20:        decimals = decimals_;
+contracts/mocks/MockTokens.sol:21:    }
+contracts/mocks/MockTokens.sol:23:    function mint(address to, uint256 amount) external virtual {
+contracts/mocks/MockTokens.sol:24:        totalSupply += amount;
+contracts/mocks/MockTokens.sol:25:        balanceOf[to] += amount;
+contracts/mocks/MockTokens.sol:26:        emit Transfer(address(0), to, amount);
+contracts/mocks/MockTokens.sol:27:    }
+contracts/mocks/MockTokens.sol:29:    function burn(address from, uint256 amount) external virtual {
+contracts/mocks/MockTokens.sol:30:        balanceOf[from] -= amount;
+contracts/mocks/MockTokens.sol:31:        totalSupply -= amount;
+contracts/mocks/MockTokens.sol:32:        emit Transfer(from, address(0), amount);
+contracts/mocks/MockTokens.sol:33:    }
+contracts/mocks/MockTokens.sol:35:    function approve(address spender, uint256 amount) external override returns (bool) {
+contracts/mocks/MockTokens.sol:36:        allowance[msg.sender][spender] = amount;
+contracts/mocks/MockTokens.sol:37:        emit Approval(msg.sender, spender, amount);
+contracts/mocks/MockTokens.sol:38:        return true;
+contracts/mocks/MockTokens.sol:39:    }
+contracts/mocks/MockTokens.sol:41:    function transfer(address to, uint256 amount) external virtual override returns (bool) {
+contracts/mocks/MockTokens.sol:42:        _transfer(msg.sender, to, amount);
+contracts/mocks/MockTokens.sol:43:        return true;
+contracts/mocks/MockTokens.sol:44:    }
+contracts/mocks/MockTokens.sol:46:    function transferFrom(address from, address to, uint256 amount) external virtual override returns (bool) {
+contracts/mocks/MockTokens.sol:47:        uint256 allowed = allowance[from][msg.sender];
+contracts/mocks/MockTokens.sol:48:        if (allowed != type(uint256).max) {
+contracts/mocks/MockTokens.sol:49:            allowance[from][msg.sender] = allowed - amount;
+contracts/mocks/MockTokens.sol:50:            emit Approval(from, msg.sender, allowance[from][msg.sender]);
+contracts/mocks/MockTokens.sol:51:        }
+contracts/mocks/MockTokens.sol:52:        _transfer(from, to, amount);
+contracts/mocks/MockTokens.sol:53:        return true;
+contracts/mocks/MockTokens.sol:54:    }
+contracts/mocks/MockTokens.sol:56:    function _transfer(address from, address to, uint256 amount) internal virtual {
+contracts/mocks/MockTokens.sol:57:        balanceOf[from] -= amount;
+contracts/mocks/MockTokens.sol:58:        balanceOf[to] += amount;
+contracts/mocks/MockTokens.sol:59:        emit Transfer(from, to, amount);
+contracts/mocks/MockTokens.sol:60:    }
+contracts/mocks/MockTokens.sol:61:}
+contracts/mocks/MockMessaging.sol:1:// SPDX-License-Identifier: MIT
+contracts/mocks/MockMessaging.sol:2:pragma solidity 0.8.30;
+contracts/mocks/MockMessaging.sol:4:contract MockMessenger {
+contracts/mocks/MockMessaging.sol:5:    address public xDomainMessageSender;
+contracts/mocks/MockMessaging.sol:6:    uint32 public xDomainSourceChain;
+contracts/mocks/MockMessaging.sol:8:    event Relayed(uint32 indexed sourceChain, address indexed sourceSender, address indexed target);
+contracts/mocks/MockMessaging.sol:10:    function relay(address target, uint32 sourceChain, address sourceSender, bytes calldata message)
+contracts/mocks/MockMessaging.sol:11:        external
+contracts/mocks/MockMessaging.sol:12:        returns (bytes memory result)
+contracts/mocks/MockMessaging.sol:13:    {
+contracts/mocks/MockMessaging.sol:14:        require(xDomainMessageSender == address(0), "ACTIVE");
+contracts/mocks/MockMessaging.sol:15:        xDomainMessageSender = sourceSender;
+contracts/mocks/MockMessaging.sol:16:        xDomainSourceChain = sourceChain;
+contracts/mocks/MockMessaging.sol:17:        (bool ok, bytes memory returned) = target.call(message);
+contracts/mocks/MockMessaging.sol:18:        xDomainMessageSender = address(0);
+contracts/mocks/MockMessaging.sol:19:        xDomainSourceChain = 0;
+contracts/mocks/MockMessaging.sol:20:        require(ok, _reason(returned));
+contracts/mocks/MockMessaging.sol:21:        emit Relayed(sourceChain, sourceSender, target);
+contracts/mocks/MockMessaging.sol:22:        return returned;
+contracts/mocks/MockMessaging.sol:23:    }
+contracts/mocks/MockMessaging.sol:25:    function _reason(bytes memory data) private pure returns (string memory) {
+contracts/mocks/MockMessaging.sol:26:        if (data.length < 68) return "RELAY";
+contracts/mocks/MockMessaging.sol:27:        assembly {
+contracts/mocks/MockMessaging.sol:28:            data := add(data, 0x04)
+contracts/mocks/MockMessaging.sol:29:        }
+contracts/mocks/MockMessaging.sol:30:        return abi.decode(data, (string));
+contracts/mocks/MockMessaging.sol:31:    }
+contracts/mocks/MockMessaging.sol:32:}
+contracts/AsterVault.sol:1:// SPDX-License-Identifier: MIT
+contracts/AsterVault.sol:2:pragma solidity 0.8.30;
+contracts/AsterVault.sol:4:import {IERC20, IERC20Metadata} from "./interfaces/ProtocolInterfaces.sol";
+contracts/AsterVault.sol:5:import {MockERC20} from "./mocks/MockTokens.sol";
+contracts/AsterVault.sol:6:import {TokenMath} from "./lib/TokenMath.sol";
+contracts/AsterVault.sol:8:contract AsterVault is MockERC20 {
+contracts/AsterVault.sol:9:    using TokenMath for uint256;
+contracts/AsterVault.sol:11:    IERC20 public immutable asset;
+contracts/AsterVault.sol:13:    constructor(IERC20Metadata asset_)
+contracts/AsterVault.sol:14:        MockERC20("Aster Vault Share", "avSHARE", asset_.decimals())
+contracts/AsterVault.sol:15:    {
+contracts/AsterVault.sol:16:        asset = asset_;
+contracts/AsterVault.sol:17:    }
+contracts/AsterVault.sol:19:    function totalAssets() public view returns (uint256) {
+contracts/AsterVault.sol:20:        return asset.balanceOf(address(this));
+contracts/AsterVault.sol:21:    }
+contracts/AsterVault.sol:23:    function convertToShares(uint256 assets) public view returns (uint256) {
+contracts/AsterVault.sol:24:        uint256 supply = totalSupply;
+contracts/AsterVault.sol:25:        uint256 managed = totalAssets();
+contracts/AsterVault.sol:26:        return supply == 0 || managed == 0 ? assets : assets.mulDivDown(supply, managed);
+contracts/AsterVault.sol:27:    }
+contracts/AsterVault.sol:29:    function convertToAssets(uint256 shares) public view returns (uint256) {
+contracts/AsterVault.sol:30:        uint256 supply = totalSupply;
+contracts/AsterVault.sol:31:        return supply == 0 ? shares : shares.mulDivDown(totalAssets(), supply);
+contracts/AsterVault.sol:32:    }
+contracts/AsterVault.sol:34:    function previewDeposit(uint256 assets) external view returns (uint256) {
+contracts/AsterVault.sol:35:        return convertToShares(assets);
+contracts/AsterVault.sol:36:    }
+contracts/AsterVault.sol:38:    function previewMint(uint256 shares) public view returns (uint256) {
+contracts/AsterVault.sol:39:        uint256 supply = totalSupply;
+contracts/AsterVault.sol:40:        uint256 managed = totalAssets();
+contracts/AsterVault.sol:41:        return supply == 0 || managed == 0 ? shares : shares.mulDivUp(managed, supply);
+contracts/AsterVault.sol:42:    }
+contracts/AsterVault.sol:44:    function previewWithdraw(uint256 assets) external view returns (uint256) {
+contracts/AsterVault.sol:45:        return convertToShares(assets);
+contracts/AsterVault.sol:46:    }
+contracts/AsterVault.sol:48:    function previewRedeem(uint256 shares) external view returns (uint256) {
+contracts/AsterVault.sol:49:        return convertToAssets(shares);
+contracts/AsterVault.sol:50:    }
+contracts/AsterVault.sol:52:    function deposit(uint256 assets, address receiver) external returns (uint256 shares) {
+contracts/AsterVault.sol:53:        shares = convertToShares(assets);
+contracts/AsterVault.sol:54:        require(shares != 0, "ZERO_SHARES");
+contracts/AsterVault.sol:55:        require(asset.transferFrom(msg.sender, address(this), assets), "TRANSFER");
+contracts/AsterVault.sol:56:        _mint(receiver, shares);
+contracts/AsterVault.sol:57:    }
+contracts/AsterVault.sol:59:    function mint(address, uint256) external pure override {
+contracts/AsterVault.sol:60:        revert("UNSUPPORTED");
+contracts/AsterVault.sol:61:    }
+contracts/AsterVault.sol:63:    function burn(address, uint256) external pure override {
+contracts/AsterVault.sol:64:        revert("UNSUPPORTED");
+contracts/AsterVault.sol:65:    }
+contracts/AsterVault.sol:67:    function mint(uint256 shares, address receiver) external returns (uint256 assets) {
+contracts/AsterVault.sol:68:        assets = previewMint(shares);
+contracts/AsterVault.sol:69:        require(asset.transferFrom(msg.sender, address(this), assets), "TRANSFER");
+contracts/AsterVault.sol:70:        _mint(receiver, shares);
+contracts/AsterVault.sol:71:    }
+contracts/AsterVault.sol:73:    function withdraw(uint256 assets, address receiver, address owner) external returns (uint256 shares) {
+contracts/AsterVault.sol:74:        shares = convertToShares(assets);
+contracts/AsterVault.sol:75:        if (msg.sender != owner) _spendAllowance(owner, msg.sender, shares);
+contracts/AsterVault.sol:76:        _burn(owner, shares);
+contracts/AsterVault.sol:77:        require(asset.transfer(receiver, assets), "TRANSFER");
+contracts/AsterVault.sol:78:    }
+contracts/AsterVault.sol:80:    function redeem(uint256 shares, address receiver, address owner) external returns (uint256 assets) {
+contracts/AsterVault.sol:81:        if (msg.sender != owner) _spendAllowance(owner, msg.sender, shares);
+contracts/AsterVault.sol:82:        assets = convertToAssets(shares);
+contracts/AsterVault.sol:83:        _burn(owner, shares);
+contracts/AsterVault.sol:84:        require(asset.transfer(receiver, assets), "TRANSFER");
+contracts/AsterVault.sol:85:    }
+contracts/AsterVault.sol:87:    function _mint(address to, uint256 amount) internal {
+contracts/AsterVault.sol:88:        totalSupply += amount;
+contracts/AsterVault.sol:89:        balanceOf[to] += amount;
+contracts/AsterVault.sol:90:        emit Transfer(address(0), to, amount);
+contracts/AsterVault.sol:91:    }
+contracts/AsterVault.sol:93:    function _burn(address from, uint256 amount) internal {
+contracts/AsterVault.sol:94:        balanceOf[from] -= amount;
+contracts/AsterVault.sol:95:        totalSupply -= amount;
+contracts/AsterVault.sol:96:        emit Transfer(from, address(0), amount);
+contracts/AsterVault.sol:97:    }
+contracts/AsterVault.sol:99:    function _spendAllowance(address owner, address spender, uint256 amount) internal {
+contracts/AsterVault.sol:100:        uint256 allowed = allowance[owner][spender];
+contracts/AsterVault.sol:101:        if (allowed != type(uint256).max) {
+contracts/AsterVault.sol:102:            allowance[owner][spender] = allowed - amount;
+contracts/AsterVault.sol:103:            emit Approval(owner, spender, allowance[owner][spender]);
+contracts/AsterVault.sol:104:        }
+contracts/AsterVault.sol:105:    }
+contracts/AsterVault.sol:106:}
+contracts/lib/TokenMath.sol:1:// SPDX-License-Identifier: MIT
+contracts/lib/TokenMath.sol:2:pragma solidity 0.8.30;
+contracts/lib/TokenMath.sol:4:library TokenMath {
+contracts/lib/TokenMath.sol:5:    function mulDivDown(uint256 x, uint256 y, uint256 d) internal pure returns (uint256) {
+contracts/lib/TokenMath.sol:6:        return x * y / d;
+contracts/lib/TokenMath.sol:7:    }
+contracts/lib/TokenMath.sol:9:    function mulDivUp(uint256 x, uint256 y, uint256 d) internal pure returns (uint256) {
+contracts/lib/TokenMath.sol:10:        if (x == 0 || y == 0) return 0;
+contracts/lib/TokenMath.sol:11:        return (x * y - 1) / d + 1;
+contracts/lib/TokenMath.sol:12:    }
+contracts/lib/TokenMath.sol:13:}
+contracts/lib/SignatureCodec.sol:1:// SPDX-License-Identifier: MIT
+contracts/lib/SignatureCodec.sol:2:pragma solidity 0.8.30;
+contracts/lib/SignatureCodec.sol:4:library SignatureCodec {
+contracts/lib/SignatureCodec.sol:5:    function messageHash(bytes32 payloadHash) internal pure returns (bytes32) {
+contracts/lib/SignatureCodec.sol:6:        return keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", payloadHash));
+contracts/lib/SignatureCodec.sol:7:    }
+contracts/lib/SignatureCodec.sol:9:    function recover(bytes32 digest, bytes calldata signature) internal pure returns (address signer) {
+contracts/lib/SignatureCodec.sol:10:        require(signature.length == 65, "SIGNATURE_LENGTH");
+contracts/lib/SignatureCodec.sol:11:        bytes32 r;
+contracts/lib/SignatureCodec.sol:12:        bytes32 s;
+contracts/lib/SignatureCodec.sol:13:        uint8 v;
+contracts/lib/SignatureCodec.sol:14:        assembly {
+contracts/lib/SignatureCodec.sol:15:            r := calldataload(signature.offset)
+contracts/lib/SignatureCodec.sol:16:            s := calldataload(add(signature.offset, 32))
+contracts/lib/SignatureCodec.sol:17:            v := byte(0, calldataload(add(signature.offset, 64)))
+contracts/lib/SignatureCodec.sol:18:        }
+contracts/lib/SignatureCodec.sol:19:        if (v < 27) v += 27;
+contracts/lib/SignatureCodec.sol:20:        require(v == 27 || v == 28, "SIGNATURE_V");
+contracts/lib/SignatureCodec.sol:21:        signer = ecrecover(digest, v, r, s);
+contracts/lib/SignatureCodec.sol:22:        require(signer != address(0), "SIGNATURE");
+contracts/lib/SignatureCodec.sol:23:    }
+contracts/lib/SignatureCodec.sol:24:}
+contracts/LendingMarket.sol:1:// SPDX-License-Identifier: MIT
+contracts/LendingMarket.sol:2:pragma solidity 0.8.30;
+contracts/LendingMarket.sol:4:import {
+contracts/LendingMarket.sol:5:    IERC20,
+contracts/LendingMarket.sol:6:    IPriceSource,
+contracts/LendingMarket.sol:7:    IBorrowCallback,
+contracts/LendingMarket.sol:8:    IBridgeCollateralReceiver
+contracts/LendingMarket.sol:9:} from "./interfaces/ProtocolInterfaces.sol";
+contracts/LendingMarket.sol:10:import {AsterVault} from "./AsterVault.sol";
+contracts/LendingMarket.sol:12:contract LendingMarket is IBridgeCollateralReceiver {
+contracts/LendingMarket.sol:13:    IERC20 public immutable stable;
+contracts/LendingMarket.sol:14:    AsterVault public immutable collateral;
+contracts/LendingMarket.sol:15:    IPriceSource public immutable oracle;
+contracts/LendingMarket.sol:16:    address public guardian;
+contracts/LendingMarket.sol:17:    address public bridge;
+contracts/LendingMarket.sol:18:    uint256 public collateralFactorBps;
+contracts/LendingMarket.sol:19:    bool public paused;
+contracts/LendingMarket.sol:21:    mapping(address => uint256) public localCollateral;
+contracts/LendingMarket.sol:22:    mapping(address => uint256) public bridgeCollateral;
+contracts/LendingMarket.sol:23:    mapping(address => uint256) public debt;
+contracts/LendingMarket.sol:25:    event CollateralDeposited(address indexed caller, address indexed beneficiary, uint256 shares);
+contracts/LendingMarket.sol:26:    event CollateralWithdrawn(address indexed account, address indexed receiver, uint256 shares);
+contracts/LendingMarket.sol:27:    event Borrowed(address indexed account, address indexed receiver, uint256 amount);
+contracts/LendingMarket.sol:28:    event Repaid(address indexed payer, address indexed account, uint256 amount);
+contracts/LendingMarket.sol:29:    event BridgeCredit(address indexed beneficiary, uint256 shares);
+contracts/LendingMarket.sol:31:    constructor(IERC20 stable_, AsterVault collateral_, IPriceSource oracle_, address guardian_) {
+contracts/LendingMarket.sol:32:        stable = stable_;
+contracts/LendingMarket.sol:33:        collateral = collateral_;
+contracts/LendingMarket.sol:34:        oracle = oracle_;
+contracts/LendingMarket.sol:35:        guardian = guardian_;
+contracts/LendingMarket.sol:36:        collateralFactorBps = 7_500;
+contracts/LendingMarket.sol:37:    }
+contracts/LendingMarket.sol:39:    function depositCollateral(uint256 shares, address beneficiary) external {
+contracts/LendingMarket.sol:40:        require(shares != 0, "SHARES");
+contracts/LendingMarket.sol:41:        require(collateral.transferFrom(msg.sender, address(this), shares), "TRANSFER");
+contracts/LendingMarket.sol:42:        localCollateral[beneficiary] += shares;
+contracts/LendingMarket.sol:43:        emit CollateralDeposited(msg.sender, beneficiary, shares);
+contracts/LendingMarket.sol:44:    }
+contracts/LendingMarket.sol:46:    function withdrawCollateral(uint256 shares, address receiver) external {
+contracts/LendingMarket.sol:47:        localCollateral[msg.sender] -= shares;
+contracts/LendingMarket.sol:48:        require(_healthy(msg.sender, debt[msg.sender]), "HEALTH");
+contracts/LendingMarket.sol:49:        require(collateral.transfer(receiver, shares), "TRANSFER");
+contracts/LendingMarket.sol:50:        emit CollateralWithdrawn(msg.sender, receiver, shares);
+contracts/LendingMarket.sol:51:    }
+contracts/LendingMarket.sol:53:    function borrow(uint256 amount, address receiver, bytes calldata data) external {
+contracts/LendingMarket.sol:54:        require(!paused, "PAUSED");
+contracts/LendingMarket.sol:55:        require(_healthy(msg.sender, debt[msg.sender] + amount), "HEALTH");
+contracts/LendingMarket.sol:56:        require(stable.transfer(receiver, amount), "TRANSFER");
+contracts/LendingMarket.sol:57:        if (data.length != 0) IBorrowCallback(receiver).onBorrow(msg.sender, amount, data);
+contracts/LendingMarket.sol:58:        debt[msg.sender] += amount;
+contracts/LendingMarket.sol:59:        emit Borrowed(msg.sender, receiver, amount);
+contracts/LendingMarket.sol:60:    }
+contracts/LendingMarket.sol:62:    function repay(address account, uint256 amount) external returns (uint256 paid) {
+contracts/LendingMarket.sol:63:        paid = amount < debt[account] ? amount : debt[account];
+contracts/LendingMarket.sol:64:        require(stable.transferFrom(msg.sender, address(this), paid), "TRANSFER");
+contracts/LendingMarket.sol:65:        debt[account] -= paid;
+contracts/LendingMarket.sol:66:        emit Repaid(msg.sender, account, paid);
+contracts/LendingMarket.sol:67:    }
+contracts/LendingMarket.sol:69:    function collateralValue(address account) public view returns (uint256) {
+contracts/LendingMarket.sol:70:        uint256 shares = localCollateral[account] + bridgeCollateral[account];
+contracts/LendingMarket.sol:71:        return collateral.convertToAssets(shares) * oracle.price() / 1e18;
+contracts/LendingMarket.sol:72:    }
+contracts/LendingMarket.sol:74:    function borrowLimit(address account) public view returns (uint256) {
+contracts/LendingMarket.sol:75:        return collateralValue(account) * collateralFactorBps / 10_000;
+contracts/LendingMarket.sol:76:    }
+contracts/LendingMarket.sol:78:    function onBridgeCredit(address beneficiary, uint256 shares) external override {
+contracts/LendingMarket.sol:79:        require(msg.sender == bridge, "BRIDGE");
+contracts/LendingMarket.sol:80:        bridgeCollateral[beneficiary] += shares;
+contracts/LendingMarket.sol:81:        emit BridgeCredit(beneficiary, shares);
+contracts/LendingMarket.sol:82:    }
+contracts/LendingMarket.sol:84:    function setBridge(address nextBridge) external {
+contracts/LendingMarket.sol:85:        require(msg.sender == guardian, "GUARDIAN");
+contracts/LendingMarket.sol:86:        bridge = nextBridge;
+contracts/LendingMarket.sol:87:    }
+contracts/LendingMarket.sol:89:    function setCollateralFactor(uint256 nextFactorBps) external {
+contracts/LendingMarket.sol:90:        require(nextFactorBps <= 9_500, "FACTOR");
+contracts/LendingMarket.sol:91:        if (msg.sender != guardian && nextFactorBps <= collateralFactorBps) revert("GUARDIAN");
+contracts/LendingMarket.sol:92:        collateralFactorBps = nextFactorBps;
+contracts/LendingMarket.sol:93:    }
+contracts/LendingMarket.sol:95:    function setPaused(bool nextPaused) external {
+contracts/LendingMarket.sol:96:        require(msg.sender == guardian, "GUARDIAN");
+contracts/LendingMarket.sol:97:        paused = nextPaused;
+contracts/LendingMarket.sol:98:    }
+contracts/LendingMarket.sol:100:    function transferGuardianship(address nextGuardian) external {
+contracts/LendingMarket.sol:101:        require(msg.sender == guardian, "GUARDIAN");
+contracts/LendingMarket.sol:102:        require(nextGuardian != address(0), "GUARDIAN_ZERO");
+contracts/LendingMarket.sol:103:        guardian = nextGuardian;
+contracts/LendingMarket.sol:104:    }
+contracts/LendingMarket.sol:106:    function _healthy(address account, uint256 nextDebt) internal view returns (bool) {
+contracts/LendingMarket.sol:107:        return nextDebt <= borrowLimit(account);
+contracts/LendingMarket.sol:108:    }
+contracts/LendingMarket.sol:109:}
+contracts/interfaces/ProtocolInterfaces.sol:1:// SPDX-License-Identifier: MIT
+contracts/interfaces/ProtocolInterfaces.sol:2:pragma solidity 0.8.30;
+contracts/interfaces/ProtocolInterfaces.sol:4:interface IERC20 {
+contracts/interfaces/ProtocolInterfaces.sol:5:    function totalSupply() external view returns (uint256);
+contracts/interfaces/ProtocolInterfaces.sol:6:    function balanceOf(address account) external view returns (uint256);
+contracts/interfaces/ProtocolInterfaces.sol:7:    function transfer(address to, uint256 amount) external returns (bool);
+contracts/interfaces/ProtocolInterfaces.sol:8:    function allowance(address owner, address spender) external view returns (uint256);
+contracts/interfaces/ProtocolInterfaces.sol:9:    function approve(address spender, uint256 amount) external returns (bool);
+contracts/interfaces/ProtocolInterfaces.sol:10:    function transferFrom(address from, address to, uint256 amount) external returns (bool);
+contracts/interfaces/ProtocolInterfaces.sol:11:}
+contracts/interfaces/ProtocolInterfaces.sol:13:interface IERC20Metadata is IERC20 {
+contracts/interfaces/ProtocolInterfaces.sol:14:    function decimals() external view returns (uint8);
+contracts/interfaces/ProtocolInterfaces.sol:15:}
+contracts/interfaces/ProtocolInterfaces.sol:17:interface IPriceSource {
+contracts/interfaces/ProtocolInterfaces.sol:18:    function price() external view returns (uint256);
+contracts/interfaces/ProtocolInterfaces.sol:19:}
+contracts/interfaces/ProtocolInterfaces.sol:21:interface IReservePool {
+contracts/interfaces/ProtocolInterfaces.sol:22:    function spotPrice() external view returns (uint256);
+contracts/interfaces/ProtocolInterfaces.sol:23:}
+contracts/interfaces/ProtocolInterfaces.sol:25:interface IAggregator {
+contracts/interfaces/ProtocolInterfaces.sol:26:    function decimals() external view returns (uint8);
+contracts/interfaces/ProtocolInterfaces.sol:27:    function latestRoundData()
+contracts/interfaces/ProtocolInterfaces.sol:28:        external
+contracts/interfaces/ProtocolInterfaces.sol:29:        view
+contracts/interfaces/ProtocolInterfaces.sol:30:        returns (uint80 roundId, int256 answer, uint256 startedAt, uint256 updatedAt, uint80 answeredInRound);
+contracts/interfaces/ProtocolInterfaces.sol:31:}
+contracts/interfaces/ProtocolInterfaces.sol:33:interface IBorrowCallback {
+contracts/interfaces/ProtocolInterfaces.sol:34:    function onBorrow(address account, uint256 amount, bytes calldata data) external;
+contracts/interfaces/ProtocolInterfaces.sol:35:}
+contracts/interfaces/ProtocolInterfaces.sol:37:interface IBridgeCollateralReceiver {
+contracts/interfaces/ProtocolInterfaces.sol:38:    function onBridgeCredit(address beneficiary, uint256 shares) external;
+contracts/interfaces/ProtocolInterfaces.sol:39:}
+contracts/interfaces/ProtocolInterfaces.sol:41:interface IMessageContext {
+contracts/interfaces/ProtocolInterfaces.sol:42:    function xDomainMessageSender() external view returns (address);
+contracts/interfaces/ProtocolInterfaces.sol:43:    function xDomainSourceChain() external view returns (uint32);
+contracts/interfaces/ProtocolInterfaces.sol:44:}
+contracts/RewardsDistributor.sol:1:// SPDX-License-Identifier: MIT
+contracts/RewardsDistributor.sol:2:pragma solidity 0.8.30;
+contracts/RewardsDistributor.sol:4:import {IERC20} from "./interfaces/ProtocolInterfaces.sol";
+contracts/RewardsDistributor.sol:5:import {SignatureCodec} from "./lib/SignatureCodec.sol";
+contracts/RewardsDistributor.sol:7:contract RewardsDistributor {
+contracts/RewardsDistributor.sol:8:    using SignatureCodec for bytes32;
+contracts/RewardsDistributor.sol:10:    bytes32 public constant CLAIM_TYPEHASH =
+contracts/RewardsDistributor.sol:11:        keccak256("RewardClaim(address distributor,uint256 chainId,address account,uint256 amount,uint256 nonce)");
+contracts/RewardsDistributor.sol:13:    IERC20 public immutable rewardToken;
+contracts/RewardsDistributor.sol:14:    address public immutable authority;
+contracts/RewardsDistributor.sol:15:    mapping(bytes32 => bool) public usedSignatures;
+contracts/RewardsDistributor.sol:17:    event Claimed(address indexed account, uint256 amount, uint256 nonce);
+contracts/RewardsDistributor.sol:19:    constructor(IERC20 rewardToken_, address authority_) {
+contracts/RewardsDistributor.sol:20:        rewardToken = rewardToken_;
+contracts/RewardsDistributor.sol:21:        authority = authority_;
+contracts/RewardsDistributor.sol:22:    }
+contracts/RewardsDistributor.sol:24:    function claim(address account, uint256 amount, uint256 nonce, bytes calldata signature) external {
+contracts/RewardsDistributor.sol:25:        bytes32 payload = claimPayload(account, amount, nonce);
+contracts/RewardsDistributor.sol:26:        bytes32 signatureId = keccak256(signature);
+contracts/RewardsDistributor.sol:27:        require(!usedSignatures[signatureId], "USED");
+contracts/RewardsDistributor.sol:28:        require(payload.messageHash().recover(signature) == authority, "AUTHORITY");
+contracts/RewardsDistributor.sol:29:        usedSignatures[signatureId] = true;
+contracts/RewardsDistributor.sol:30:        require(rewardToken.transfer(account, amount), "TRANSFER");
+contracts/RewardsDistributor.sol:31:        emit Claimed(account, amount, nonce);
+contracts/RewardsDistributor.sol:32:    }
+contracts/RewardsDistributor.sol:34:    function claimPayload(address account, uint256 amount, uint256 nonce) public view returns (bytes32) {
+contracts/RewardsDistributor.sol:35:        return keccak256(abi.encode(CLAIM_TYPEHASH, address(this), block.chainid, account, amount, nonce));
+contracts/RewardsDistributor.sol:36:    }
+contracts/RewardsDistributor.sol:37:}
+contracts/ReservePool.sol:1:// SPDX-License-Identifier: MIT
+contracts/ReservePool.sol:2:pragma solidity 0.8.30;
+contracts/ReservePool.sol:4:import {IERC20} from "./interfaces/ProtocolInterfaces.sol";
+contracts/ReservePool.sol:6:contract ReservePool {
+contracts/ReservePool.sol:7:    IERC20 public immutable asset;
+contracts/ReservePool.sol:8:    IERC20 public immutable quote;
+contracts/ReservePool.sol:9:    uint112 public reserveAsset;
+contracts/ReservePool.sol:10:    uint112 public reserveQuote;
+contracts/ReservePool.sol:12:    event LiquidityAdded(address indexed provider, uint256 assets, uint256 quotes);
+contracts/ReservePool.sol:13:    event Swap(address indexed sender, address indexed tokenIn, uint256 amountIn, uint256 amountOut, address to);
+contracts/ReservePool.sol:15:    constructor(IERC20 asset_, IERC20 quote_) {
+contracts/ReservePool.sol:16:        asset = asset_;
+contracts/ReservePool.sol:17:        quote = quote_;
+contracts/ReservePool.sol:18:    }
+contracts/ReservePool.sol:20:    function addLiquidity(uint256 assets, uint256 quotes) external {
+contracts/ReservePool.sol:21:        require(asset.transferFrom(msg.sender, address(this), assets), "ASSET_TRANSFER");
+contracts/ReservePool.sol:22:        require(quote.transferFrom(msg.sender, address(this), quotes), "QUOTE_TRANSFER");
+contracts/ReservePool.sol:23:        _sync();
+contracts/ReservePool.sol:24:        emit LiquidityAdded(msg.sender, assets, quotes);
+contracts/ReservePool.sol:25:    }
+contracts/ReservePool.sol:27:    function spotPrice() external view returns (uint256) {
+contracts/ReservePool.sol:28:        require(reserveAsset != 0, "NO_LIQUIDITY");
+contracts/ReservePool.sol:29:        return uint256(reserveQuote) * 1e18 / uint256(reserveAsset);
+contracts/ReservePool.sol:30:    }
+contracts/ReservePool.sol:32:    function quoteExactInput(address tokenIn, uint256 amountIn) public view returns (uint256 amountOut) {
+contracts/ReservePool.sol:33:        uint256 amountAfterFee = amountIn * 9_970;
+contracts/ReservePool.sol:34:        if (tokenIn == address(asset)) {
+contracts/ReservePool.sol:35:            amountOut = amountAfterFee * reserveQuote / (uint256(reserveAsset) * 10_000 + amountAfterFee);
+contracts/ReservePool.sol:36:        } else if (tokenIn == address(quote)) {
+contracts/ReservePool.sol:37:            amountOut = amountAfterFee * reserveAsset / (uint256(reserveQuote) * 10_000 + amountAfterFee);
+contracts/ReservePool.sol:38:        } else {
+contracts/ReservePool.sol:39:            revert("TOKEN");
+contracts/ReservePool.sol:40:        }
+contracts/ReservePool.sol:41:    }
+contracts/ReservePool.sol:43:    function swapExactInput(address tokenIn, uint256 amountIn, uint256 minOut, address to)
+contracts/ReservePool.sol:44:        external
+contracts/ReservePool.sol:45:        returns (uint256 amountOut)
+contracts/ReservePool.sol:46:    {
+contracts/ReservePool.sol:47:        require(to != address(0) && to != address(this), "RECIPIENT");
+contracts/ReservePool.sol:48:        uint256 receivedIn;
+contracts/ReservePool.sol:49:        uint256 quotedOut;
+contracts/ReservePool.sol:50:        if (tokenIn == address(asset)) {
+contracts/ReservePool.sol:51:            uint256 inputBalance = asset.balanceOf(address(this));
+contracts/ReservePool.sol:52:            require(asset.transferFrom(msg.sender, address(this), amountIn), "INPUT");
+contracts/ReservePool.sol:53:            receivedIn = asset.balanceOf(address(this)) - inputBalance;
+contracts/ReservePool.sol:54:            quotedOut = quoteExactInput(tokenIn, receivedIn);
+contracts/ReservePool.sol:55:            uint256 outputBalance = quote.balanceOf(to);
+contracts/ReservePool.sol:56:            require(quote.transfer(to, quotedOut), "OUTPUT");
+contracts/ReservePool.sol:57:            amountOut = quote.balanceOf(to) - outputBalance;
+contracts/ReservePool.sol:58:        } else if (tokenIn == address(quote)) {
+contracts/ReservePool.sol:59:            uint256 inputBalance = quote.balanceOf(address(this));
+contracts/ReservePool.sol:60:            require(quote.transferFrom(msg.sender, address(this), amountIn), "INPUT");
+contracts/ReservePool.sol:61:            receivedIn = quote.balanceOf(address(this)) - inputBalance;
+contracts/ReservePool.sol:62:            quotedOut = quoteExactInput(tokenIn, receivedIn);
+contracts/ReservePool.sol:63:            uint256 outputBalance = asset.balanceOf(to);
+contracts/ReservePool.sol:64:            require(asset.transfer(to, quotedOut), "OUTPUT");
+contracts/ReservePool.sol:65:            amountOut = asset.balanceOf(to) - outputBalance;
+contracts/ReservePool.sol:66:        } else {
+contracts/ReservePool.sol:67:            revert("TOKEN");
+contracts/ReservePool.sol:68:        }
+contracts/ReservePool.sol:69:        require(amountOut >= minOut, "MIN_OUT");
+contracts/ReservePool.sol:70:        _sync();
+contracts/ReservePool.sol:71:        emit Swap(msg.sender, tokenIn, receivedIn, amountOut, to);
+contracts/ReservePool.sol:72:    }
+contracts/ReservePool.sol:74:    function sync() external {
+contracts/ReservePool.sol:75:        _sync();
+contracts/ReservePool.sol:76:    }
+contracts/ReservePool.sol:78:    function _sync() internal {
+contracts/ReservePool.sol:79:        reserveAsset = uint112(asset.balanceOf(address(this)));
+contracts/ReservePool.sol:80:        reserveQuote = uint112(quote.balanceOf(address(this)));
+contracts/ReservePool.sol:81:    }
+contracts/ReservePool.sol:82:}
+contracts/ReserveOracle.sol:1:// SPDX-License-Identifier: MIT
+contracts/ReserveOracle.sol:2:pragma solidity 0.8.30;
+contracts/ReserveOracle.sol:4:import {IAggregator, IPriceSource, IReservePool} from "./interfaces/ProtocolInterfaces.sol";
+contracts/ReserveOracle.sol:6:contract ReserveOracle is IPriceSource {
+contracts/ReserveOracle.sol:7:    IAggregator public feed;
+contracts/ReserveOracle.sol:8:    IReservePool public immutable pool;
+contracts/ReserveOracle.sol:9:    address public owner;
+contracts/ReserveOracle.sol:11:    constructor(IAggregator feed_, IReservePool pool_) {
+contracts/ReserveOracle.sol:12:        feed = feed_;
+contracts/ReserveOracle.sol:13:        pool = pool_;
+contracts/ReserveOracle.sol:14:        owner = msg.sender;
+contracts/ReserveOracle.sol:15:    }
+contracts/ReserveOracle.sol:17:    function price() external view override returns (uint256) {
+contracts/ReserveOracle.sol:18:        (, int256 answer,,,) = feed.latestRoundData();
+contracts/ReserveOracle.sol:19:        if (answer > 0) return _normalize(uint256(answer));
+contracts/ReserveOracle.sol:20:        return pool.spotPrice();
+contracts/ReserveOracle.sol:21:    }
+contracts/ReserveOracle.sol:23:    function configure(IAggregator nextFeed) external {
+contracts/ReserveOracle.sol:24:        require(msg.sender == owner, "OWNER");
+contracts/ReserveOracle.sol:25:        require(address(nextFeed) != address(0), "CONFIG");
+contracts/ReserveOracle.sol:26:        feed = nextFeed;
+contracts/ReserveOracle.sol:27:    }
+contracts/ReserveOracle.sol:29:    function transferOwnership(address nextOwner) external {
+contracts/ReserveOracle.sol:30:        require(msg.sender == owner, "OWNER");
+contracts/ReserveOracle.sol:31:        require(nextOwner != address(0), "OWNER_ZERO");
+contracts/ReserveOracle.sol:32:        owner = nextOwner;
+contracts/ReserveOracle.sol:33:    }
+contracts/ReserveOracle.sol:35:    function _normalize(uint256 answer) internal view returns (uint256) {
+contracts/ReserveOracle.sol:36:        uint8 d = feed.decimals();
+contracts/ReserveOracle.sol:37:        if (d < 18) return answer * 10 ** (18 - d);
+contracts/ReserveOracle.sol:38:        if (d > 18) return answer / 10 ** (d - 18);
+contracts/ReserveOracle.sol:39:        return answer;
+contracts/ReserveOracle.sol:40:    }
+contracts/ReserveOracle.sol:41:}
+contracts/BridgeGateway.sol:1:// SPDX-License-Identifier: MIT
+contracts/BridgeGateway.sol:2:pragma solidity 0.8.30;
+contracts/BridgeGateway.sol:4:import {IBridgeCollateralReceiver, IMessageContext} from "./interfaces/ProtocolInterfaces.sol";
+contracts/BridgeGateway.sol:6:contract BridgeGateway {
+contracts/BridgeGateway.sol:7:    IMessageContext public immutable messenger;
+contracts/BridgeGateway.sol:8:    IBridgeCollateralReceiver public immutable receiver;
+contracts/BridgeGateway.sol:9:    address public admin;
+contracts/BridgeGateway.sol:11:    mapping(uint32 => address) public remoteGateway;
+contracts/BridgeGateway.sol:12:    mapping(uint64 => bool) public processedNonce;
+contracts/BridgeGateway.sol:14:    event RemoteConfigured(uint32 indexed chainId, address indexed gateway);
+contracts/BridgeGateway.sol:15:    event CollateralFinalized(
+contracts/BridgeGateway.sol:16:        uint32 indexed sourceChain,
+contracts/BridgeGateway.sol:17:        uint64 indexed nonce,
+contracts/BridgeGateway.sol:18:        address indexed beneficiary,
+contracts/BridgeGateway.sol:19:        uint256 shares,
+contracts/BridgeGateway.sol:20:        address sourceSender
+contracts/BridgeGateway.sol:21:    );
+contracts/BridgeGateway.sol:23:    constructor(IMessageContext messenger_, IBridgeCollateralReceiver receiver_, address admin_) {
+contracts/BridgeGateway.sol:24:        messenger = messenger_;
+contracts/BridgeGateway.sol:25:        receiver = receiver_;
+contracts/BridgeGateway.sol:26:        admin = admin_;
+contracts/BridgeGateway.sol:27:    }
+contracts/BridgeGateway.sol:29:    function configureRemote(uint32 sourceChain, address gateway) external {
+contracts/BridgeGateway.sol:30:        require(msg.sender == admin, "ADMIN");
+contracts/BridgeGateway.sol:31:        require(gateway != address(0), "GATEWAY");
+contracts/BridgeGateway.sol:32:        remoteGateway[sourceChain] = gateway;
+contracts/BridgeGateway.sol:33:        emit RemoteConfigured(sourceChain, gateway);
+contracts/BridgeGateway.sol:34:    }
+contracts/BridgeGateway.sol:36:    function finalizeCollateral(uint32 sourceChain, uint64 nonce, address beneficiary, uint256 shares) external {
+contracts/BridgeGateway.sol:37:        require(msg.sender == address(messenger), "MESSENGER");
+contracts/BridgeGateway.sol:38:        require(messenger.xDomainSourceChain() == sourceChain, "SOURCE_CHAIN");
+contracts/BridgeGateway.sol:39:        require(remoteGateway[sourceChain] != address(0), "UNSUPPORTED");
+contracts/BridgeGateway.sol:40:        require(!processedNonce[nonce], "PROCESSED");
+contracts/BridgeGateway.sol:41:        processedNonce[nonce] = true;
+contracts/BridgeGateway.sol:42:        address sourceSender = messenger.xDomainMessageSender();
+contracts/BridgeGateway.sol:43:        receiver.onBridgeCredit(beneficiary, shares);
+contracts/BridgeGateway.sol:44:        emit CollateralFinalized(sourceChain, nonce, beneficiary, shares, sourceSender);
+contracts/BridgeGateway.sol:45:    }
+contracts/BridgeGateway.sol:47:    function transferAdmin(address nextAdmin) external {
+contracts/BridgeGateway.sol:48:        require(msg.sender == admin, "ADMIN");
+contracts/BridgeGateway.sol:49:        require(nextAdmin != address(0), "ADMIN_ZERO");
+contracts/BridgeGateway.sol:50:        admin = nextAdmin;
+contracts/BridgeGateway.sol:51:    }
+contracts/BridgeGateway.sol:52:}
+contracts/PermitRouter.sol:1:// SPDX-License-Identifier: MIT
+contracts/PermitRouter.sol:2:pragma solidity 0.8.30;
+contracts/PermitRouter.sol:4:import {IERC20} from "./interfaces/ProtocolInterfaces.sol";
+contracts/PermitRouter.sol:5:import {SignatureCodec} from "./lib/SignatureCodec.sol";
+contracts/PermitRouter.sol:7:contract PermitRouter {
+contracts/PermitRouter.sol:8:    using SignatureCodec for bytes32;
+contracts/PermitRouter.sol:10:    bytes32 public constant TRANSFER_TYPEHASH =
+contracts/PermitRouter.sol:11:        keccak256("TransferPermit(address owner,address token,uint256 amount,uint256 nonce,uint256 deadline)");
+contracts/PermitRouter.sol:13:    mapping(address => uint256) public nonces;
+contracts/PermitRouter.sol:15:    event PermitTransfer(address indexed owner, address indexed token, address indexed recipient, uint256 amount);
+contracts/PermitRouter.sol:17:    function executeTransfer(
+contracts/PermitRouter.sol:18:        address owner,
+contracts/PermitRouter.sol:19:        IERC20 token,
+contracts/PermitRouter.sol:20:        uint256 amount,
+contracts/PermitRouter.sol:21:        address recipient,
+contracts/PermitRouter.sol:22:        uint256 deadline,
+contracts/PermitRouter.sol:23:        bytes calldata signature
+contracts/PermitRouter.sol:24:    ) external {
+contracts/PermitRouter.sol:25:        require(block.timestamp <= deadline, "EXPIRED");
+contracts/PermitRouter.sol:26:        uint256 nonce = nonces[owner]++;
+contracts/PermitRouter.sol:27:        bytes32 payload = keccak256(abi.encode(TRANSFER_TYPEHASH, owner, address(token), amount, nonce, deadline));
+contracts/PermitRouter.sol:28:        require(payload.messageHash().recover(signature) == owner, "SIGNER");
+contracts/PermitRouter.sol:29:        require(token.transferFrom(owner, recipient, amount), "TRANSFER");
+contracts/PermitRouter.sol:30:        emit PermitTransfer(owner, address(token), recipient, amount);
+contracts/PermitRouter.sol:31:    }
+contracts/PermitRouter.sol:32:}

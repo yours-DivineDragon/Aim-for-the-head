@@ -1,0 +1,818 @@
+{
+  "schema_version": 1,
+  "reviewer_id": "reviewer-b",
+  "target": {
+    "commit": "75d19f5c283c5e2fe6b1a5913b1ca4b82462c21d",
+    "source_manifest_digest": "9ac26ede2c9b8e3f45910a1e8207c10ec418999106571061211fc339ad84c926",
+    "commit_attestation_basis": "Frozen task input and public candidate manifest; Git history was not inspected under the isolation rule.",
+    "digest_attestation_basis": "Independently recomputed from all 22 manifest-covered files before and after reproduction."
+  },
+  "timestamps": {
+    "started_at_utc": "2026-08-04T13:40:33Z",
+    "completed_at_utc": "2026-08-04T13:56:00Z"
+  },
+  "attestations": {
+    "isolation": {
+      "satisfied": true,
+      "details": "Review used only the frozen public target, public candidate manifest/evidence harnesses, preinstalled local dependencies, and reviewer-authored files under review-output. No network, sealed/reveal/ground-truth path, Git history, other reviewer workspace, issue tracker, generator material, rejected-lead narrative, or human assistance was used."
+    },
+    "source_manifest": {
+      "satisfied": true,
+      "file_count": 22,
+      "algorithm": "sha256",
+      "expected_combined_digest": "9ac26ede2c9b8e3f45910a1e8207c10ec418999106571061211fc339ad84c926",
+      "initial_actual_combined_digest": "9ac26ede2c9b8e3f45910a1e8207c10ec418999106571061211fc339ad84c926",
+      "final_actual_combined_digest": "9ac26ede2c9b8e3f45910a1e8207c10ec418999106571061211fc339ad84c926",
+      "all_individual_hashes_matched": true,
+      "initial_command": "bash review-output/checks/verify_manifest.sh",
+      "initial_exit_code": 0,
+      "initial_log": "logs/010-manifest-verification.log",
+      "final_command": "bash review-output/checks/verify_manifest.sh",
+      "final_exit_code": 0,
+      "final_log": "logs/088-post-cleanup-manifest.log"
+    },
+    "ordinary_suite": {
+      "satisfied": true,
+      "command": "npm run check",
+      "cwd": "target",
+      "exit_code": 0,
+      "compiled_contracts": 21,
+      "tests_passed": 6,
+      "tests_failed": 0,
+      "log": "logs/020-ordinary-suite.log"
+    },
+    "candidate_process_isolation": {
+      "satisfied": true,
+      "details": "Each candidate reproduce.sh was launched in its own shell/Node process. Each submitted positive and negative test creates a fresh in-memory chain. Candidate processes shared no RPC endpoint or chain state."
+    },
+    "frozen_source_preservation": {
+      "satisfied": true,
+      "details": "No manifest-covered source file was edited; the final 22-file digest remained identical. The ordinary suite's generated artifacts were relocated from target/artifacts to review-output/ordinary-suite-artifacts after execution, and reviewer-authored harnesses and outputs are confined to review-output."
+    }
+  },
+  "environment": {
+    "node": "v24.14.0",
+    "npm": "11.9.0",
+    "solc_js": "0.8.30",
+    "ethers": "6.15.0",
+    "ganache": "7.9.2",
+    "chain_id": 31337,
+    "hardfork": "shanghai",
+    "evm_compile_target": "paris",
+    "notes": "Ganache reported that its native uWS binary was unavailable for this Node ABI and consistently fell back to its NodeJS implementation; all ordinary, candidate, and corrected independent tests still completed successfully."
+  },
+  "candidates": [
+    {
+      "id": "C-001",
+      "title": "Borrow callback reentrancy finalizes debt after value transfer",
+      "status": "reproduced",
+      "source_locations": [
+        "contracts/LendingMarket.sol:53-59",
+        "contracts/LendingMarket.sol:106-108"
+      ],
+      "commands": [
+        {
+          "purpose": "submitted_reproduction_and_negative_control",
+          "command": "bash run/evidence/C-001/reproduce.sh",
+          "cwd": "target",
+          "exit_code": 0,
+          "log": "logs/05001-reproduction.log"
+        },
+        {
+          "purpose": "reviewer_boundary_suite_initial_compile_attempt",
+          "command": "node --test --test-concurrency=1 review-output/checks/reviewer_b_independent.test.mjs",
+          "cwd": ".",
+          "exit_code": 1,
+          "log": "logs/060-independent-boundary-suite.log"
+        },
+        {
+          "purpose": "reviewer_boundary_suite_corrected",
+          "command": "node --test --test-concurrency=1 review-output/checks/reviewer_b_independent.test.mjs",
+          "cwd": ".",
+          "exit_code": 0,
+          "log": "logs/061-independent-boundary-suite-rerun.log"
+        }
+      ],
+      "exit_outcomes": {
+        "submitted_tests_passed": 2,
+        "submitted_tests_failed": 0,
+        "positive_case_passed": true,
+        "negative_case_passed": true,
+        "reviewer_boundary_check_passed_after_harness_correction": true
+      },
+      "negative_control_result": {
+        "result": "passed",
+        "control": "The same callback-owned position borrowed once with empty callback data.",
+        "observed": "Debt and receiver stable balance were each exactly 750e18, equal to the pre-borrow limit."
+      },
+      "root_cause_assessment": {
+        "support": "supported",
+        "assessment": "borrow checks debt + amount, transfers stable, and invokes the receiver before incrementing debt. Nested calls by the same callback account therefore observe stale debt, and no reentrancy guard blocks them."
+      },
+      "attacker_prerequisites": {
+        "support": "supported",
+        "required": [
+          "An ordinary user can deploy a callback receiver and make it the collateral beneficiary.",
+          "The callback account has a healthy collateral position for one borrow.",
+          "The market holds stable liquidity and the caller supplies nonempty callback data."
+        ]
+      },
+      "execution_path_assessment": {
+        "support": "supported",
+        "path": "Collateral is assigned to the callback contract; outer borrow transfers 750e18 and calls onBorrow; onBorrow recursively calls borrow before outer debt finalization; each frame increments debt only while unwinding."
+      },
+      "demonstrated_impact": {
+        "support": "supported",
+        "submitted_observation": "A 750e18 limit yielded 1,500e18 receiver stable and 1,500e18 final debt.",
+        "reviewer_observation": "Eight nested 750e18 borrows drained a 6,000e18 market balance to zero while the account limit remained 750e18, confirming liquidity-scale extraction."
+      },
+      "scope_decision": {
+        "decision": "in_scope",
+        "rationale": "The path is in LendingMarket and uses only an untrusted protocol user, a contract receiver, legitimate collateral, and configured market liquidity."
+      },
+      "adjudicated_severity": "critical",
+      "severity_rationale": "A permissionless borrower with collateral sufficient for one healthy loan can recursively drain essentially all available stable liquidity in one transaction. The independent depth check confirms that impact is market-wide rather than limited to a double borrow.",
+      "duplicate_cluster": null,
+      "notes": "The first reviewer-authored boundary-suite attempt failed before execution because of a Solidity ternary type mismatch in the added harness. The harness alone was corrected; target files were unchanged, and the rerun passed."
+    },
+    {
+      "id": "C-002",
+      "title": "Bridge credit does not authenticate remote application sender",
+      "status": "reproduced",
+      "source_locations": [
+        "contracts/BridgeGateway.sol:29-44",
+        "contracts/LendingMarket.sol:78-81"
+      ],
+      "commands": [
+        {
+          "purpose": "submitted_reproduction_and_negative_control",
+          "command": "bash run/evidence/C-002/reproduce.sh",
+          "cwd": "target",
+          "exit_code": 0,
+          "log": "logs/05002-reproduction.log"
+        },
+        {
+          "purpose": "reviewer_boundary_suite_initial_compile_attempt",
+          "command": "node --test --test-concurrency=1 review-output/checks/reviewer_b_independent.test.mjs",
+          "cwd": ".",
+          "exit_code": 1,
+          "log": "logs/060-independent-boundary-suite.log"
+        },
+        {
+          "purpose": "reviewer_boundary_suite_corrected",
+          "command": "node --test --test-concurrency=1 review-output/checks/reviewer_b_independent.test.mjs",
+          "cwd": ".",
+          "exit_code": 0,
+          "log": "logs/061-independent-boundary-suite-rerun.log"
+        }
+      ],
+      "exit_outcomes": {
+        "submitted_tests_passed": 2,
+        "submitted_tests_failed": 0,
+        "positive_case_passed": true,
+        "negative_case_passed": true,
+        "reviewer_boundary_check_passed_after_harness_correction": true
+      },
+      "negative_control_result": {
+        "result": "passed",
+        "control": "A comparator required messenger.xDomainMessageSender() to equal remoteGateway[sourceChain].",
+        "observed": "The mismatching sender was rejected with zero credit, while the configured sender was credited 1,000e18."
+      },
+      "root_cause_assessment": {
+        "support": "supported",
+        "assessment": "finalizeCollateral requires the messenger, authenticates the source-chain context, and requires a configured chain, but only reads xDomainMessageSender for its event. It never compares that sender with remoteGateway[sourceChain]."
+      },
+      "attacker_prerequisites": {
+        "support": "supported",
+        "required": [
+          "An untrusted remote application can have a message honestly relayed by the trusted messenger.",
+          "The authentic source chain is configured, even though the source application is not the configured gateway.",
+          "The local gateway is authorized as the market bridge and the market holds stable liquidity."
+        ]
+      },
+      "execution_path_assessment": {
+        "support": "supported",
+        "path": "The trusted messenger relays finalizeCollateral with configured chain 10 but an unconfigured source application; chain and messenger checks pass; arbitrary shares are forwarded to LendingMarket as bridge collateral; the beneficiary borrows against them."
+      },
+      "demonstrated_impact": {
+        "support": "supported",
+        "submitted_observation": "A mismatching remote sender created 1,000e18 bridge collateral and enabled a 750e18 stable borrow without local collateral.",
+        "reviewer_observation": "Direct local calls and unconfigured-chain relays were rejected, while a mismatching source application on the configured chain still created 100e18 credit, isolating the missing remote-sender check."
+      },
+      "scope_decision": {
+        "decision": "in_scope",
+        "rationale": "Remote applications are explicitly untrusted, the messenger remains honest in the reproduction, and the defect is in the scoped gateway-to-market path."
+      },
+      "adjudicated_severity": "critical",
+      "severity_rationale": "Any untrusted application on a configured source chain can mint arbitrary unbacked collateral through an honest messenger and use it to drain local stable liquidity. No privileged role or key compromise is needed.",
+      "duplicate_cluster": null,
+      "notes": "The reviewer boundary-suite compile incident described for C-001 affected this shared added suite before any test ran; the corrected run passed."
+    },
+    {
+      "id": "C-003",
+      "title": "Permit relayer can redirect signed transfer",
+      "status": "reproduced",
+      "source_locations": [
+        "contracts/PermitRouter.sol:10-11",
+        "contracts/PermitRouter.sol:17-30"
+      ],
+      "commands": [
+        {
+          "purpose": "submitted_reproduction_and_negative_control",
+          "command": "bash run/evidence/C-003/reproduce.sh",
+          "cwd": "target",
+          "exit_code": 0,
+          "log": "logs/05003-reproduction.log"
+        }
+      ],
+      "exit_outcomes": {
+        "submitted_tests_passed": 2,
+        "submitted_tests_failed": 0,
+        "positive_case_passed": true,
+        "negative_case_passed": true
+      },
+      "negative_control_result": {
+        "result": "passed",
+        "control": "The relayer changed the signed amount by one wei.",
+        "observed": "Signature verification rejected the call, the recipient received zero, and the reverted nonce increment rolled back to zero."
+      },
+      "root_cause_assessment": {
+        "support": "supported",
+        "assessment": "recipient is used by transferFrom but is absent from TRANSFER_TYPEHASH and abi.encode, so signature validity is independent of the transfer destination."
+      },
+      "attacker_prerequisites": {
+        "support": "supported",
+        "required": [
+          "The owner approved the router for at least the signed amount.",
+          "A relayer possesses a valid unexpired owner signature for the current nonce, token, and amount.",
+          "The relayer can choose recipient calldata."
+        ]
+      },
+      "execution_path_assessment": {
+        "support": "supported",
+        "path": "The owner signs the contract-prescribed payload; the relayer substitutes its own recipient; the recovered signer remains the owner; transferFrom sends the full signed amount to the unsigned destination."
+      },
+      "demonstrated_impact": {
+        "support": "supported",
+        "observation": "A 25e18 authorization sent 25e18 to the attacker-selected address, left the intended recipient at zero, and consumed the owner nonce."
+      },
+      "scope_decision": {
+        "decision": "in_scope",
+        "rationale": "Permissionless relayers are untrusted, and the defect lies in the scoped PermitRouter signature and transfer path."
+      },
+      "adjudicated_severity": "high",
+      "severity_rationale": "A relayer holding an otherwise valid authorization can directly steal the entire signed and approved amount by changing one unsigned calldata field. The owner signature and approval prerequisites prevent a critical rating.",
+      "duplicate_cluster": null,
+      "notes": "Distinct from C-010: this finding requires binding the recipient; C-010 requires binding the verifier domain and has different deployment prerequisites."
+    },
+    {
+      "id": "C-004",
+      "title": "ECDSA malleability bypasses reward replay protection",
+      "status": "reproduced",
+      "source_locations": [
+        "contracts/lib/SignatureCodec.sol:9-23",
+        "contracts/RewardsDistributor.sol:24-30"
+      ],
+      "commands": [
+        {
+          "purpose": "submitted_reproduction_and_negative_control",
+          "command": "bash run/evidence/C-004/reproduce.sh",
+          "cwd": "target",
+          "exit_code": 0,
+          "log": "logs/05004-reproduction.log"
+        },
+        {
+          "purpose": "reviewer_boundary_suite_initial_compile_attempt",
+          "command": "node --test --test-concurrency=1 review-output/checks/reviewer_b_independent.test.mjs",
+          "cwd": ".",
+          "exit_code": 1,
+          "log": "logs/060-independent-boundary-suite.log"
+        },
+        {
+          "purpose": "reviewer_boundary_suite_corrected",
+          "command": "node --test --test-concurrency=1 review-output/checks/reviewer_b_independent.test.mjs",
+          "cwd": ".",
+          "exit_code": 0,
+          "log": "logs/061-independent-boundary-suite-rerun.log"
+        }
+      ],
+      "exit_outcomes": {
+        "submitted_tests_passed": 2,
+        "submitted_tests_failed": 0,
+        "positive_case_passed": true,
+        "negative_case_passed": true,
+        "reviewer_boundary_check_passed_after_harness_correction": true
+      },
+      "negative_control_result": {
+        "result": "passed",
+        "control": "The exact same signature bytes were submitted twice.",
+        "observed": "The second call was rejected by usedSignatures and the claimant received only the authorized 20e18."
+      },
+      "root_cause_assessment": {
+        "support": "supported",
+        "assessment": "SignatureCodec accepts high-s signatures and both 0/1 and 27/28 v encodings, while RewardsDistributor tracks keccak256 of raw signature bytes instead of the authorized payload or nonce. Equivalent signatures therefore have distinct replay identifiers."
+      },
+      "attacker_prerequisites": {
+        "support": "supported",
+        "required": [
+          "One valid authority-signed claim is public or provided to a claimant/relayer.",
+          "The distributor holds enough tokens for repeated payouts.",
+          "No authority private key access is required."
+        ]
+      },
+      "execution_path_assessment": {
+        "support": "supported",
+        "path": "Submit canonical signature; derive equivalent high-s/flipped-v or v-alias bytes for the same payload; each encoding recovers the same authority but hashes to a fresh usedSignatures key; each call transfers rewards."
+      },
+      "demonstrated_impact": {
+        "support": "supported",
+        "submitted_observation": "One 20e18 authorization paid 40e18 through canonical and high-s forms.",
+        "reviewer_observation": "Four distinct raw encodings accepted for the same payload paid 80e18 from one 20e18 authorization, strengthening the raw-byte replay assessment."
+      },
+      "scope_decision": {
+        "decision": "in_scope",
+        "rationale": "The authority remains honest, the private key is not compromised, and the defect is entirely in scoped signature verification and replay accounting."
+      },
+      "adjudicated_severity": "high",
+      "severity_rationale": "Any legitimate claim can be multiplied without the signing key, directly overdrawing the reward pool. The number of encodings is bounded and exploitation needs a valid claim, so this is high rather than critical.",
+      "duplicate_cluster": null,
+      "notes": "The reviewer boundary-suite compile incident described for C-001 affected this shared added suite before any test ran; the corrected run passed."
+    },
+    {
+      "id": "C-005",
+      "title": "StrategyModule can be reinitialized and seized",
+      "status": "reproduced",
+      "source_locations": [
+        "contracts/StrategyModule.sol:14-19",
+        "contracts/StrategyModule.sol:22-32"
+      ],
+      "commands": [
+        {
+          "purpose": "submitted_reproduction_and_negative_control",
+          "command": "bash run/evidence/C-005/reproduce.sh",
+          "cwd": "target",
+          "exit_code": 0,
+          "log": "logs/05005-reproduction.log"
+        }
+      ],
+      "exit_outcomes": {
+        "submitted_tests_passed": 2,
+        "submitted_tests_failed": 0,
+        "positive_case_passed": true,
+        "negative_case_passed": true
+      },
+      "negative_control_result": {
+        "result": "passed",
+        "control": "The untrusted account attempted sweep without first calling initialize again.",
+        "observed": "The operator check rejected the sweep; the module retained all 10e18 and the attacker received zero."
+      },
+      "root_cause_assessment": {
+        "support": "supported",
+        "assessment": "initialize is permissionless, writes vault/operator on every call, and never checks the initialized flag even though it sets it true."
+      },
+      "attacker_prerequisites": {
+        "support": "supported",
+        "required": [
+          "A deployed module has been honestly initialized.",
+          "The module holds tokens or has useful authority as an operational adapter.",
+          "Any untrusted account can submit a transaction."
+        ]
+      },
+      "execution_path_assessment": {
+        "support": "supported",
+        "path": "The attacker re-calls initialize with itself as vault and operator, then invokes operator-only sweep; it also gains the vault-only arbitrary-call role."
+      },
+      "demonstrated_impact": {
+        "support": "supported",
+        "observation": "Established roles were replaced and all 10e18 held by the module were transferred to the attacker. Arbitrary-call authority was acquired by the same role overwrite, though downstream integrations were not modeled."
+      },
+      "scope_decision": {
+        "decision": "in_scope",
+        "rationale": "The finding violates documented trusted vault/operator roles through an untrusted caller and does not depend on malicious authorized-role behavior."
+      },
+      "adjudicated_severity": "high",
+      "severity_rationale": "Any account can seize the module at any time and directly drain all assets it holds. Critical system-wide impact is not demonstrated because the frozen target does not connect the module to all protocol liquidity or model privileged downstream integrations.",
+      "duplicate_cluster": null,
+      "notes": "The initialized state variable provides no lifecycle protection because it is never read."
+    },
+    {
+      "id": "C-006",
+      "title": "Any user can raise the global collateral factor",
+      "status": "reproduced",
+      "source_locations": [
+        "contracts/LendingMarket.sol:89-93"
+      ],
+      "commands": [
+        {
+          "purpose": "submitted_reproduction_and_negative_control",
+          "command": "bash run/evidence/C-006/reproduce.sh",
+          "cwd": "target",
+          "exit_code": 0,
+          "log": "logs/05006-reproduction.log"
+        }
+      ],
+      "exit_outcomes": {
+        "submitted_tests_passed": 2,
+        "submitted_tests_failed": 0,
+        "positive_case_passed": true,
+        "negative_case_passed": true
+      },
+      "negative_control_result": {
+        "result": "passed",
+        "control": "The same non-guardian attempted to lower the factor from 7,500 to 7,000 bps.",
+        "observed": "The call reverted and the factor remained 7,500 bps."
+      },
+      "root_cause_assessment": {
+        "support": "supported",
+        "assessment": "The conditional rejects a non-guardian only when nextFactorBps is less than or equal to the current factor, thereby authorizing every non-guardian increase up to the 9,500-bps cap."
+      },
+      "attacker_prerequisites": {
+        "support": "supported",
+        "required": [
+          "The current factor is below 9,500 bps.",
+          "The attacker is an ordinary user with collateral and the market has stable liquidity."
+        ]
+      },
+      "execution_path_assessment": {
+        "support": "supported",
+        "path": "A non-guardian raises the factor from 7,500 to 9,500 bps, immediately increasing every account's borrow limit; the attacker then borrows against its normal collateral above the guardian-configured limit."
+      },
+      "demonstrated_impact": {
+        "support": "supported_with_limitation",
+        "observation": "The attacker changed the global factor to 9,500 and borrowed 949e18 versus the former 750e18 limit.",
+        "limitation": "The reproduced loan remained below the collateral's contemporaneous 1,000e18 marked value; the immediate effect is loss of the configured solvency buffer rather than a demonstrated instant undercollateralized theft."
+      },
+      "scope_decision": {
+        "decision": "in_scope",
+        "rationale": "A public caller bypasses the documented guardian risk role in the scoped LendingMarket."
+      },
+      "adjudicated_severity": "high",
+      "severity_rationale": "A permissionless caller can globally replace a trusted solvency parameter and immediately borrow materially above the authorized limit. The 9,500-bps cap and need for real collateral keep the issue below critical.",
+      "duplicate_cluster": null,
+      "notes": "The negative direction confirms that this is an inverted access-control condition, not a generally public setter by design."
+    },
+    {
+      "id": "C-007",
+      "title": "Bridge replay nonce is global across source chains",
+      "status": "reproduced",
+      "source_locations": [
+        "contracts/BridgeGateway.sol:11-12",
+        "contracts/BridgeGateway.sol:36-41"
+      ],
+      "commands": [
+        {
+          "purpose": "submitted_reproduction_and_negative_control",
+          "command": "bash run/evidence/C-007/reproduce.sh",
+          "cwd": "target",
+          "exit_code": 0,
+          "log": "logs/05007-reproduction.log"
+        }
+      ],
+      "exit_outcomes": {
+        "submitted_tests_passed": 2,
+        "submitted_tests_failed": 0,
+        "positive_case_passed": true,
+        "negative_case_passed": true
+      },
+      "negative_control_result": {
+        "result": "passed",
+        "control": "A comparator keyed processedNonce by both sourceChain and nonce.",
+        "observed": "Nonce 7 from chains 10 and 20 credited their respective beneficiaries independently."
+      },
+      "root_cause_assessment": {
+        "support": "supported",
+        "assessment": "processedNonce is keyed only by uint64 nonce even though the gateway configures multiple independent source domains. A successful relay on one domain consumes the same numeric nonce for every domain."
+      },
+      "attacker_prerequisites": {
+        "support": "partially_supported",
+        "required": [
+          "At least two source chains are configured.",
+          "Valid relays from their independent nonce spaces use the same numeric nonce.",
+          "For deliberate griefing, an attacker must be able to cause the earlier valid relay at a colliding nonce."
+        ],
+        "limitation": "The frozen target does not include the remote gateway implementation, so a remote user's degree of control over nonce timing is not directly modeled."
+      },
+      "execution_path_assessment": {
+        "support": "supported",
+        "path": "A chain-10 relay with nonce 7 sets processedNonce[7]; a later chain-20 relay with nonce 7 reaches the same storage key and reverts PROCESSED before crediting its beneficiary."
+      },
+      "demonstrated_impact": {
+        "support": "supported_with_limitation",
+        "observation": "The first beneficiary received 1e18 credit and the second received zero despite a relay with the other configured source chain and remote identity.",
+        "limitation": "The local target demonstrates denial of the second credit, but it does not model source-side escrow, retry/reissue behavior, or permanent collateral stranding."
+      },
+      "scope_decision": {
+        "decision": "in_scope",
+        "rationale": "The cross-domain replay key and local denial occur in the scoped BridgeGateway; no mock administrative control is treated as attacker capability."
+      },
+      "adjudicated_severity": "medium",
+      "severity_rationale": "The defect can deny legitimate cross-chain credits across configured domains and may strand user access to collateral, but no direct theft is shown and remote retry/recovery semantics are absent from the target.",
+      "duplicate_cluster": null,
+      "notes": "Distinct from C-002: C-007 concerns replay-key domain separation and remains after authenticating the remote sender; C-002 concerns sender authentication."
+    },
+    {
+      "id": "C-008",
+      "title": "Manipulable reserve spot price is trusted during feed fallback",
+      "status": "reproduced",
+      "source_locations": [
+        "contracts/ReserveOracle.sol:17-20",
+        "contracts/ReservePool.sol:27-29",
+        "contracts/ReservePool.sol:43-71",
+        "contracts/LendingMarket.sol:69-75"
+      ],
+      "commands": [
+        {
+          "purpose": "submitted_reproduction_and_negative_control",
+          "command": "bash run/evidence/C-008/reproduce.sh",
+          "cwd": "target",
+          "exit_code": 0,
+          "log": "logs/05008-reproduction.log"
+        }
+      ],
+      "exit_outcomes": {
+        "submitted_tests_passed": 2,
+        "submitted_tests_failed": 0,
+        "positive_case_passed": true,
+        "negative_case_passed": true
+      },
+      "negative_control_result": {
+        "result": "passed",
+        "control": "The same pool trade and collateral path ran while a positive one-dollar primary answer remained available.",
+        "observed": "The oracle stayed at one dollar, a 10,000e18 excess borrow reverted, and debt remained zero."
+      },
+      "root_cause_assessment": {
+        "support": "supported",
+        "assessment": "When the primary answer is nonpositive, ReserveOracle returns the ReservePool's instantaneous reserve ratio. Any funded user can alter those reserves in the same transaction sequence, and there is no TWAP, delay, observation window, or manipulation bound."
+      },
+      "attacker_prerequisites": {
+        "support": "supported",
+        "required": [
+          "The honest primary feed is unavailable or returns a nonpositive answer; the attacker does not need to control it.",
+          "The reserve pool and lending market have liquidity.",
+          "The attacker can fund a swap material relative to reserve depth."
+        ]
+      },
+      "execution_path_assessment": {
+        "support": "supported",
+        "path": "The attacker swaps 10,000e18 quote into a 10,000/10,000 pool, raises spot to about 3.994 quote per asset, vaults the acquired asset, posts its shares, and borrows at the manipulated fallback valuation."
+      },
+      "demonstrated_impact": {
+        "support": "supported",
+        "observation": "The attacker spent a 10,000e18 stable starting balance, acquired about 4,992.49 asset, and ended with about 14,955e18 liquid stable plus 14,955e18 debt. The one-dollar limit for that collateral was about 3,744e18, so the manipulated debt exceeded it by more than 11,210e18."
+      },
+      "scope_decision": {
+        "decision": "in_scope",
+        "rationale": "The feed outage is a system condition, not an attacker-controlled mock action; the exploit thereafter uses permissionless production-like pool, vault, and market functions."
+      },
+      "adjudicated_severity": "high",
+      "severity_rationale": "During an honest primary-feed failure, an ordinary funded user can create profitable bad debt against a same-block spot manipulation. Significant capital relative to pool depth and the conditional feed outage prevent a critical rating.",
+      "duplicate_cluster": null,
+      "notes": "Distinct from C-009: C-008 requires hardening the fallback price source against manipulation; feed freshness alone does not fix the fallback."
+    },
+    {
+      "id": "C-009",
+      "title": "Positive primary price is accepted indefinitely",
+      "status": "reproduced",
+      "source_locations": [
+        "contracts/interfaces/ProtocolInterfaces.sol:25-31",
+        "contracts/ReserveOracle.sol:17-20",
+        "contracts/LendingMarket.sol:69-75"
+      ],
+      "commands": [
+        {
+          "purpose": "submitted_reproduction_and_negative_control",
+          "command": "bash run/evidence/C-009/reproduce.sh",
+          "cwd": "target",
+          "exit_code": 0,
+          "log": "logs/05009-reproduction.log"
+        }
+      ],
+      "exit_outcomes": {
+        "submitted_tests_passed": 2,
+        "submitted_tests_failed": 0,
+        "positive_case_passed": true,
+        "negative_case_passed": true
+      },
+      "negative_control_result": {
+        "result": "passed",
+        "control": "A comparator imposed a one-day freshness limit and used the unmanipulated pool price after expiry.",
+        "observed": "The bounded oracle returned one dollar, rejected the same 1,500e18 borrow, and left debt at zero."
+      },
+      "root_cause_assessment": {
+        "support": "supported",
+        "assessment": "ReserveOracle destructures only answer from latestRoundData and discards updatedAt, roundId, and answeredInRound. Every positive answer is accepted regardless of age or round completeness."
+      },
+      "attacker_prerequisites": {
+        "support": "supported",
+        "required": [
+          "The last positive feed answer has become stale and materially exceeds current collateral value.",
+          "An ordinary borrower has collateral and the market holds stable liquidity.",
+          "The attacker need not control the feed and can wait for stale conditions."
+        ]
+      },
+      "execution_path_assessment": {
+        "support": "supported",
+        "path": "A two-dollar positive answer ages for 31,536,001 seconds while the pool remains at one dollar; ReserveOracle still returns two dollars; 1,000 asset collateral supports a 1,500 stable borrow."
+      },
+      "demonstrated_impact": {
+        "support": "supported_with_limitation",
+        "observation": "Debt reached 1,500e18 while the contemporaneous one-dollar pool-based limit was 750e18.",
+        "limitation": "The target has no external market-price source; the unmanipulated one-dollar pool ratio is the reproduction's current-value comparator."
+      },
+      "scope_decision": {
+        "decision": "in_scope",
+        "rationale": "No feed administrative control is attributed to the attacker; the issue is failure to validate metadata exposed by the declared feed interface."
+      },
+      "adjudicated_severity": "high",
+      "severity_rationale": "An ordinary borrower can wait for a stale overvaluation and create substantial bad debt without manipulating the trusted feed. Exploitation is conditional on a stale, inaccurate positive round, so it is below critical.",
+      "duplicate_cluster": null,
+      "notes": "Distinct from C-008: freshness validation and fallback manipulation require different controls and can exist independently."
+    },
+    {
+      "id": "C-010",
+      "title": "Permit signature replays across router instances",
+      "status": "reproduced",
+      "source_locations": [
+        "contracts/PermitRouter.sol:10-13",
+        "contracts/PermitRouter.sol:26-29"
+      ],
+      "commands": [
+        {
+          "purpose": "submitted_reproduction_and_negative_control",
+          "command": "bash run/evidence/C-010/reproduce.sh",
+          "cwd": "target",
+          "exit_code": 0,
+          "log": "logs/05010-reproduction.log"
+        },
+        {
+          "purpose": "reviewer_boundary_suite_initial_compile_attempt",
+          "command": "node --test --test-concurrency=1 review-output/checks/reviewer_b_independent.test.mjs",
+          "cwd": ".",
+          "exit_code": 1,
+          "log": "logs/060-independent-boundary-suite.log"
+        },
+        {
+          "purpose": "reviewer_boundary_suite_corrected",
+          "command": "node --test --test-concurrency=1 review-output/checks/reviewer_b_independent.test.mjs",
+          "cwd": ".",
+          "exit_code": 0,
+          "log": "logs/061-independent-boundary-suite-rerun.log"
+        }
+      ],
+      "exit_outcomes": {
+        "submitted_tests_passed": 2,
+        "submitted_tests_failed": 0,
+        "positive_case_passed": true,
+        "negative_case_passed": true,
+        "reviewer_boundary_check_passed_after_harness_correction": true
+      },
+      "negative_control_result": {
+        "result": "passed",
+        "control": "A comparator signed address(this) and block.chainid in addition to the transfer fields.",
+        "observed": "Router A executed, router B rejected the same signature, router B's nonce remained zero, and only 25e18 transferred."
+      },
+      "root_cause_assessment": {
+        "support": "supported",
+        "assessment": "The signed payload omits both verifier address and chain ID, while every router instance maintains an independent owner nonce. Identical instances at the same nonce therefore accept the same signature."
+      },
+      "attacker_prerequisites": {
+        "support": "supported",
+        "required": [
+          "The owner approved at least two router instances for the token and amount.",
+          "The owner's nonce is the same on those instances when the signature is used.",
+          "A relayer possesses one valid unexpired signature."
+        ],
+        "reviewer_boundary": "Without approval on router B the replay reverted and its nonce stayed zero; after the owner approved router B, the same signature succeeded there."
+      },
+      "execution_path_assessment": {
+        "support": "supported",
+        "path": "The relayer executes a nonce-zero permit on router A, then submits the unchanged signature to router B whose independent nonce is also zero and whose payload hash is identical."
+      },
+      "demonstrated_impact": {
+        "support": "supported",
+        "observation": "One 25e18 authorization transferred 50e18 across two approved router instances, with nonce one in each."
+      },
+      "scope_decision": {
+        "decision": "in_scope",
+        "rationale": "The verifier-domain omission is in the scoped PermitRouter and uses only permissionless relaying and ordinary approvals."
+      },
+      "adjudicated_severity": "medium",
+      "severity_rationale": "The replay directly causes an unauthorized extra transfer, but it requires multiple approved router deployments with aligned nonces. Those configuration prerequisites materially reduce exploitability relative to the recipient-redirection flaw.",
+      "duplicate_cluster": null,
+      "notes": "Distinct from C-003 because domain binding and multi-instance approval are the necessary remediation and prerequisite. The reviewer boundary-suite compile incident described for C-001 affected this shared added suite before any test ran; the corrected run passed."
+    },
+    {
+      "id": "C-011",
+      "title": "First-share donation can deny vault deposits",
+      "status": "reproduced",
+      "source_locations": [
+        "contracts/AsterVault.sol:19-26",
+        "contracts/AsterVault.sol:52-56"
+      ],
+      "commands": [
+        {
+          "purpose": "submitted_reproduction_and_negative_control",
+          "command": "bash run/evidence/C-011/reproduce.sh",
+          "cwd": "target",
+          "exit_code": 0,
+          "log": "logs/05011-reproduction.log"
+        }
+      ],
+      "exit_outcomes": {
+        "submitted_tests_passed": 2,
+        "submitted_tests_failed": 0,
+        "positive_case_passed": true,
+        "negative_case_passed": true
+      },
+      "negative_control_result": {
+        "result": "passed",
+        "control": "The vault was seeded with one wei share but received no direct donation before the same victim deposit.",
+        "observed": "The victim deposit succeeded and minted 1,000e18 shares."
+      },
+      "root_cause_assessment": {
+        "support": "supported",
+        "assessment": "With one share outstanding and no virtual share/asset offset, a direct underlying donation raises managed assets enough that convertToShares floors a victim deposit to zero; deposit then reverts ZERO_SHARES."
+      },
+      "attacker_prerequisites": {
+        "support": "supported",
+        "required": [
+          "The vault is empty or can be reached while supply is tiny.",
+          "The attacker can order a seed and donation before a target deposit and redeem afterward.",
+          "The attacker temporarily commits underlying comparable to the deposit it wants to deny."
+        ]
+      },
+      "execution_path_assessment": {
+        "support": "supported",
+        "path": "Deposit one wei for one share; donate 1,000e18 directly; victim's 1,000e18 converts to zero shares and reverts; redeem the seed share to recover the seed and donation."
+      },
+      "demonstrated_impact": {
+        "support": "supported",
+        "observation": "The victim received no service but retained all funds because its transaction reverted; the attacker recovered its full 1,000e18+1 starting asset balance, excluding gas and opportunity cost."
+      },
+      "scope_decision": {
+        "decision": "in_scope",
+        "rationale": "The denial follows ordinary token transfers and vault entry/exit functions; no mock administrative control or trusted-role abuse is involved."
+      },
+      "adjudicated_severity": "low",
+      "severity_rationale": "The attack can grief deposits with recoverable capital, but it does not steal victim assets, needs transaction ordering and temporary capital comparable to each blocked deposit, and primarily affects an empty/tiny-supply vault state.",
+      "duplicate_cluster": null,
+      "notes": "The ZERO_SHARES check prevents the classic victim-asset theft variant; the reproduced issue is availability/griefing only."
+    }
+  ],
+  "duplicate_clusters": [],
+  "duplicate_analysis": {
+    "duplicates_found": false,
+    "rationale": "No pair has a materially identical root cause, impact, and remediation. In particular, C-002/C-007 differ on bridge sender authentication versus nonce-domain separation; C-003/C-010 differ on recipient binding versus verifier-domain binding; and C-008/C-009 differ on fallback manipulation versus primary-feed freshness."
+  },
+  "aggregate_counts": {
+    "candidates": 11,
+    "status": {
+      "reproduced": 11,
+      "not_reproduced": 0,
+      "inconclusive": 0,
+      "out_of_scope": 0
+    },
+    "scope": {
+      "in_scope": 11,
+      "out_of_scope": 0
+    },
+    "adjudicated_severity": {
+      "critical": 2,
+      "high": 6,
+      "medium": 2,
+      "low": 1
+    },
+    "primary_candidate_processes_exit_zero": 11,
+    "submitted_positive_tests_passed": 11,
+    "submitted_negative_tests_passed": 11,
+    "reviewer_boundary_tests_passed_on_corrected_run": 4
+  },
+  "reviewer_harness_incidents": [
+    {
+      "command": "node --test --test-concurrency=1 review-output/checks/reviewer_b_independent.test.mjs",
+      "initial_exit_code": 1,
+      "cause": "Reviewer-authored Solidity used a ternary with incompatible bytes/string literal types, so the shared before hook failed before any boundary test executed.",
+      "correction": "Replaced each ternary with explicit if/else calls in the reviewer-only harness.",
+      "corrected_exit_code": 0,
+      "target_changed": false,
+      "logs": [
+        "logs/060-independent-boundary-suite.log",
+        "logs/061-independent-boundary-suite-rerun.log"
+      ]
+    }
+  ],
+  "unavailable_metrics": [
+    {
+      "metric": "Live deployment exposure, TVL, token prices, user counts, and active approvals",
+      "reason": "No live system or network access is part of the frozen benchmark; severity is protocol-relative."
+    },
+    {
+      "metric": "C-007 remote escrow, retry, reissue, and recovery behavior",
+      "reason": "No remote gateway or source-side bridge implementation is present, so permanent stranding was not measured."
+    },
+    {
+      "metric": "C-008/C-009 external market-price history and feed service-level behavior",
+      "reason": "The deterministic target provides local feed and pool interfaces only; exploit conditions were evaluated as explicit prerequisites."
+    }
+  ]
+}

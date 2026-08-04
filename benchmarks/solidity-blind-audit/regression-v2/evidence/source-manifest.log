@@ -1,0 +1,12 @@
+## frozen source manifest
+command: /opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node regression-v2/scripts/verify-source-manifest.mjs
+started_at: 2026-08-04T16:49:59.709Z
+ended_at: 2026-08-04T16:49:59.770Z
+duration_ms: 61
+exit_code: 0
+
+### stdout
+{"status":"passed","files":22,"combined_digest":"9ac26ede2c9b8e3f45910a1e8207c10ec418999106571061211fc339ad84c926"}
+
+### stderr
+(empty)

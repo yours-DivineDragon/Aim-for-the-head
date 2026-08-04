@@ -55,6 +55,31 @@ boundary from the threat model.
 Reject harmless crashes, controlled errors, information already available to
 the attacker, and behavior that stays within the caller's legitimate privilege.
 
+### `downstream-impact`
+
+Trace the corrupted or attacker-mutable value through every direct security
+consumer and then to the strongest supported system effect. Record each
+consumer, transformation, guard, persistence boundary, and final oracle. Show
+the caller, system, and affected third-party deltas where value or rights move.
+
+Reject a candidate disposition that stops at a local imbalance, manipulated
+view, stale intermediate state, or isolated primitive while a material consumer
+remains untested. If there is no downstream consumer, preserve the search map
+that establishes that boundary rather than asserting it from one call site.
+
+### `composition-review`
+
+Compare the candidate with every supported primitive and meaningful rejected
+lead. Record compatibility of identity, assets, configuration, ordering,
+lifetime, funding, and cleanup. Reproduce every material join that could raise
+impact or make an otherwise uneconomic path feasible; preserve failed joins and
+their exact incompatibility.
+
+Reject an inferred composed impact assembled from separate executions. A
+composed claim passes only when one feasible sequence reaches repayment or
+cleanup and the final security oracle. A standalone candidate may pass this
+gate with evidence that all material joins were tested or ruled out.
+
 ### `realistic-configuration`
 
 Reproduce in a supported, relevant configuration. Prefer defaults; otherwise
@@ -133,6 +158,8 @@ Maintain a matrix in the candidate report:
 | Reachability | Supported path to effect | Trace/test/log | Reproduced or not | pass/fail |
 | Defense analysis | Missing or bypassed guard | Guard inventory | Confirmed or disputed | pass/fail |
 | Impact | Security property violated | Safe effect oracle | Confirmed or disputed | pass/fail |
+| Downstream impact | Strongest supported consumer effect | Consumer map and system-delta trace | Reproduced or bounded | pass/fail |
+| Composition review | Compatible and incompatible primitive joins | Join graph and combined/failed runs | Reproduced or ruled out | pass/fail |
 | Realistic config | Relevant deployment | Build/config manifest | Recreated or not | pass/fail |
 | Safe reproduction | Deterministic minimal proof | Reproducer/log | Reproduced or not | pass/fail |
 | Release reproduction | Effect survives realistic build | Release log | Reproduced or not | pass/fail |
@@ -157,6 +184,8 @@ Include:
 8. cleanup instructions;
 9. negative-control command and result;
 10. proof-safety notes and known limitations.
+11. downstream consumer map and final system delta;
+12. primitive-join graph, combined run, and failed-join evidence.
 
 Avoid outbound callbacks, real credentials, destructive writes, uncontrolled
 resource exhaustion, third-party targets, and weaponized payloads. Demonstrate

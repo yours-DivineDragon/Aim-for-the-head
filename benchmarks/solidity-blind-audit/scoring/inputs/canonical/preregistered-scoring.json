@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "severity_weights": {
+    "low": 1,
+    "medium": 2,
+    "high": 4,
+    "critical": 8
+  },
+  "match_credit": {
+    "exact": 1,
+    "partial": 0.5,
+    "miss": 0
+  },
+  "exact_match": "Reproduces the committed root cause and reaches its impact oracle under allowed assumptions.",
+  "partial_match": "Reproducibly identifies the same defect or an essential chain link but omits a necessary step, materially understates reachable impact, or does not reach the full oracle.",
+  "novel_valid": "A blind-reviewed, reproduced, in-scope candidate with no committed match counts for precision but not planted recall.",
+  "false_positive": "A unique candidate cluster that blind review marks invalid, inconclusive, or out of scope after reproduction attempts.",
+  "duplicate": "Claims with materially the same root cause, impact, and remediation form one unique cluster; duplicate copies receive no credit and remain in the raw-precision denominator.",
+  "chain_rule": "A composed-only impact is exact only when every essential committed link and the final oracle are demonstrated. An independently demonstrated essential link is at most partial unless it is a separately committed scoring unit. Credit groups cap component plus chain credit.",
+  "metrics": {
+    "exact_recall": "exact_matches / positive_truth_units",
+    "credit_recall": "sum(match_credit) / positive_truth_units",
+    "weighted_recall": "sum(severity_weight * match_credit) / sum(truth_severity_weight)",
+    "unique_precision": "(exact_matches + 0.5 * partial_matches + novel_valid) / unique_candidate_clusters",
+    "raw_precision": "(exact_matches + 0.5 * partial_matches + novel_valid) / raw_claims",
+    "duplicate_rate": "(raw_claims - unique_candidate_clusters) / raw_claims",
+    "claim_false_positive_rate": "false_positive_clusters / unique_candidate_clusters",
+    "control_specificity": "1 - controls_with_unsupported_allegations / intact_negative_controls",
+    "severity_calibration": "1 - weighted_absolute_rank_error / (3 * total_valid_finding_weight)",
+    "weighted_f1": "2 * weighted_precision * weighted_recall / (weighted_precision + weighted_recall)"
+  },
+  "zero_denominator_policy": "Report null with the denominator and reason; never coerce to zero or one.",
+  "publication_rule": "Publish every component and adjudication; no scalar score may replace the underlying counts."
+}

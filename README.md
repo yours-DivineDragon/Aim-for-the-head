@@ -76,6 +76,9 @@ Scope: <INCLUDED_COMPONENTS>.
 Excluded: dependencies, generated artifacts, and <OTHER_EXCLUSIONS>.
 Success: exactly one novel Critical or High severity vulnerability that passes
 every required evidence gate.
+Impact priority: prefer Critical. A High candidate does not finish the goal
+until every mandatory consumer, boundary, integration, sequence, composition,
+and system-impact closure pass is complete.
 Non-success: finish honestly as exhausted, budget-limited, or blocked rather
 than promoting an unproven lead.
 Safety: do not attack public infrastructure, access real user data, or modify
@@ -90,11 +93,13 @@ Budget: 8 hours or 50 decisive experiments.
 
 Before hunting:
 1. map the repository and rank the attack surfaces;
-2. create the threat model;
-3. initialize .goal-hunt;
-4. draft GOAL.md, THREAT_MODEL.md, and contract.json;
-5. validate the activation contract; and
-6. show me the completed contract for approval.
+2. create the threat model and business-flow/accounting model;
+3. map attacker-mutable values to every downstream consumer;
+4. initialize .goal-hunt;
+5. draft GOAL.md, THREAT_MODEL.md, and contract.json;
+6. retain all workflow-version-2 mandatory passes;
+7. validate the activation contract; and
+8. show me the completed contract for approval.
 
 Do not begin security experiments until I approve the contract.
 ```
@@ -158,9 +163,11 @@ Codex should now:
 2. form falsifiable hypotheses and run the cheapest decisive experiments;
 3. invoke compatible tools explicitly instead of assuming they ran;
 4. preserve raw evidence and update multidimensional coverage;
-5. reject false positives as soon as a decisive gate fails;
-6. independently reproduce any surviving candidate; and
-7. finish as `validated`, `exhausted`, `budget-limited`, or `blocked`.
+5. trace supported primitives through consumers, semantic boundaries, and
+   compatible joins;
+6. reject false positives as soon as a decisive gate fails;
+7. independently reproduce any surviving candidate; and
+8. finish as `validated`, `exhausted`, `budget-limited`, or `blocked`.
 
 Use `/goal` to view the current objective, `/goal pause` to stop temporarily,
 `/goal resume` to continue, and `/goal clear` only when you intentionally want to
@@ -180,6 +187,25 @@ package or follow a Markdown playbook.
 > The agent must inventory the tools actually visible in its environment, invoke
 > useful ones explicitly, preserve their outputs, and record any blind spots.
 
+## Blind benchmark
+
+The repository includes a sealed, reproducible Solidity audit benchmark with a
+fresh-context hunter, independent blind reproduction, a committed reveal, and
+deterministic scoring. On this instance, Aim for the Head achieved 9 exact and 2
+partial matches across 15 committed findings, with no false positives. See the
+[benchmark result](benchmarks/solidity-blind-audit/RESULTS.md) for the complete
+evidence, misses, protocol caveats, and calculation checker. The
+[baseline research record](benchmarks/solidity-blind-audit/BASELINE_RECORD.md)
+indexes every frozen artifact, hash, environment detail, and reproduction
+command, and defines the contamination boundary for later tuning runs. The
+[workflow-v2 improvement study](benchmarks/solidity-blind-audit/IMPROVEMENT_STUDY.md)
+records the evidence-led diagnosis, generalized changes, precision constraints,
+and same-target regression protocol. Its deliberately labeled
+[revealed regression](benchmarks/solidity-blind-audit/regression-v2/RESULTS.md)
+closes all 15/15 units with zero unsupported claims on the unchanged target;
+because the truth was known during tuning, that is regression evidence rather
+than a second blind or generalization score.
+
 The skill is intended for authorized defensive research only. It improves the
 discipline and auditability of a hunt; it does not guarantee that a vulnerability
 exists, that every bug will be found, or that a finding is ready for disclosure
@@ -197,6 +223,7 @@ without expert review.
 - [Hunt modes](#hunt-modes)
 - [The investigation workflow](#the-investigation-workflow)
 - [Tools, plugins, and project-specific analyzers](#tools-plugins-and-project-specific-analyzers)
+- [Blind benchmark](#blind-benchmark)
 - [Evidence gates](#evidence-gates)
 - [Coverage accounting](#coverage-accounting)
 - [Durable state and command reference](#durable-state-and-command-reference)
@@ -246,6 +273,9 @@ entire codebase.
 | Threat model | Names attacker capabilities, assets, trust boundaries, realistic configurations, and security invariants. |
 | Five hunt modes | Supports discovery, variant, invariant, differential, and validation work without conflating their methods. |
 | Prioritized surface queue | Ranks work by attacker influence, leverage, complexity, guard uncertainty, historical evidence, and test gaps. |
+| Deep business model | Reconstructs value flows, state machines, accounting identities, external promises, and attacker funding before judging local code. |
+| Primitive escalation | Traces mutable values through downstream consumers and tests compatible primitive joins before closing a surface. |
+| Semantic and boundary differentials | Measures nominal-versus-actual external effects and exact rounding, unit, and zero-value boundaries. |
 | Capability inventory | Makes the agent discover and explicitly invoke useful local tools, plugins, skills, analyzers, and harnesses. |
 | Durable state | Preserves the contract, events, candidate revisions, coverage, blockers, and final outcome in ordinary files. |
 | Falsification loop | Requires every serious hypothesis to have a disproof plan and a recorded result. |
@@ -265,10 +295,10 @@ to reason, what to measure, and what evidence is required.
 
 ```mermaid
 flowchart TD
-    A[Confirm authorization] --> B[Model threats and invariants]
+    A[Confirm authorization] --> B[Model threats, business flows, and invariants]
     B --> C[Freeze the goal contract]
-    C --> D[Run the evidence loop]
-    D --> E{Do the gates pass?}
+    C --> D[Run experiments and deep-hunt passes]
+    D --> E{Do the gates and closure passes pass?}
     E -->|Not yet| D
     E -->|Validated| F[Validated finding]
     E -->|Queue complete| G[Exhausted]
@@ -283,8 +313,10 @@ The core loop is:
 4. Run it safely and preserve the raw evidence.
 5. Classify the result as supporting, contradicting, negative, inconclusive, or
    a tool failure.
-6. Update coverage and the candidate ledger.
-7. Continue, pivot, reject, pause, or finish according to the contract.
+6. Trace the changed value through downstream consumers.
+7. Join compatible primitives and close attacker/system/third-party impact.
+8. Update coverage and the candidate ledger.
+9. Continue, pivot, reject, pause, or finish according to the contract.
 
 Busy work is not progress. A useful action must reduce uncertainty, close a
 coverage item, falsify a hypothesis, strengthen a finding, or expose a concrete
@@ -545,12 +577,19 @@ a security bug; the relevant question is whether an attacker-reachable path can
 violate a meaningful confidentiality, integrity, availability, authorization,
 or isolation property.
 
+Also reconstruct intended business flows, accounting/conservation identities,
+external semantic promises, state transitions, downstream consumers, and
+attacker funding. A locally balanced function can still violate a system-wide
+invariant after another component consumes its output.
+
 ### Phase 2 — Freeze the contract
 
 Define success, non-success, evidence gates, budget, outputs, and stopping rules.
 Red-team the contract: could an agent satisfy its wording with a toy harness,
 debug-only behavior, dead code, an unrealistic configuration, or a duplicate?
 If so, tighten it before activation.
+New contracts use workflow version 2 and retain all mandatory business,
+consumer, boundary, integration, sequence, composition, and closure passes.
 
 ### Phase 3 — Map and rank surfaces
 
@@ -579,6 +618,12 @@ For each hypothesis, state:
 
 Classify every experiment. “The tool ran” and “coverage increased” are not
 classifications.
+
+After a primitive reproduces, follow it through every direct consumer, test
+cross-function/cross-contract interleavings, compare exact semantic deltas and
+integer boundaries, join compatible primitives, and calculate the final system
+effect after repayment or cleanup. Do not let one successful path close a whole
+surface.
 
 ### Phase 5 — Validate or reject candidates
 
@@ -652,11 +697,15 @@ activated contract.
 | `independent-reproduction` | Can a clean process or reviewer reproduce from the recorded instructions? |
 | `duplicate-check` | Was the target's available history searched for the same root cause? |
 | `human-review` | Did a qualified reviewer examine the claim, scope, and evidence? |
+| `downstream-impact` | What is the strongest supported effect after every direct consumer and system delta is traced? |
+| `composition-review` | Which primitive joins were reproduced or ruled out by identity, state, timing, funding, and cleanup? |
 
-The default generated contract requires all eleven gates. The eight core gates—
+The workflow-version-2 generated contract requires all thirteen gates. The ten
+core gates—
 `attacker-control`, `reachability`, `defense-analysis`, `security-impact`,
 `realistic-configuration`, `safe-reproduction`, `release-reproduction`, and
-`independent-reproduction`—cannot be omitted. `negative-control` must remain
+`independent-reproduction`, plus `downstream-impact` and
+`composition-review`—cannot be omitted. `negative-control` must remain
 required but may be listed as waivable before activation when an equivalent
 falsification method is defined. `duplicate-check` may be waivable or omitted,
 and `human-review` may be omitted, only with an explicit pre-activation reason.
@@ -680,7 +729,7 @@ validation packet and reporting guidance.
 ## Coverage accounting
 
 Coverage here means accountable investigation breadth, not merely executed lines.
-The helper tracks eight dimensions:
+The helper tracks fifteen dimensions in workflow version 2:
 
 | Dimension | What to account for |
 | --- | --- |
@@ -692,6 +741,13 @@ The helper tracks eight dimensions:
 | `config-build` | Feature flags, build modes, platforms, and deployment configurations |
 | `historical-family` | Related advisories, patches, commits, bug classes, and sibling implementations |
 | `falsification` | Negative controls, counter-tests, alternate explanations, and rejected hypotheses |
+| `business-invariant` | Business flows, state machines, assets, liabilities, and conservation identities |
+| `consumer-propagation` | Every direct/transitive security consumer of attacker-mutable values |
+| `boundary-arithmetic` | Rounding obligations, unit extremes, zero cases, and repeat amplification |
+| `external-semantics` | Interface promises versus measured balance, callback, freshness, ordering, and identity effects |
+| `sequence-interleaving` | Reordering, repetition, cross-function callbacks, atomic batches, and unwind state |
+| `exploit-composition` | Compatible and failed primitive joins with exact preconditions |
+| `economic-closure` | Funding, fees, repayment, cleanup, attacker net, system loss, and third-party delta |
 
 Each `(dimension, item)` has a current status:
 
@@ -703,7 +759,8 @@ Each `(dimension, item)` has a current status:
 The log is revisioned: updating an item appends a new record rather than deleting
 the old one. An `exhausted` outcome is rejected if any current item is
 `uninspected` or `blocked`, any dimension is absent, or any candidate remains a
-live lead.
+live lead. A workflow-version-2 `validated` or `exhausted` result also requires
+all eight exact deep-hunt item records and concrete evidence artifacts.
 
 ## Durable state and command reference
 
@@ -720,7 +777,7 @@ directory per goal.
 | `state.json` | Current lifecycle state, activation fingerprint, counters, blocker, and terminal result |
 | `events.jsonl` | Append-only mappings, hypotheses, experiments, observations, pivots, failures, reviews, transitions, and notes |
 | `candidates.jsonl` | Append-only revisions of leads, rejections, and validated candidates |
-| `coverage.json` | Revisioned coverage items across the eight dimensions |
+| `coverage.json` | Revisioned coverage items across the fifteen workflow-version-2 dimensions |
 
 Keep large raw artifacts in the evidence directory named by `contract.json`
 (the generated default is `artifacts/`) and refer to them from state records.
@@ -876,8 +933,8 @@ python3 "$SKILL_ROOT/scripts/goal_state.py" transition \
 
 | Outcome | Meaning | Required state and evidence |
 | --- | --- | --- |
-| `validated` | The contract's required number of candidates passed every applicable gate. | Finish from `active`; name a validated candidate and at least one terminal evidence artifact. |
-| `exhausted` | The prioritized queue and all coverage obligations are complete without enough validated findings. | Finish from `active`; no open coverage items or leads, all eight dimensions represented, residual risks recorded, and obligation attestations exactly match the contract. |
+| `validated` | The contract's required number of candidates passed every applicable gate. | Finish from `active`; name a validated candidate, provide terminal evidence, and complete every mandatory deep-hunt pass. |
+| `exhausted` | The prioritized queue and all coverage obligations are complete without enough validated findings. | Finish from `active`; no open coverage items or leads, all required dimensions and deep-hunt items represented, residual risks recorded, and obligation attestations exactly match the contract. |
 | `budget-limited` | The deadline, experiment limit, or hour limit arrived before exhaustion. | Finish from `active` or `paused`; include substantive hunt evidence, coverage records, and residual risks. |
 | `blocked` | A concrete external prerequisite prevents progress. | Transition to `blocked`, then finish with evidence and the exact unlock needed. |
 
@@ -1001,6 +1058,7 @@ Aim-for-the-head/
 │   └── openai.yaml                Skill metadata and invocation hints
 ├── references/
 │   ├── evidence-gates.md          Validation and reproduction requirements
+│   ├── deep-hunt.md               Business-logic, semantic, boundary, and composition passes
 │   ├── goal-contract.md           Contract schema and red-team checklist
 │   ├── hunt-strategies.md         Mode-specific investigation strategies
 │   ├── portability.md             Host-specific installation and fallback notes
@@ -1035,8 +1093,9 @@ PYTHONDONTWRITEBYTECODE=1 python3 -B -m unittest discover -s tests -v
 
 The tests cover initialization, activation, lifecycle transitions, contract
 fingerprinting, evidence requirements, candidate revision rules, coverage,
-validated completion, honest exhaustion, budget-limited and blocked outcomes,
-append-only stream integrity, and corrupted-state rejection.
+mandatory deep-hunt completion, validated completion, honest exhaustion,
+budget-limited and blocked outcomes, append-only stream integrity, and
+corrupted-state rejection.
 
 ## Troubleshooting
 

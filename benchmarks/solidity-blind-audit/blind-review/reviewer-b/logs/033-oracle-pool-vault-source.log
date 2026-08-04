@@ -1,0 +1,229 @@
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.30;
+
+import {IAggregator, IPriceSource, IReservePool} from "./interfaces/ProtocolInterfaces.sol";
+
+contract ReserveOracle is IPriceSource {
+    IAggregator public feed;
+    IReservePool public immutable pool;
+    address public owner;
+
+    constructor(IAggregator feed_, IReservePool pool_) {
+        feed = feed_;
+        pool = pool_;
+        owner = msg.sender;
+    }
+
+    function price() external view override returns (uint256) {
+        (, int256 answer,,,) = feed.latestRoundData();
+        if (answer > 0) return _normalize(uint256(answer));
+        return pool.spotPrice();
+    }
+
+    function configure(IAggregator nextFeed) external {
+        require(msg.sender == owner, "OWNER");
+        require(address(nextFeed) != address(0), "CONFIG");
+        feed = nextFeed;
+    }
+
+    function transferOwnership(address nextOwner) external {
+        require(msg.sender == owner, "OWNER");
+        require(nextOwner != address(0), "OWNER_ZERO");
+        owner = nextOwner;
+    }
+
+    function _normalize(uint256 answer) internal view returns (uint256) {
+        uint8 d = feed.decimals();
+        if (d < 18) return answer * 10 ** (18 - d);
+        if (d > 18) return answer / 10 ** (d - 18);
+        return answer;
+    }
+}
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.30;
+
+import {IERC20} from "./interfaces/ProtocolInterfaces.sol";
+
+contract ReservePool {
+    IERC20 public immutable asset;
+    IERC20 public immutable quote;
+    uint112 public reserveAsset;
+    uint112 public reserveQuote;
+
+    event LiquidityAdded(address indexed provider, uint256 assets, uint256 quotes);
+    event Swap(address indexed sender, address indexed tokenIn, uint256 amountIn, uint256 amountOut, address to);
+
+    constructor(IERC20 asset_, IERC20 quote_) {
+        asset = asset_;
+        quote = quote_;
+    }
+
+    function addLiquidity(uint256 assets, uint256 quotes) external {
+        require(asset.transferFrom(msg.sender, address(this), assets), "ASSET_TRANSFER");
+        require(quote.transferFrom(msg.sender, address(this), quotes), "QUOTE_TRANSFER");
+        _sync();
+        emit LiquidityAdded(msg.sender, assets, quotes);
+    }
+
+    function spotPrice() external view returns (uint256) {
+        require(reserveAsset != 0, "NO_LIQUIDITY");
+        return uint256(reserveQuote) * 1e18 / uint256(reserveAsset);
+    }
+
+    function quoteExactInput(address tokenIn, uint256 amountIn) public view returns (uint256 amountOut) {
+        uint256 amountAfterFee = amountIn * 9_970;
+        if (tokenIn == address(asset)) {
+            amountOut = amountAfterFee * reserveQuote / (uint256(reserveAsset) * 10_000 + amountAfterFee);
+        } else if (tokenIn == address(quote)) {
+            amountOut = amountAfterFee * reserveAsset / (uint256(reserveQuote) * 10_000 + amountAfterFee);
+        } else {
+            revert("TOKEN");
+        }
+    }
+
+    function swapExactInput(address tokenIn, uint256 amountIn, uint256 minOut, address to)
+        external
+        returns (uint256 amountOut)
+    {
+        require(to != address(0) && to != address(this), "RECIPIENT");
+        uint256 receivedIn;
+        uint256 quotedOut;
+        if (tokenIn == address(asset)) {
+            uint256 inputBalance = asset.balanceOf(address(this));
+            require(asset.transferFrom(msg.sender, address(this), amountIn), "INPUT");
+            receivedIn = asset.balanceOf(address(this)) - inputBalance;
+            quotedOut = quoteExactInput(tokenIn, receivedIn);
+            uint256 outputBalance = quote.balanceOf(to);
+            require(quote.transfer(to, quotedOut), "OUTPUT");
+            amountOut = quote.balanceOf(to) - outputBalance;
+        } else if (tokenIn == address(quote)) {
+            uint256 inputBalance = quote.balanceOf(address(this));
+            require(quote.transferFrom(msg.sender, address(this), amountIn), "INPUT");
+            receivedIn = quote.balanceOf(address(this)) - inputBalance;
+            quotedOut = quoteExactInput(tokenIn, receivedIn);
+            uint256 outputBalance = asset.balanceOf(to);
+            require(asset.transfer(to, quotedOut), "OUTPUT");
+            amountOut = asset.balanceOf(to) - outputBalance;
+        } else {
+            revert("TOKEN");
+        }
+        require(amountOut >= minOut, "MIN_OUT");
+        _sync();
+        emit Swap(msg.sender, tokenIn, receivedIn, amountOut, to);
+    }
+
+    function sync() external {
+        _sync();
+    }
+
+    function _sync() internal {
+        reserveAsset = uint112(asset.balanceOf(address(this)));
+        reserveQuote = uint112(quote.balanceOf(address(this)));
+    }
+}
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.30;
+
+import {IERC20, IERC20Metadata} from "./interfaces/ProtocolInterfaces.sol";
+import {MockERC20} from "./mocks/MockTokens.sol";
+import {TokenMath} from "./lib/TokenMath.sol";
+
+contract AsterVault is MockERC20 {
+    using TokenMath for uint256;
+
+    IERC20 public immutable asset;
+
+    constructor(IERC20Metadata asset_)
+        MockERC20("Aster Vault Share", "avSHARE", asset_.decimals())
+    {
+        asset = asset_;
+    }
+
+    function totalAssets() public view returns (uint256) {
+        return asset.balanceOf(address(this));
+    }
+
+    function convertToShares(uint256 assets) public view returns (uint256) {
+        uint256 supply = totalSupply;
+        uint256 managed = totalAssets();
+        return supply == 0 || managed == 0 ? assets : assets.mulDivDown(supply, managed);
+    }
+
+    function convertToAssets(uint256 shares) public view returns (uint256) {
+        uint256 supply = totalSupply;
+        return supply == 0 ? shares : shares.mulDivDown(totalAssets(), supply);
+    }
+
+    function previewDeposit(uint256 assets) external view returns (uint256) {
+        return convertToShares(assets);
+    }
+
+    function previewMint(uint256 shares) public view returns (uint256) {
+        uint256 supply = totalSupply;
+        uint256 managed = totalAssets();
+        return supply == 0 || managed == 0 ? shares : shares.mulDivUp(managed, supply);
+    }
+
+    function previewWithdraw(uint256 assets) external view returns (uint256) {
+        return convertToShares(assets);
+    }
+
+    function previewRedeem(uint256 shares) external view returns (uint256) {
+        return convertToAssets(shares);
+    }
+
+    function deposit(uint256 assets, address receiver) external returns (uint256 shares) {
+        shares = convertToShares(assets);
+        require(shares != 0, "ZERO_SHARES");
+        require(asset.transferFrom(msg.sender, address(this), assets), "TRANSFER");
+        _mint(receiver, shares);
+    }
+
+    function mint(address, uint256) external pure override {
+        revert("UNSUPPORTED");
+    }
+
+    function burn(address, uint256) external pure override {
+        revert("UNSUPPORTED");
+    }
+
+    function mint(uint256 shares, address receiver) external returns (uint256 assets) {
+        assets = previewMint(shares);
+        require(asset.transferFrom(msg.sender, address(this), assets), "TRANSFER");
+        _mint(receiver, shares);
+    }
+
+    function withdraw(uint256 assets, address receiver, address owner) external returns (uint256 shares) {
+        shares = convertToShares(assets);
+        if (msg.sender != owner) _spendAllowance(owner, msg.sender, shares);
+        _burn(owner, shares);
+        require(asset.transfer(receiver, assets), "TRANSFER");
+    }
+
+    function redeem(uint256 shares, address receiver, address owner) external returns (uint256 assets) {
+        if (msg.sender != owner) _spendAllowance(owner, msg.sender, shares);
+        assets = convertToAssets(shares);
+        _burn(owner, shares);
+        require(asset.transfer(receiver, assets), "TRANSFER");
+    }
+
+    function _mint(address to, uint256 amount) internal {
+        totalSupply += amount;
+        balanceOf[to] += amount;
+        emit Transfer(address(0), to, amount);
+    }
+
+    function _burn(address from, uint256 amount) internal {
+        balanceOf[from] -= amount;
+        totalSupply -= amount;
+        emit Transfer(from, address(0), amount);
+    }
+
+    function _spendAllowance(address owner, address spender, uint256 amount) internal {
+        uint256 allowed = allowance[owner][spender];
+        if (allowed != type(uint256).max) {
+            allowance[owner][spender] = allowed - amount;
+            emit Approval(owner, spender, allowance[owner][spender]);
+        }
+    }
+}

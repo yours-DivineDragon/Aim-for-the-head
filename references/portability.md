@@ -116,6 +116,11 @@ If Python cannot run, create the same files manually. Preserve these invariants:
 - explicit `draft`, `active`, `paused`, `blocked`, and `completed` states;
 - only `validated`, `exhausted`, `budget-limited`, or `blocked` terminal outcomes;
 - every validated candidate mapped to contract-required gates;
+- every workflow-version-2 candidate mapped to downstream-impact and
+  composition-review evidence;
+- every mandatory business, consumer, boundary, external-semantic, sequence,
+  composition, and closure item recorded as tested with an artifact before a
+  validated or exhausted outcome;
 - every optional gate either required or explicitly omitted before activation;
 - residual risks for non-finding outcomes and an exact unlock for blockers.
 

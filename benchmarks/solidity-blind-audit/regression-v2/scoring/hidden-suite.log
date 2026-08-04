@@ -1,0 +1,72 @@
+# Post-reveal canonical validation suite
+command: /opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node --test --test-concurrency=1 reveal/ground-truth-package/tests/controls.test.mjs reveal/ground-truth-package/tests/exploits.test.mjs
+started_at: 2026-08-04T17:07:46.928Z
+ended_at: 2026-08-04T17:08:19.402Z
+duration_ms: 32474
+exit_code: 0
+interpretation: Canonical behavior confirmation after the workflow-v2 submission seal; not hunt input.
+
+## stdout
+This version of µWS is not compatible with your Node.js build:
+
+Error: Cannot find module '../binaries/uws_linux_x64_137.node'
+Require stack:
+- /workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/solidity-blind-audit/node_modules/ganache/node_modules/@trufflesuite/uws-js-unofficial/src/uws.js
+- /workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/solidity-blind-audit/node_modules/ganache/dist/node/core.js
+Falling back to a NodeJS implementation; performance may be degraded.
+
+
+▶ patched controls
+  ✔ F-01 control rejects the compound path before credit is issued (5670.054939ms)
+  ✔ F-02 control does not consume the mutable pool quote (116.717327ms)
+  ✔ F-03 control excludes unsolicited balances from the exchange rate (292.664321ms)
+  ✔ F-04 control records debt before invoking the receiver (929.956736ms)
+  ✔ F-05 control limits risk changes to the guardian (74.157065ms)
+  ✔ F-06 control rounds the share burn upward (355.1842ms)
+  ✔ F-07 control mints against the balance delta (609.512562ms)
+  ✔ F-08 control binds an authorization to one router (908.489424ms)
+  ✔ F-09 control binds the intended recipient (797.404566ms)
+  ✔ F-10 control authenticates the configured remote gateway (715.102577ms)
+  ✔ F-11 control namespaces nonces by source chain (861.720773ms)
+  ✔ F-12 control permits initialization only once (809.388212ms)
+  ✔ F-13 control rejects an expired report (146.264359ms)
+  ✔ F-14 control reduces debt by the amount received (218.751479ms)
+  ✔ F-15 control keys replay protection by the claim payload (768.572592ms)
+✔ patched controls (13275.806631ms)
+This version of µWS is not compatible with your Node.js build:
+
+Error: Cannot find module '../binaries/uws_linux_x64_137.node'
+Require stack:
+- /workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/solidity-blind-audit/node_modules/ganache/node_modules/@trufflesuite/uws-js-unofficial/src/uws.js
+- /workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/solidity-blind-audit/node_modules/ganache/dist/node/core.js
+Falling back to a NodeJS implementation; performance may be degraded.
+
+
+▶ canonical reproductions
+  ✔ F-01 compound valuation path creates a profitable reserve shortfall (5838.517023ms)
+  ✔ F-02 pool state immediately controls the lending price when the feed is unavailable (838.893787ms)
+  ✔ F-03 an unsolicited vault transfer increases an existing borrow limit (1058.77546ms)
+  ✔ F-04 the borrow callback can release collateral before debt is recorded (1064.903511ms)
+  ✔ F-05 an untrusted account can raise the collateral factor (731.3972ms)
+  ✔ F-06 coarse asset units permit withdrawals that burn zero shares (353.363535ms)
+  ✔ F-07 nominal deposits dilute existing holders for transfer-fee assets (604.699238ms)
+  ✔ F-08 one authorization executes on two router deployments (927.872193ms)
+  ✔ F-09 a submitter can replace the transfer recipient (763.191623ms)
+  ✔ F-10 a message from a non-gateway remote sender creates usable collateral (896.20561ms)
+  ✔ F-11 equal nonces on different source chains collide (815.858037ms)
+  ✔ F-12 the strategy can be initialized again and its balance swept (844.165244ms)
+  ✔ F-13 an expired feed report remains usable for borrowing (1140.466708ms)
+  ✔ F-14 repayment reduces debt by more than a transfer-fee token delivers (769.913743ms)
+  ✔ F-15 a malleated claim signature is accepted as a second claim (894.326309ms)
+✔ canonical reproductions (17544.406719ms)
+ℹ tests 30
+ℹ suites 2
+ℹ pass 30
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 32420.301237
+
+## stderr
+(empty)

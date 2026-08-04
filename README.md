@@ -2,6 +2,171 @@
 
 **A portable Agent Skill for persistent, evidence-driven security bug hunts.**
 
+<p align="center">
+  <img src="assets/aim-for-the-head-quickstart.gif" width="800" alt="Animated walkthrough: install Aim for the Head, invoke it in Codex, review the generated security contract, and activate the contract with slash-goal." />
+</p>
+
+<p align="center">
+  <sub>Install → prepare → review → activate. Rendered from the <a href="demo/remotion">Remotion source</a>.</sub>
+</p>
+
+## Start here: audit a codebase with Codex
+
+Do **not** begin with only `/goal hunt bugs`. That leaves the attacker model,
+severity threshold, evidence requirements, tool usage, budget, and honest stopping
+conditions undefined. The reliable pattern is:
+
+1. Install the skill once.
+2. Open Codex inside the target repository.
+3. Invoke `$aim-for-the-head` to prepare and validate the hunt contract.
+4. Review that contract.
+5. Activate the approved contract with `/goal`.
+
+Codex uses `$skill-name` for explicit skill invocation, while `/goal` makes an
+outcome persistent across turns. See the official OpenAI documentation for
+[skills](https://learn.chatgpt.com/docs/build-skills) and
+[goals](https://developers.openai.com/cookbook/examples/codex/using_goals_in_codex).
+
+### 1. Install the skill once
+
+A user-wide installation makes the skill available in every repository without
+adding it to each target codebase:
+
+```bash
+mkdir -p "$HOME/.agents/skills"
+
+git clone https://github.com/yours-DivineDragon/Aim-for-the-head.git \
+  "$HOME/.agents/skills/aim-for-the-head"
+```
+
+To update an existing installation:
+
+```bash
+git -C "$HOME/.agents/skills/aim-for-the-head" pull --ff-only
+```
+
+### 2. Open Codex in the codebase
+
+```bash
+cd /absolute/path/to/codebase
+codex
+```
+
+Inside Codex, run `/skills` and confirm that `aim-for-the-head` appears. If it
+does not, verify that this file exists:
+
+```text
+$HOME/.agents/skills/aim-for-the-head/SKILL.md
+```
+
+### 3. Prepare the hunt before activating `/goal`
+
+Paste the following as a normal Codex prompt. Replace the angle-bracketed values
+with the real scope and tool command for your audit:
+
+```text
+$aim-for-the-head
+
+Prepare an authorized, report-only security investigation of the repository
+currently open in Codex.
+
+Mode: discovery.
+Target revision: current HEAD; resolve and record the exact commit SHA.
+Scope: <INCLUDED_COMPONENTS>.
+Excluded: dependencies, generated artifacts, and <OTHER_EXCLUSIONS>.
+Success: exactly one novel Critical or High severity vulnerability that passes
+every required evidence gate.
+Non-success: finish honestly as exhausted, budget-limited, or blocked rather
+than promoting an unproven lead.
+Safety: do not attack public infrastructure, access real user data, or modify
+production source code. Temporary local harnesses and evidence artifacts are
+allowed.
+Tooling: inventory every relevant audit tool available locally. Specifically
+inspect and use Nemesis at <NEMESIS_COMMAND_OR_ABSOLUTE_PATH> when compatible.
+Record each tool's exact invocation, input scope, raw output, coverage, failures,
+and blind spots. Do not assume a tool was used merely because it exists in
+.codex or elsewhere on disk.
+Budget: 8 hours or 50 decisive experiments.
+
+Before hunting:
+1. map the repository and rank the attack surfaces;
+2. create the threat model;
+3. initialize .goal-hunt;
+4. draft GOAL.md, THREAT_MODEL.md, and contract.json;
+5. validate the activation contract; and
+6. show me the completed contract for approval.
+
+Do not begin security experiments until I approve the contract.
+```
+
+If you do not use Nemesis, remove that sentence or replace it with another exact
+tool command. A tool's presence inside `.codex` does not make `/goal` execute it
+automatically.
+
+### 4. Review the generated contract
+
+The preparation step creates one durable state directory:
+
+```text
+.goal-hunt/
+├── GOAL.md
+├── THREAT_MODEL.md
+├── contract.json
+├── state.json
+├── events.jsonl
+├── candidates.jsonl
+└── coverage.json
+```
+
+Before approving it, confirm:
+
+- authorization and proof-safety limits are correct;
+- the exact commit and included/excluded components are pinned;
+- attacker capabilities and non-capabilities are realistic;
+- Critical/High impact is defined for this particular system;
+- release-like reproduction and negative-control requirements are meaningful;
+- Nemesis or other internal tools have an exact accessible path or command; and
+- the budget and all four terminal outcomes are acceptable.
+
+Do not rewrite an activated contract merely because the hunt found something
+different. Start a new goal directory when the objective or acceptance policy
+materially changes.
+
+### 5. Activate the approved contract
+
+After reviewing the files, paste this command into Codex:
+
+```text
+/goal Using $aim-for-the-head, execute the approved authorized security
+investigation defined in .goal-hunt/GOAL.md and .goal-hunt/contract.json.
+Explicitly inventory and invoke relevant local audit tools, including Nemesis at
+<NEMESIS_COMMAND_OR_ABSOLUTE_PATH>, when compatible. Preserve every material
+tool output and record coverage, failures, and blind spots. Continue until the
+state helper records validated, exhausted, budget-limited, or blocked. Do not
+mark this goal complete until the terminal check passes.
+```
+
+That command deliberately references the approved files instead of squeezing the
+whole threat model into one line. `/goal` provides persistence; Aim for the Head
+provides the security workflow and evidence standard.
+
+### What happens next
+
+Codex should now:
+
+1. work through the ranked attack-surface queue;
+2. form falsifiable hypotheses and run the cheapest decisive experiments;
+3. invoke compatible tools explicitly instead of assuming they ran;
+4. preserve raw evidence and update multidimensional coverage;
+5. reject false positives as soon as a decisive gate fails;
+6. independently reproduce any surviving candidate; and
+7. finish as `validated`, `exhausted`, `budget-limited`, or `blocked`.
+
+Use `/goal` to view the current objective, `/goal pause` to stop temporarily,
+`/goal resume` to continue, and `/goal clear` only when you intentionally want to
+remove it. A completed non-finding outcome means the contracted search was
+accounted for; it does not mean the codebase is secure.
+
 Aim for the Head turns an open-ended request such as “find a real vulnerability”
 into a bounded security investigation with an explicit threat model, durable state,
 measurable coverage, falsifiable hypotheses, evidence gates, and checked terminal
@@ -22,6 +187,7 @@ without expert review.
 
 ## Contents
 
+- [Start here: audit a codebase with Codex](#start-here-audit-a-codebase-with-codex)
 - [Why this exists](#why-this-exists)
 - [What the skill adds](#what-the-skill-adds)
 - [How it works](#how-it-works)
@@ -833,6 +999,11 @@ Aim-for-the-head/
 ├── README.md                      Human-facing installation and operating guide
 ├── agents/
 │   └── openai.yaml                Skill metadata and invocation hints
+├── assets/
+│   └── aim-for-the-head-quickstart.gif
+│                                    Animated README walkthrough
+├── demo/
+│   └── remotion/                  Reproducible Remotion composition and renderer
 ├── references/
 │   ├── evidence-gates.md          Validation and reproduction requirements
 │   ├── goal-contract.md           Contract schema and red-team checklist
@@ -871,6 +1042,18 @@ The tests cover initialization, activation, lifecycle transitions, contract
 fingerprinting, evidence requirements, candidate revision rules, coverage,
 validated completion, honest exhaustion, budget-limited and blocked outcomes,
 append-only stream integrity, and corrupted-state rejection.
+
+Type-check and regenerate the animated walkthrough:
+
+```bash
+cd demo/remotion
+./render-readme-demo.sh
+```
+
+The render script requires Node.js, Remotion's supported browser environment,
+and FFmpeg. It installs the pinned dependencies, type-checks the composition,
+writes intermediate video output under the ignored
+`demo/remotion/out/` directory and replaces the tracked README GIF.
 
 ## Troubleshooting
 

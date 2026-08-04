@@ -1,0 +1,6 @@
+$ /opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node scoring/scorer-b/run-reruns.mjs
+cwd=/workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/perps-blind-generalization
+exit=0
+
+{"candidatePasses":25,"discriminationPasses":2}
+

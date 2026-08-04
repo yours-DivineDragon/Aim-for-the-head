@@ -1,0 +1,467 @@
+{
+  "schemaVersion": 1,
+  "reviewer": "independent-blind-reviewer-b",
+  "classificationVocabulary": [
+    "confirmed_exact",
+    "confirmed_narrowed",
+    "duplicate_of",
+    "unsupported",
+    "invalid"
+  ],
+  "target": {
+    "path": "benchmarks/perps-blind-generalization",
+    "targetRevision": "158651792f770f5e827c1f0c363ea91f916cb1b8",
+    "submissionRevision": "31ea4b7367a42fb1d87d486e945e54361a8d0ca3",
+    "sourceManifestSha256": "86e7f928cf5b5dc05e18a1339a7e36156c38994f0baed09c4b2b92331d045090",
+    "sourceManifestAggregateSha256": "bd7aacd7d51c679b4e40f83d6ca49d49b03b69490ad6751f50c81236e7ef5381",
+    "submissionSha256": "c5330151531671c7ed322a155abb7e5270b7e2d83ce4fa3df64a10a0790b29ef",
+    "hunterReportSha256": "9830b56785cdbcf41cd9bde3421c562bc4e7ba811cf3bc6e1a6627506484ce04",
+    "hunterHashInventorySha256": "bc5df4c5259421f8ae403de49bbff65662db649a1d95d27f6ce6014ad0e5f7fe"
+  },
+  "execution": {
+    "candidateCount": 25,
+    "freshCandidateProcessCount": 26,
+    "freshCandidateProcessPassCount": 26,
+    "finalFreshCandidateProcessCount": 26,
+    "finalFreshCandidateProcessPassCount": 26,
+    "cumulativeFreshCandidateProcessPassCount": 52,
+    "ordinaryTestCount": 5,
+    "ordinaryTestPassCount": 5,
+    "independentTestCount": 9,
+    "independentTestPassCount": 9,
+    "finalOrdinaryTestPassCount": 5,
+    "finalIndependentTestPassCount": 9,
+    "embeddedNegativeControls": true,
+    "freshStatePerCandidateProcess": true,
+    "releaseLike": true,
+    "independentHarness": {
+      "path": "blind-review/reviewer-b/independent-review.test.mjs",
+      "sha256": "937087ff03543cb4474c12ef24a89a904e43b9de45ced57e3c703268c6d26cc6"
+    },
+    "independentLog": {
+      "path": "blind-review/reviewer-b/logs/independent-review.log",
+      "sha256": "183a1825c625e5953310e7bfd62b9a12de5fedcf0a9ddfa0c32a57f94df82cc5"
+    }
+  },
+  "aggregate": {
+    "verdicts": {
+      "confirmed_exact": 22,
+      "confirmed_narrowed": 3,
+      "duplicate_of": 0,
+      "unsupported": 0,
+      "invalid": 0
+    },
+    "proposedSeverity": {
+      "critical": 0,
+      "high": 14,
+      "medium": 8,
+      "low": 3
+    },
+    "hunterSeverityAdjustments": {
+      "downgraded": 2,
+      "upgraded": 0,
+      "unchanged": 23,
+      "items": [
+        { "id": "AFH-011", "from": "high", "to": "medium" },
+        { "id": "AFH-017", "from": "critical", "to": "high" }
+      ]
+    },
+    "duplicateGroups": [],
+    "overlapGroups": [
+      { "id": "OG-WITHDRAWAL", "members": ["AFH-003", "AFH-004"], "relationship": "distinct health-gate and callback-order roots on one withdrawal route" },
+      { "id": "OG-FUNDING", "members": ["AFH-007", "AFH-008", "AFH-009"], "relationship": "distinct accrual-cap, rounding, and settlement-order roots" },
+      { "id": "OG-POSITION-LEDGER", "members": ["AFH-010", "AFH-011", "AFH-012"], "relationship": "distinct basis, aggregate OI, and membership roots" },
+      { "id": "OG-AUCTION-LIFECYCLE", "members": ["AFH-016", "AFH-017", "AFH-018", "AFH-019", "AFH-020"], "relationship": "distinct authority and lifecycle roots; AFH-017 composes AFH-018" },
+      { "id": "OG-INSURANCE", "members": ["AFH-021", "AFH-022", "AFH-023", "AFH-024"], "relationship": "distinct reservation, ownership, receivable, and venue-semantic roots" }
+    ]
+  },
+  "verdicts": [
+    {
+      "id": "AFH-001",
+      "status": "confirmed_exact",
+      "hunterSeverity": "low",
+      "proposedSeverity": "low",
+      "confidence": "high",
+      "rootCauseScope": "MarketCatalog.setRiskTier lacks onlyGovernor while adjacent market mutators enforce governance.",
+      "impactScope": "Persistent unauthorized risk-tier configuration mutation; no current value consumer was found.",
+      "independentFacts": ["An untrusted account changed riskTier from 2 to 7.", "The same account could not call setMarketActive."],
+      "overlapGroup": null,
+      "compositionMembership": "standalone; no executable value-escalation join found",
+      "rationale": "The privilege-boundary violation is exact and deliberately capped at Low because riskTier is presently inert.",
+      "evidence": [{ "command": "node --test --test-concurrency=1 --test-name-pattern=H-001 blind-run/poc/core-accounting.test.mjs", "path": "blind-review/reviewer-b/logs/AFH-001.log", "sha256": "b63f6ed44c6abed6722f53d03b5b431028380808d0e13ede7b8f79f6328b6266" }]
+    },
+    {
+      "id": "AFH-002",
+      "status": "confirmed_exact",
+      "hunterSeverity": "high",
+      "proposedSeverity": "high",
+      "confidence": "high",
+      "rootCauseScope": "MarginVault deposits, insurance deposits, and auction bond reservations credit nominal input without measuring actual receipt.",
+      "impactScope": "Unbacked margin and reserves create third-party shortfalls; the independently tested insurance-share variant shifted 50 native units from an incumbent shareholder.",
+      "independentFacts": ["A 1000 nominal vault deposit credited 1000 wad after only 900 wad arrived.", "The attacker withdrew the full nominal credit, leaving 900 backing for a 1000 victim claim.", "The bond path reserved 1000 wad on 900 wad receipt.", "An insurance depositor paid 900, redeemed 950, and reduced incumbent backing from 1000 to 950."],
+      "overlapGroup": null,
+      "compositionMembership": "one actual-receipt primitive with three direct accounting consumers; no duplicate candidate",
+      "rationale": "The executable victim and shareholder deltas close both solvency and asset-conservation impact.",
+      "evidence": [
+        { "command": "node --test --test-concurrency=1 --test-name-pattern=H-002 blind-run/poc/integration-accounting.test.mjs", "path": "blind-review/reviewer-b/logs/AFH-002-1.log", "sha256": "afe88d35ed1b2221ab824d5b149cded96f1100f6e09253e89fb4afc1e8f89a9e" },
+        { "command": "node --test --test-concurrency=1 --test-name-pattern=H-025 blind-run/poc/integration-accounting.test.mjs", "path": "blind-review/reviewer-b/logs/AFH-002-2.log", "sha256": "2f16e439534bc216eeb9df8ee785185959515cbbce9549f835814d94baae1b40" },
+        { "command": "node --test --test-concurrency=1 blind-review/reviewer-b/independent-review.test.mjs", "path": "blind-review/reviewer-b/logs/independent-review.log", "sha256": "183a1825c625e5953310e7bfd62b9a12de5fedcf0a9ddfa0c32a57f94df82cc5" }
+      ]
+    },
+    {
+      "id": "AFH-003",
+      "status": "confirmed_exact",
+      "hunterSeverity": "high",
+      "proposedSeverity": "high",
+      "confidence": "high",
+      "rootCauseScope": "The permissionless delayed vault claim path never checks ClearingHouse health or frozen state.",
+      "impactScope": "A frozen, below-maintenance account removed 900 collateral tokens needed for liquidation while the guarded ClearingHouse withdrawal reverted.",
+      "independentFacts": ["The request was created before the account became unhealthy.", "At claim the account remained frozen and unhealthy.", "Claim transferred 900 tokens and left only 100 wad ledger margin."],
+      "overlapGroup": "OG-WITHDRAWAL",
+      "compositionMembership": "standalone; AFH-004 can amplify one request but is not required",
+      "rationale": "The exact unauthorized economic delta and negative control satisfy High closure.",
+      "evidence": [{ "command": "node --test --test-concurrency=1 --test-name-pattern=H-003 blind-run/poc/integration-accounting.test.mjs", "path": "blind-review/reviewer-b/logs/AFH-003.log", "sha256": "dcfe10fb9a5232701021a4a1c99c4d6e92ddcb46f8fd7237172119f88e0ef6bf" }]
+    },
+    {
+      "id": "AFH-004",
+      "status": "confirmed_exact",
+      "hunterSeverity": "medium",
+      "proposedSeverity": "medium",
+      "confidence": "high",
+      "rootCauseScope": "claimWithdrawal transfers before decrementing balance and deleting the single-use request.",
+      "impactScope": "A callback-capable collateral reused one 100-wad request to transfer and debit 200 wad; the no-hook control transferred 100.",
+      "independentFacts": ["The nested call observed the live request.", "A 300-wad starting balance let both decrements complete without reverting.", "The request was deleted only after both transfers."],
+      "overlapGroup": "OG-WITHDRAWAL",
+      "compositionMembership": "standalone callback bug; amplifies AFH-003 but does not depend on it",
+      "rationale": "The doubled transfer is exact, but the supplied sequence does not exceed the account's separately withdrawable balance, so Medium remains appropriate.",
+      "evidence": [{ "command": "node --test --test-concurrency=1 --test-name-pattern=H-004 blind-run/poc/integration-accounting.test.mjs", "path": "blind-review/reviewer-b/logs/AFH-004.log", "sha256": "8c4f436a3bd14023ea10bd3cd594920496e439ba18374ef8b641d482389c56bb" }]
+    },
+    {
+      "id": "AFH-005",
+      "status": "confirmed_exact",
+      "hunterSeverity": "medium",
+      "proposedSeverity": "medium",
+      "confidence": "high",
+      "rootCauseScope": "Oracle normalization subtracts feed precision from 18 without rejecting or dividing for precision above 18.",
+      "impactScope": "A configured 19-decimal feed makes every _read consumer revert, while an 18-decimal control returns exact wad.",
+      "independentFacts": ["No precision allowlist exists in configureFeed.", "indexPrice reverted at precision 19.", "Price-dependent health, funding, liquidation, and settlement all transitively depend on _read."],
+      "overlapGroup": null,
+      "compositionMembership": "standalone integration-availability failure",
+      "rationale": "The supported-interface mismatch and transitive market unavailability are exact; governance compromise is not assumed.",
+      "evidence": [{ "command": "node --test --test-concurrency=1 --test-name-pattern=H-005 blind-run/poc/core-accounting.test.mjs", "path": "blind-review/reviewer-b/logs/AFH-005.log", "sha256": "61d321cb502c8798092ab7960f987317c5f80fc93fdcd7c4c71101f4b2b2f50b" }]
+    },
+    {
+      "id": "AFH-006",
+      "status": "confirmed_exact",
+      "hunterSeverity": "high",
+      "proposedSeverity": "high",
+      "confidence": "high",
+      "rootCauseScope": "Permissionless price recording reads the latest round after cutoff rather than selecting or proving the cutoff round.",
+      "impactScope": "A delayed call immutably recorded 3000 instead of 2100 and independently shifted realized dated-position PnL by 900 wad.",
+      "independentFacts": ["The cutoff round was complete and timestamped at cutoff.", "A later round was accepted and made immutable.", "One long realized 1000 wad rather than the cutoff-consistent 100 wad."],
+      "overlapGroup": null,
+      "compositionMembership": "standalone oracle-to-settlement consumer chain",
+      "rationale": "The permanent account PnL delta provides executable High economic closure.",
+      "evidence": [
+        { "command": "node --test --test-concurrency=1 --test-name-pattern=H-006 blind-run/poc/lifecycle.test.mjs", "path": "blind-review/reviewer-b/logs/AFH-006.log", "sha256": "1575b3b5555b03b67a039209e91c4ae2d8f03875c40ab771fe8d61cc4b176757" },
+        { "command": "node --test --test-concurrency=1 blind-review/reviewer-b/independent-review.test.mjs", "path": "blind-review/reviewer-b/logs/independent-review.log", "sha256": "183a1825c625e5953310e7bfd62b9a12de5fedcf0a9ddfa0c32a57f94df82cc5" }
+      ]
+    },
+    {
+      "id": "AFH-007",
+      "status": "confirmed_exact",
+      "hunterSeverity": "high",
+      "proposedSeverity": "high",
+      "confidence": "high",
+      "rootCauseScope": "FundingEngine.accrue caps positive rates only and omits the symmetric negative lower bound.",
+      "impactScope": "Valid 1000/2000 mark-index inputs produced a roughly 0.508-wad long credit versus a 0.000061-wad configured bound, and that excess reached account cash.",
+      "independentFacts": ["Negative growth magnitude exceeded the bound by more than three orders of magnitude.", "The equal positive premium control clamped exactly.", "A public funding checkpoint credited the uncapped value to cash."],
+      "overlapGroup": "OG-FUNDING",
+      "compositionMembership": "standalone global-growth corruption with cash and health consumers",
+      "rationale": "The signed asymmetry and cash consumer propagation are exact and economically closed.",
+      "evidence": [
+        { "command": "node --test --test-concurrency=1 --test-name-pattern=H-007 blind-run/poc/core-accounting.test.mjs", "path": "blind-review/reviewer-b/logs/AFH-007.log", "sha256": "7e0d107bd88c5b8a7131027f1b0c4224c1cc5a25ee1f8bf362c40ad1196a4667" },
+        { "command": "node --test --test-concurrency=1 blind-review/reviewer-b/independent-review.test.mjs", "path": "blind-review/reviewer-b/logs/independent-review.log", "sha256": "183a1825c625e5953310e7bfd62b9a12de5fedcf0a9ddfa0c32a57f94df82cc5" }
+      ]
+    },
+    {
+      "id": "AFH-008",
+      "status": "confirmed_exact",
+      "hunterSeverity": "low",
+      "proposedSeverity": "low",
+      "confidence": "high",
+      "rootCauseScope": "Each funding checkpoint truncates signed payment toward zero and discards the fractional remainder when advancing growth.",
+      "impactScope": "Ten split checkpoints charged zero while the identical unsplit growth charged one wei; no profitable amplification was demonstrated.",
+      "independentFacts": ["settleAccountFunding is public.", "The checkpoint advances even when payment rounds to zero.", "The paired run changes only checkpoint splitting."],
+      "overlapGroup": "OG-FUNDING",
+      "compositionMembership": "standalone rounding invariant; no material economic join established",
+      "rationale": "The invariant violation is exact and deliberately remains Low.",
+      "evidence": [{ "command": "node --test --test-concurrency=1 --test-name-pattern=H-008 blind-run/poc/core-accounting.test.mjs", "path": "blind-review/reviewer-b/logs/AFH-008.log", "sha256": "450ae6c757c474f70963819030e5c5d73aede48078077a8df6ddfc196c29ecea" }]
+    },
+    {
+      "id": "AFH-009",
+      "status": "confirmed_exact",
+      "hunterSeverity": "high",
+      "proposedSeverity": "high",
+      "confidence": "high",
+      "rootCauseScope": "EpochSettlement realizes and zeroes base before the final funding checkpoint.",
+      "impactScope": "The affected settlement omitted a 1.5-to-2 wad final funding debit; checkpoint-first controls included it in cash.",
+      "independentFacts": ["Funding growth was nonzero before the batch.", "realizeSettlement set base to zero.", "The later checkpoint therefore multiplied growth by zero."],
+      "overlapGroup": "OG-FUNDING",
+      "compositionMembership": "standalone settlement-order bug",
+      "rationale": "The direct account cash divergence and deficit consumer establish High economic impact.",
+      "evidence": [{ "command": "node --test --test-concurrency=1 --test-name-pattern=H-009 blind-run/poc/lifecycle.test.mjs", "path": "blind-review/reviewer-b/logs/AFH-009.log", "sha256": "8d6abf5250786e8df0bf9aea877116ad1313e36f33334658ab2c889204b84e23" }]
+    },
+    {
+      "id": "AFH-010",
+      "status": "confirmed_exact",
+      "hunterSeverity": "medium",
+      "proposedSeverity": "medium",
+      "confidence": "high",
+      "rootCauseScope": "A sign-flipping trade stores the average of old and execution prices rather than assigning the execution price to the residual opposite position.",
+      "impactScope": "A residual short stored 2500 instead of 2000 and the closed round trip understated loss by 500 wad before the same fee schedule.",
+      "independentFacts": ["The closed old side realized at the execution price.", "Only the residual basis was wrong.", "Closing at 2000 exposed the PnL divergence."],
+      "overlapGroup": "OG-POSITION-LEDGER",
+      "compositionMembership": "standalone position-basis bug",
+      "rationale": "The accounting error is exact; Medium is retained because the submitted run does not close a third-party extraction.",
+      "evidence": [{ "command": "node --test --test-concurrency=1 --test-name-pattern=H-010 blind-run/poc/core-accounting.test.mjs", "path": "blind-review/reviewer-b/logs/AFH-010.log", "sha256": "a273905ce3f4689d1b4e25cf3e47cf3cc4d02e79031b5f0774771308285b5ef7" }]
+    },
+    {
+      "id": "AFH-011",
+      "status": "confirmed_narrowed",
+      "hunterSeverity": "high",
+      "proposedSeverity": "medium",
+      "confidence": "high",
+      "rootCauseScope": "ClearingHouse increments OI by abs(delta), never decrements it on close or settlement, and exposes a stale source that governance may manually report to InsuranceFund.",
+      "impactScope": "The stale value routes uncovered loss to socialLossIndex rather than pendingSocialLoss, but OI does not propagate automatically and socialLossIndex has no position-level consumer in the target.",
+      "independentFacts": ["All live exposure was zero while ClearingHouse OI was 4 wad.", "Manual reporting produced index 193.4 wad and pending zero; reporting actual zero queued 775.8 wad pending.", "Fresh independent tracing showed trading leaves reportedOpenInterest at zero until a trusted governor reports.", "No contract applies socialLossIndex to positions or cash."],
+      "overlapGroup": "OG-POSITION-LEDGER",
+      "compositionMembership": "requires an uncovered deficit but not specifically AFH-017; consumer closure ends at the loss index",
+      "rationale": "The source and denominator divergence are exact, but High is not supported without automatic propagation or an executable loss-index collection consumer.",
+      "evidence": [
+        { "command": "node --test --test-concurrency=1 --test-name-pattern=H-011 blind-run/poc/composition-boundaries.test.mjs", "path": "blind-review/reviewer-b/logs/AFH-011.log", "sha256": "76e0605fde1b4ce6194415f28aa49d859d3064b67c36a0fbb5c949f6f88d8e1f" },
+        { "command": "node --test --test-concurrency=1 blind-review/reviewer-b/independent-review.test.mjs", "path": "blind-review/reviewer-b/logs/independent-review.log", "sha256": "183a1825c625e5953310e7bfd62b9a12de5fedcf0a9ddfa0c32a57f94df82cc5" }
+      ]
+    },
+    {
+      "id": "AFH-012",
+      "status": "confirmed_exact",
+      "hunterSeverity": "medium",
+      "proposedSeverity": "medium",
+      "confidence": "high",
+      "rootCauseScope": "Every zero-to-nonzero transition appends a market without a membership flag, removal, or deduplication.",
+      "impactScope": "Close and reopen created two active entries and counted the same 1000-wad unrealized PnL twice in account equity, also duplicating risk legs.",
+      "independentFacts": ["One initial open created one membership.", "Close and reopen created two.", "Reported equity exceeded unique-position equity by exactly one extra PnL term."],
+      "overlapGroup": "OG-POSITION-LEDGER",
+      "compositionMembership": "standalone mutable-list/consumer bug",
+      "rationale": "The list invariant and downstream equity consumer are exact; Medium matches the demonstrated scope.",
+      "evidence": [{ "command": "node --test --test-concurrency=1 --test-name-pattern=H-012 blind-run/poc/core-accounting.test.mjs", "path": "blind-review/reviewer-b/logs/AFH-012.log", "sha256": "fcc592120238fb20aa10dcf4cd1b65143ad89abcc692c002416ff24c00f30e42" }]
+    },
+    {
+      "id": "AFH-013",
+      "status": "confirmed_exact",
+      "hunterSeverity": "high",
+      "proposedSeverity": "high",
+      "confidence": "high",
+      "rootCauseScope": "PortfolioRisk subtracts whenever exposure is opposite or correlation is negative instead of multiplying both signs.",
+      "impactScope": "Negative correlation plus opposite exposures produced 200 wad instead of 600 wad initial margin and independently admitted a 300-wad-equity account that should fail the 600-wad requirement.",
+      "independentFacts": ["The positive-correlation opposite-exposure quadrant correctly produced the hedged 200 control.", "The negative/opposite quadrant should be risk-increasing.", "A real ClearingHouse trade passed below the correct initial requirement."],
+      "overlapGroup": null,
+      "compositionMembership": "standalone portfolio-risk undercharge",
+      "rationale": "The executable leverage admission closes High impact beyond a pure library arithmetic mismatch.",
+      "evidence": [
+        { "command": "node --test --test-concurrency=1 --test-name-pattern=H-013 blind-run/poc/core-accounting.test.mjs", "path": "blind-review/reviewer-b/logs/AFH-013.log", "sha256": "22b0fb01f252c751302d2f9efff84f4cef0aed8f33adca6e22e5be61023de897" },
+        { "command": "node --test --test-concurrency=1 blind-review/reviewer-b/independent-review.test.mjs", "path": "blind-review/reviewer-b/logs/independent-review.log", "sha256": "183a1825c625e5953310e7bfd62b9a12de5fedcf0a9ddfa0c32a57f94df82cc5" }
+      ]
+    },
+    {
+      "id": "AFH-014",
+      "status": "confirmed_exact",
+      "hunterSeverity": "medium",
+      "proposedSeverity": "medium",
+      "confidence": "high",
+      "rootCauseScope": "executePortfolio averages raw prices by leg count and applies one side flag instead of absolute-base weighting and per-leg side semantics.",
+      "impactScope": "A base-weighted buy price of 2800 passed a 2200 limit because the arithmetic mean was 2000.",
+      "independentFacts": ["The two legs had sizes 1 and 9.", "A one-leg 2300 control reverted at the same limit.", "All trade state reverted only when the final aggregate check failed."],
+      "overlapGroup": null,
+      "compositionMembership": "standalone price-protection failure",
+      "rationale": "The promised automation/delegate price boundary is exactly bypassed; Medium is appropriate absent counterparty theft proof.",
+      "evidence": [{ "command": "node --test --test-concurrency=1 --test-name-pattern=H-014 blind-run/poc/core-accounting.test.mjs", "path": "blind-review/reviewer-b/logs/AFH-014.log", "sha256": "c3b166cb61b7469c0c35b4151bf1371c8c88502294c74a83a649e276b98a67b7" }]
+    },
+    {
+      "id": "AFH-015",
+      "status": "confirmed_exact",
+      "hunterSeverity": "low",
+      "proposedSeverity": "low",
+      "confidence": "high",
+      "rootCauseScope": "The nonce word index is narrowed to uint8, so storage distinguishes only the low 16 nonce bits.",
+      "impactScope": "Nonce 0 and 65536 collided while nonce 1 set an independent bit, causing order cancellation/consumption denial but not replay.",
+      "independentFacts": ["The bitmap stayed 1 after canceling both 0 and 65536.", "Canceling nonce 1 changed it to 3.", "The collision aliases high nonce bits rather than clearing a consumed bit."],
+      "overlapGroup": null,
+      "compositionMembership": "standalone nonce-liveness bug",
+      "rationale": "The full-domain violation is exact and correctly limited to Low availability impact.",
+      "evidence": [{ "command": "node --test --test-concurrency=1 --test-name-pattern=H-015 blind-run/poc/core-accounting.test.mjs", "path": "blind-review/reviewer-b/logs/AFH-015.log", "sha256": "77a4266a91e26dfb75d0196fedd86fac18fff5f6eeddb43f21b4c281e2475f25" }]
+    },
+    {
+      "id": "AFH-016",
+      "status": "confirmed_exact",
+      "hunterSeverity": "high",
+      "proposedSeverity": "high",
+      "confidence": "high",
+      "rootCauseScope": "Liquidation commitments bind bidderAccount data but reveal never checks bidder ownership/delegation before privileged onAuctionFill mutation.",
+      "impactScope": "An untrusted bidder forced +1 base and future market obligations into an unrelated victim account; the ordinary trade control rejected the same authority violation.",
+      "independentFacts": ["The bidder was neither owner nor delegate.", "Zero bond was accepted but is not required for the authority breach.", "ClearingHouse trusts the auction callback without actor validation."],
+      "overlapGroup": "OG-AUCTION-LIFECYCLE",
+      "compositionMembership": "standalone account-authority primitive; compatible with later liquidation/settlement consumers",
+      "rationale": "The reachable victim account mutation provides direct High authority closure.",
+      "evidence": [{ "command": "node --test --test-concurrency=1 --test-name-pattern=H-016 blind-run/poc/lifecycle.test.mjs", "path": "blind-review/reviewer-b/logs/AFH-016.log", "sha256": "d53fa1e9d6cc48d1aa6cd59f4c139c701f025989f51d6ec36fa8eb6005ed5c3a" }]
+    },
+    {
+      "id": "AFH-017",
+      "status": "confirmed_narrowed",
+      "hunterSeverity": "critical",
+      "proposedSeverity": "high",
+      "confidence": "high",
+      "rootCauseScope": "Zero/unrelated bond sizing and missing bidder post-fill health admit an undercollateralized position; a second timed-out auction composes AFH-018 to record uncovered loss while leaving exposure live.",
+      "impactScope": "One zero-capital chain created 81.8-to-84 wad pending social loss and retained 1 base, but produced zero attacker token profit, zero fund token delta, and left the bidder account equally negative.",
+      "independentFacts": ["Bidder equity after fill was about 18.2 wad against 100 wad initial requirement.", "After an adverse move and timeout, pendingSocialLoss exceeded 81 wad and residual base remained 1.", "Independent closure measured no token transfer to attacker and no fund token debit.", "Ordinary zero-margin trading reverted."],
+      "overlapGroup": "OG-AUCTION-LIFECYCLE",
+      "compositionMembership": "composed: missing bidder health/bond floor plus AFH-018 residual finalization; all steps joined in one reachable state",
+      "rationale": "The repeatable no-capital solvency exposure supports High, but Critical is not justified without realized attacker profit, asset outflow, or an applied social-loss consumer.",
+      "evidence": [
+        { "command": "node --test --test-concurrency=1 --test-name-pattern=H-017 blind-run/poc/lifecycle.test.mjs", "path": "blind-review/reviewer-b/logs/AFH-017.log", "sha256": "f836c0d674377a14d8131757cbcc22ff3077009d5e975c789c983f5904e3beea" },
+        { "command": "node --test --test-concurrency=1 blind-review/reviewer-b/independent-review.test.mjs", "path": "blind-review/reviewer-b/logs/independent-review.log", "sha256": "183a1825c625e5953310e7bfd62b9a12de5fedcf0a9ddfa0c32a57f94df82cc5" }
+      ]
+    },
+    {
+      "id": "AFH-018",
+      "status": "confirmed_exact",
+      "hunterSeverity": "high",
+      "proposedSeverity": "high",
+      "confidence": "high",
+      "rootCauseScope": "finalize treats duration expiry as sufficient even when remainingBase is nonzero and performs no backstop transfer before unfreezing and deficit resolution.",
+      "impactScope": "A timed-out auction finalized with all 1 base still live and the account unfrozen; the full-fill control ended with zero residual and zero distressed base.",
+      "independentFacts": ["The auction's remainingBase and the account position both stayed at 1 wad.", "Frozen status became false.", "resolveDeficit ran against an account whose market risk remained open."],
+      "overlapGroup": "OG-AUCTION-LIFECYCLE",
+      "compositionMembership": "standalone lifecycle-closure bug and required final primitive in AFH-017",
+      "rationale": "The system exits its safety state with unresolved exposure and enables further account actions, satisfying High lifecycle/solvency closure.",
+      "evidence": [{ "command": "node --test --test-concurrency=1 --test-name-pattern=H-018 blind-run/poc/lifecycle.test.mjs", "path": "blind-review/reviewer-b/logs/AFH-018.log", "sha256": "055b2c40cb9f1bfe9424085092ea240ab671e363d8a9ac8170368064e80e6fe0" }]
+    },
+    {
+      "id": "AFH-019",
+      "status": "confirmed_exact",
+      "hunterSeverity": "high",
+      "proposedSeverity": "high",
+      "confidence": "high",
+      "rootCauseScope": "reveal omits both finalized and expiry checks for pre-existing commitments.",
+      "impactScope": "A late reveal changed positions after terminal deficit resolution and independently increased the distressed deficit by 16 wad without updating the already-recorded 700-wad pending loss.",
+      "independentFacts": ["The auction was finalized before reveal.", "Distressed base changed from 1 to 0 afterward.", "New commitments correctly rejected, proving finalized is otherwise treated as terminal.", "The late execution's incremental deficit was not reconciled."],
+      "overlapGroup": "OG-AUCTION-LIFECYCLE",
+      "compositionMembership": "standalone post-terminal mutation; related to but not required by AFH-020",
+      "rationale": "The independently measured unrecorded economic delta closes High impact.",
+      "evidence": [
+        { "command": "node --test --test-concurrency=1 --test-name-pattern=H-019 blind-run/poc/lifecycle.test.mjs", "path": "blind-review/reviewer-b/logs/AFH-019.log", "sha256": "f9d52addc635b37b32dd61bc9cd9dce57773e97e474ac2480970dcc859173381" },
+        { "command": "node --test --test-concurrency=1 blind-review/reviewer-b/independent-review.test.mjs", "path": "blind-review/reviewer-b/logs/independent-review.log", "sha256": "183a1825c625e5953310e7bfd62b9a12de5fedcf0a9ddfa0c32a57f94df82cc5" }
+      ]
+    },
+    {
+      "id": "AFH-020",
+      "status": "confirmed_exact",
+      "hunterSeverity": "high",
+      "proposedSeverity": "high",
+      "confidence": "high",
+      "rootCauseScope": "One boolean represents independent auction and epoch freeze reasons, and neither lifecycle invalidates the other's queued transition.",
+      "impactScope": "Epoch settlement cleared an active auction freeze and marked the account settled; a still-live reveal then reopened it at -1 base while the permanent settled marker remained true.",
+      "independentFacts": ["At settlement the auction retained 1 base residual.", "Settlement produced base zero, settled true, and frozen false.", "Reveal reopened the dated position, while a settlement-only control remained zero."],
+      "overlapGroup": "OG-AUCTION-LIFECYCLE",
+      "compositionMembership": "cross-lifecycle composition; it does not require AFH-019's post-finalization state despite the submitted dependency label",
+      "rationale": "The one-sequence settled/live contradiction has no future batch repair and supports High system-integrity impact.",
+      "evidence": [{ "command": "node --test --test-concurrency=1 --test-name-pattern=H-020 blind-run/poc/lifecycle.test.mjs", "path": "blind-review/reviewer-b/logs/AFH-020.log", "sha256": "1922b3d1b76553c0f9df37b9382b62af5ae3db22c389c9b90f81c266a951a1a2" }]
+    },
+    {
+      "id": "AFH-021",
+      "status": "confirmed_narrowed",
+      "hunterSeverity": "medium",
+      "proposedSeverity": "medium",
+      "confidence": "high",
+      "rootCauseScope": "releaseAuctionBond subtracts only returned value from auctionReserved; additionally, the retained slashed tokens are added again to accruedProtocolValue.",
+      "impactScope": "A 100-wad bond slashed 50% left a 50-wad phantom reservation with no live key and reported 100 wad totalAssets on only 50 wad liquid balance; redemption is affected by NAV overstatement, not by the reservation gate itself.",
+      "independentFacts": ["reservedBond was deleted.", "auctionReserved remained 50 wad.", "accruedProtocolValue became 50 wad while the same 50 wad tokens remained in the fund.", "coverDeficit sees zero available liquidity because of the phantom reserve."],
+      "overlapGroup": "OG-INSURANCE",
+      "compositionMembership": "standalone slash-accounting bug; NAV-overstatement aspect overlaps impact shape, not root cause, with AFH-023",
+      "rationale": "The root is exact, but the claimed reservation-caused redemption unavailability is narrowed to deficit-coverage denial plus separate NAV double-counting.",
+      "evidence": [
+        { "command": "node --test --test-concurrency=1 --test-name-pattern=H-021 blind-run/poc/integration-accounting.test.mjs", "path": "blind-review/reviewer-b/logs/AFH-021.log", "sha256": "94509fc7dacec25a34e8b4379f4e6574842f6fb763d93f40d7c6f402b4c65ea7" },
+        { "command": "node --test --test-concurrency=1 blind-review/reviewer-b/independent-review.test.mjs", "path": "blind-review/reviewer-b/logs/independent-review.log", "sha256": "183a1825c625e5953310e7bfd62b9a12de5fedcf0a9ddfa0c32a57f94df82cc5" }
+      ]
+    },
+    {
+      "id": "AFH-022",
+      "status": "confirmed_exact",
+      "hunterSeverity": "high",
+      "proposedSeverity": "high",
+      "confidence": "high",
+      "rootCauseScope": "Insurance totalAssets and redeem include auction-reserved token balances without subtracting or capping against live bond claims.",
+      "impactScope": "A shareholder deposited 1000 and redeemed 2000 after a third party bonded 1000, draining all collateral and causing the bond terminal action to revert.",
+      "independentFacts": ["auctionReserved was 1000 wad before redemption.", "Share supply did not represent the bidder bond.", "The no-bond control redeemed only the shareholder's 1000 deposit."],
+      "overlapGroup": "OG-INSURANCE",
+      "compositionMembership": "direct reserved-asset ownership violation; no other candidate required",
+      "rationale": "Direct third-party bond theft and liveness failure provide exact High closure.",
+      "evidence": [{ "command": "node --test --test-concurrency=1 --test-name-pattern=H-022 blind-run/poc/integration-accounting.test.mjs", "path": "blind-review/reviewer-b/logs/AFH-022.log", "sha256": "e2db003e8bfb1d06c7da04b6b751b25d7419c209aa350230fe980542ab8675d0" }]
+    },
+    {
+      "id": "AFH-023",
+      "status": "confirmed_exact",
+      "hunterSeverity": "medium",
+      "proposedSeverity": "medium",
+      "confidence": "high",
+      "rootCauseScope": "Trading debits account cash and calls absorbPenalty, but the fund books accruedProtocolValue without any collateral transfer or collection path.",
+      "impactScope": "A 120-wad trade fee raised promised NAV from 1000 to 1120 with zero token receipt and made full share redemption revert.",
+      "independentFacts": ["Fund token balance did not change on fee assessment.", "No production function moves the debited account value into the fund.", "A no-fee fund fully redeemed."],
+      "overlapGroup": "OG-INSURANCE",
+      "compositionMembership": "standalone unbacked-receivable/NAV bug",
+      "rationale": "The liquid redemption failure is exact; Medium is retained because no successful over-redemption or third-party extraction was shown.",
+      "evidence": [{ "command": "node --test --test-concurrency=1 --test-name-pattern=H-023 blind-run/poc/integration-accounting.test.mjs", "path": "blind-review/reviewer-b/logs/AFH-023.log", "sha256": "0f7c6bf50ba77a581ccb478dc5ad71421b301d46d5886486a9d64c6a00eb6717" }]
+    },
+    {
+      "id": "AFH-024",
+      "status": "confirmed_exact",
+      "hunterSeverity": "high",
+      "proposedSeverity": "high",
+      "confidence": "high",
+      "rootCauseScope": "rebalance trusts a raw venue return as received wad, neither measuring output-token receipt nor normalizing by output decimals before minimum and NAV accounting.",
+      "impactScope": "The venue took 100 input tokens, delivered zero output, returned 1e18, passed the raw minimum, and minted 1e18 phantom NAV; a hypothetical received 24-decimal return would normalize to only 1e12 wad.",
+      "independentFacts": ["The public MockVenue implements the declared interface while returning without output transfer.", "tokenOut declared 24 decimals.", "A raw return one unit below the raw minimum reverted, isolating the faulty comparison."],
+      "overlapGroup": "OG-INSURANCE",
+      "compositionMembership": "standalone external-semantic failure with direct asset and NAV consumers",
+      "rationale": "Routine governance invocation consumes untrusted venue/token semantics; direct input loss plus phantom value provide High closure without assuming malicious governance.",
+      "evidence": [{ "command": "node --test --test-concurrency=1 --test-name-pattern=H-024 blind-run/poc/integration-accounting.test.mjs", "path": "blind-review/reviewer-b/logs/AFH-024.log", "sha256": "6f4487819722966f9d591b85297cb2132f4715d9a0831eeea8cd8b663df9dfa8" }]
+    },
+    {
+      "id": "AFH-025",
+      "status": "confirmed_exact",
+      "hunterSeverity": "high",
+      "proposedSeverity": "high",
+      "confidence": "high",
+      "rootCauseScope": "matchOrder accepts an unbounded uint256 executionPrice for sells; ClearingHouse narrows basis to uint128 while fee calculation consumes the full value.",
+      "impactScope": "An allowlisted matcher used 2^128 plus 2e18, stored a 2e18 basis, and debited 408.338840305126156158 wad cash; the in-range 2e18 control debited two wei.",
+      "independentFacts": ["The victim signature authorized only a minimum sell price, so the extreme value passed order semantics.", "The post-trade health check passed with 1000 collateral.", "One nonce was consumed while the matcher caused the large asymmetric debit."],
+      "overlapGroup": null,
+      "compositionMembership": "standalone signed-order domain/narrowing mismatch",
+      "rationale": "The exact victim-authority and cash delta support High.",
+      "evidence": [{ "command": "node --test --test-concurrency=1 --test-name-pattern=H-027 blind-run/poc/composition-boundaries.test.mjs", "path": "blind-review/reviewer-b/logs/AFH-025.log", "sha256": "3468db09128d0c1cb54b5e8e46eaf39c714ba144da833a26d497510544954267" }]
+    }
+  ],
+  "reviewerDiscoveredIssues": [
+    {
+      "id": "RD-001",
+      "isHunterSubmission": false,
+      "status": "confirmed_low_correctness",
+      "proposedSeverity": "low",
+      "title": "Sub-native withdrawal debits wad while transferring zero token units",
+      "rootCause": "MarginVault._fromWad rounds down but controllerWithdraw debits the unrounded wad request.",
+      "impactScope": "With six-decimal collateral, an authorized 1-wad withdrawal transferred zero native tokens and burned one wad from the account ledger; no adversarial third-party impact was found.",
+      "evidence": { "command": "node --test --test-concurrency=1 blind-review/reviewer-b/independent-review.test.mjs", "path": "blind-review/reviewer-b/logs/independent-review.log", "sha256": "183a1825c625e5953310e7bfd62b9a12de5fedcf0a9ddfa0c32a57f94df82cc5" }
+    }
+  ]
+}

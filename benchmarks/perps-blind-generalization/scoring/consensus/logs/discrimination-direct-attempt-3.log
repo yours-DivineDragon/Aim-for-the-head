@@ -1,0 +1,26 @@
+$ /opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node --test --test-concurrency=1 scoring/consensus/discrimination.test.mjs
+cwd=/workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/perps-blind-generalization
+exit=0
+
+This version of µWS is not compatible with your Node.js build:
+
+Error: Cannot find module '../binaries/uws_linux_x64_137.node'
+Require stack:
+- /workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/perps-blind-generalization/node_modules/ganache/node_modules/@trufflesuite/uws-js-unofficial/src/uws.js
+- /workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/perps-blind-generalization/node_modules/ganache/dist/node/core.js
+Falling back to a NodeJS implementation; performance may be degraded.
+
+
+{"boundary":"MCB-006-vs-AFH-008","vulnerable":{"negativeProduct":"0","positiveProduct":"0"},"canonicalSignedFloorControl":{"negativeProduct":"-1","positiveProduct":"0"},"candidatePositiveCeilControl":{"negativeProduct":"0","positiveProduct":"1"},"conclusion":"different signed preconditions, different obligations, reciprocal non-fixing controls"}
+✔ MCB-006 and AFH-008 have opposite signed domains and non-interchangeable repairs (45465.426312ms)
+{"boundary":"MCB-015-vs-AFH-012","registeredVulnerable":{"zeroMembershipsBeforeOpen":"5","inflatedEquity":"24994000000000000000000","withdrew9000Wad":true,"normalizedEquity":"-29006000000000000000000"},"registeredZeroSizeControl":{"zeroAccepted":false,"memberships":"0"},"candidateRouteUnderRegisteredControl":{"precondition":"close/reopen, not repeated zero-size execution","memberships":"2","duplicatedPnlWad":"1000000000000000000000"},"omittedBySubmission":["zero-size setup","withdrawal through amplified health","price normalization","resulting deficit"],"conclusion":"one shared membership primitive only; registered end-to-end chain not demonstrated"}
+✔ MCB-015 full chain is blocked by its zero-size control while AFH-012 close/reopen survives (33126.144693ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 79292.686089
+

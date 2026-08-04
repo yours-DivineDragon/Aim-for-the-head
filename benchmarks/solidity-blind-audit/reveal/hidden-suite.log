@@ -1,0 +1,47 @@
+command: node --test --test-concurrency=1 .hidden/tests/*.test.mjs
+working_directory: fresh isolated validation root
+exit_code: 0
+runtime_note: Ganache fell back from its unavailable native µWS binary to the Node.js implementation.
+
+patched controls
+  PASS F-01 control rejects the compound path before credit is issued
+  PASS F-02 control does not consume the mutable pool quote
+  PASS F-03 control excludes unsolicited balances from the exchange rate
+  PASS F-04 control records debt before invoking the receiver
+  PASS F-05 control limits risk changes to the guardian
+  PASS F-06 control rounds the share burn upward
+  PASS F-07 control mints against the balance delta
+  PASS F-08 control binds an authorization to one router
+  PASS F-09 control binds the intended recipient
+  PASS F-10 control authenticates the configured remote gateway
+  PASS F-11 control namespaces nonces by source chain
+  PASS F-12 control permits initialization only once
+  PASS F-13 control rejects an expired report
+  PASS F-14 control reduces debt by the amount received
+  PASS F-15 control keys replay protection by the claim payload
+
+canonical reproductions
+  PASS F-01 compound valuation path creates a profitable reserve shortfall
+  PASS F-02 pool state immediately controls the lending price when the feed is unavailable
+  PASS F-03 an unsolicited vault transfer increases an existing borrow limit
+  PASS F-04 the borrow callback can release collateral before debt is recorded
+  PASS F-05 an untrusted account can raise the collateral factor
+  PASS F-06 coarse asset units permit withdrawals that burn zero shares
+  PASS F-07 nominal deposits dilute existing holders for transfer-fee assets
+  PASS F-08 one authorization executes on two router deployments
+  PASS F-09 a submitter can replace the transfer recipient
+  PASS F-10 a message from a non-gateway remote sender creates usable collateral
+  PASS F-11 equal nonces on different source chains collide
+  PASS F-12 the strategy can be initialized again and its balance swept
+  PASS F-13 an expired feed report remains usable for borrowing
+  PASS F-14 repayment reduces debt by more than a transfer-fee token delivers
+  PASS F-15 a malleated claim signature is accepted as a second claim
+
+tests: 30
+suites: 2
+passed: 30
+failed: 0
+cancelled: 0
+skipped: 0
+todo: 0
+duration_ms: 37095.836144

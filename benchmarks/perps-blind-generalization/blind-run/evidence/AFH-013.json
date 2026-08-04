@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "caseId": "AFH-013",
+  "targetRevision": "158651792f770f5e827c1f0c363ea91f916cb1b8",
+  "compiler": "solc-js 0.8.30; optimizer 300; viaIR; Shanghai; metadata hash disabled",
+  "runtime": "Node 24; deterministic Ganache chain 31337; isolated local process",
+  "destructiveOrExternalEffects": false,
+  "executions": [
+    {
+      "command": "node --test --test-concurrency=1 --test-name-pattern=H-013 blind-run/poc/core-accounting.test.mjs",
+      "freshProcess": true,
+      "releaseLike": true,
+      "embeddedNegativeControl": true,
+      "oracle": {
+        "hunterId": "H-013",
+        "observedNegativeCorrOppositeRisk": "200000000000000000000",
+        "expectedSignAwareRisk": "600000000000000000000",
+        "positiveCorrOppositeControlRisk": "200000000000000000000"
+      }
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "schema_version": "1.0.0",
+  "maximum_score": 104,
+  "matching": {
+    "exact_detection": {
+      "definition": "The report identifies the same root cause, affected execution path, realistic prerequisites, and security impact as one canonical finding.",
+      "award": "Use the finding's exact band up to max_points. Full points require location, mechanism, exploitability, and impact; a runnable proof is preferred but not mandatory when the narrative is complete."
+    },
+    "partial_detection": {
+      "definition": "The report overlaps the canonical root cause but omits a material trigger, component, cross-contract edge, or impact.",
+      "award": "Use only the finding's partial band. A generic best-practice statement without a concrete protocol path receives zero."
+    },
+    "severity_error": {
+      "definition": "Root cause is matched but the reported severity differs from canonical severity.",
+      "award": "Apply the per-finding cap. One-level overstatement is capped at 80% unless the finding gives a valid benchmark-specific impact; understatement uses the explicit canonical cap."
+    },
+    "duplicate": {
+      "definition": "Two report items describe the same canonical root cause or merely restate a linked primitive without a distinct impact.",
+      "award": "Score only the strongest matching item. All duplicates receive zero and do not add penalties unless they also make false claims."
+    },
+    "false_positive": {
+      "definition": "The report asserts an exploitable issue that does not reproduce under benchmark assumptions, treats stated mock privileges as findings, or flags a protected negative-control path as vulnerable.",
+      "award": "Subtract 2 points for an unsupported Low/Medium claim, 4 for an unsupported High/Critical claim, and 5 for claiming a tested negative-control path is exploitable."
+    }
+  },
+  "chain_rules": {
+    "F-01": "Score only when the report combines F-02 and F-03 into the profitable flash-funded multiplicative drain. F-02 and F-03 remain independently scorable. Do not infer F-01 merely because both primitive titles appear separately.",
+    "linked_but_distinct": [
+      "F-08 and F-09 are distinct because deployment-domain replay and recipient substitution require different signed-field fixes.",
+      "F-07 and F-14 are distinct because vault share issuance and lending debt reduction maintain different accounting invariants.",
+      "F-10 and F-11 are distinct because remote sender authentication causes asset loss while nonce namespacing causes cross-chain liveness failure."
+    ]
+  },
+  "finalization": {
+    "minimum_score": 0,
+    "maximum_score": 104,
+    "rounding": "Round only the final score to the nearest 0.5 point.",
+    "evidence_priority": ["reproduced transaction or test", "complete code-level narrative", "correct root cause with incomplete impact", "generic warning"]
+  }
+}
+

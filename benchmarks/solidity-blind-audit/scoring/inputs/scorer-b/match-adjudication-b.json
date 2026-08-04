@@ -1,0 +1,615 @@
+{
+  "schema_version": "1.0.0",
+  "scorer": "post-reveal-b",
+  "adjudication_basis": {
+    "matching_rule": "One-to-one matching on reproduced root cause, affected execution path, realistic prerequisites, and demonstrated impact; titles and class labels were not used as substitutes for mechanism matching.",
+    "candidate_validity_and_severity_source": "inputs/blind-consensus.json",
+    "match_credit": {
+      "exact": 1,
+      "partial": 0.5,
+      "miss": 0
+    },
+    "candidate_reuse_prohibited": true,
+    "truth_unit_reuse_prohibited": true
+  },
+  "input_integrity": {
+    "all_8_json_files_parse": true,
+    "regular_input_files_hashed": 65,
+    "supplied_hashes": {
+      "inputs/ground-truth.json": {
+        "expected": "b200a4a2908b88a3db88d485a173fe60a434968bc8a785a3d3b202aea4031475",
+        "observed": "b200a4a2908b88a3db88d485a173fe60a434968bc8a785a3d3b202aea4031475",
+        "match": true
+      },
+      "inputs/candidates.json": {
+        "expected": "82a3a57f53ab8dd36ee9560ef9007d77e734fc519d5cf166812c7bf904e970e1",
+        "observed": "82a3a57f53ab8dd36ee9560ef9007d77e734fc519d5cf166812c7bf904e970e1",
+        "match": true
+      },
+      "inputs/blind-consensus.json": {
+        "expected": "37343dff87450a87a610af8b6ae0216456d8db86e026b697ee3548b051dfd210",
+        "observed": "37343dff87450a87a610af8b6ae0216456d8db86e026b697ee3548b051dfd210",
+        "match": true
+      }
+    },
+    "metadata_ground_truth_hash_match": true,
+    "full_inventory": "scoring-output/input-hashes.sha256"
+  },
+  "truth_units": [
+    {
+      "truth_id": "F-01",
+      "canonical_class": "multi-contract oracle/accounting exploit chain",
+      "canonical_severity": "critical",
+      "assigned_candidate_id": null,
+      "match": "miss",
+      "match_credit": 0,
+      "rationale": "No candidate composes fallback AMM manipulation with vault-rate donation in one flash-funded transaction and reaches the committed repayment/profit/reserve-loss oracle.",
+      "chain_handling": {
+        "kind": "composite",
+        "linked_primitives": ["F-02", "F-03"],
+        "decision": "C-008 independently earns F-02 only. No candidate demonstrates F-03, and separate primitive awareness cannot create F-01 credit. The 150,000 borrow, 100,050 repayment, 49,950 profit, and normalized undercollateralization oracle is absent."
+      },
+      "rubric_points": {
+        "maximum": 12,
+        "awarded": 0,
+        "cap_applied": null
+      },
+      "severity_comparison": {
+        "candidate_severity": null,
+        "relation": "unavailable_no_match",
+        "rank_delta": null
+      }
+    },
+    {
+      "truth_id": "F-02",
+      "canonical_class": "oracle manipulation",
+      "canonical_severity": "high",
+      "assigned_candidate_id": "C-008",
+      "match": "exact",
+      "match_credit": 1,
+      "rationale": "C-008 reproduces the nonpositive-feed fallback, same-block permissionless reserve-ratio manipulation, immediate LendingMarket consumption, and materially undercollateralized borrowing. Its observed price was about 3.994 rather than the canonical fixture's greater-than-100 value, but it reaches the same security impact oracle under realistic liquidity assumptions.",
+      "evidence": [
+        "inputs/evidence/C-008/REPORT.md",
+        "inputs/evidence/C-008/reproduction.log",
+        "inputs/blind-consensus.json candidate C-008"
+      ],
+      "chain_handling": {
+        "kind": "primitive",
+        "parent_chain": "F-01",
+        "decision": "Independently credited as a committed primitive; it does not imply parent-chain credit."
+      },
+      "rubric_points": {
+        "maximum": 7,
+        "awarded": 7,
+        "cap_applied": null
+      },
+      "severity_comparison": {
+        "candidate_severity": "high",
+        "relation": "aligned",
+        "rank_delta": 0
+      }
+    },
+    {
+      "truth_id": "F-03",
+      "canonical_class": "ERC-4626 integration accounting",
+      "canonical_severity": "medium",
+      "assigned_candidate_id": null,
+      "match": "miss",
+      "match_credit": 0,
+      "rationale": "No candidate posts shares as LendingMarket collateral and demonstrates a direct vault transfer increasing borrowLimit without additional shares. C-011 is not assigned: its tiny-supply, no-virtual-offset, convertToShares-zero deposit-denial defect has a different execution path, prerequisites, impact, and remediation from LendingMarket's trust in a donation-sensitive collateral rate.",
+      "chain_handling": {
+        "kind": "primitive",
+        "parent_chain": "F-01",
+        "decision": "No primitive credit; F-01 cannot infer this missing link from C-011's distinct vault availability claim."
+      },
+      "rubric_points": {
+        "maximum": 4,
+        "awarded": 0,
+        "cap_applied": null
+      },
+      "severity_comparison": {
+        "candidate_severity": null,
+        "relation": "unavailable_no_match",
+        "rank_delta": null
+      }
+    },
+    {
+      "truth_id": "F-04",
+      "canonical_class": "cross-function cross-contract reentrancy",
+      "canonical_severity": "high",
+      "assigned_candidate_id": "C-001",
+      "match": "partial",
+      "match_credit": 0.5,
+      "rationale": "C-001 strongly reproduces the same borrow callback-before-debt ordering defect and reaches undercollateralized debt, but it reenters borrow recursively. It does not execute the committed borrow-to-withdrawCollateral edge, recover the original shares, or show nonzero debt with localCollateral equal to zero.",
+      "evidence": [
+        "inputs/evidence/C-001/REPORT.md",
+        "inputs/evidence/C-001/repro.test.mjs",
+        "inputs/evidence/C-001/reproduction.log",
+        "inputs/blind-consensus.json candidate C-001"
+      ],
+      "chain_handling": {
+        "kind": "standalone",
+        "decision": "Top of the committed partial band because the ordering defect and exploitable stale-debt callback are runnable, while the required cross-function edge and final collateral oracle are missing."
+      },
+      "rubric_points": {
+        "maximum": 7,
+        "partial_band": "3-5",
+        "awarded": 5,
+        "cap_applied": "The partial-band maximum of 5 is already below the generic one-level-overstatement 80% cap of 5.6; no further reduction."
+      },
+      "severity_comparison": {
+        "candidate_severity": "critical",
+        "relation": "overcall",
+        "rank_delta": 1
+      }
+    },
+    {
+      "truth_id": "F-05",
+      "canonical_class": "access control / incorrect boolean logic",
+      "canonical_severity": "high",
+      "assigned_candidate_id": "C-006",
+      "match": "exact",
+      "match_credit": 1,
+      "rationale": "C-006 reproduces the precise non-guardian truth-table bypass, raises the factor from 7,500 to 9,500 bps, and borrows 949 rather than the former 750 limit.",
+      "evidence": [
+        "inputs/evidence/C-006/REPORT.md",
+        "inputs/evidence/C-006/reproduction.log",
+        "inputs/blind-consensus.json candidate C-006"
+      ],
+      "chain_handling": {
+        "kind": "standalone",
+        "decision": "Independent exact match."
+      },
+      "rubric_points": {
+        "maximum": 7,
+        "pre_severity_cap": 7,
+        "awarded": 5,
+        "cap_applied": "Canonical per-finding cap of 5 because frozen consensus severity is medium."
+      },
+      "severity_comparison": {
+        "candidate_severity": "medium",
+        "relation": "undercall",
+        "rank_delta": -1
+      }
+    },
+    {
+      "truth_id": "F-06",
+      "canonical_class": "ERC-4626 rounding direction",
+      "canonical_severity": "medium",
+      "assigned_candidate_id": null,
+      "match": "miss",
+      "match_credit": 0,
+      "rationale": "No candidate identifies floor-rounded withdraw share burns or demonstrates a zero-share account receiving assets without supply reduction.",
+      "chain_handling": {
+        "kind": "standalone",
+        "decision": "No linked candidate."
+      },
+      "rubric_points": {
+        "maximum": 4,
+        "awarded": 0,
+        "cap_applied": null
+      },
+      "severity_comparison": {
+        "candidate_severity": null,
+        "relation": "unavailable_no_match",
+        "rank_delta": null
+      }
+    },
+    {
+      "truth_id": "F-07",
+      "canonical_class": "fee-on-transfer accounting",
+      "canonical_severity": "high",
+      "assigned_candidate_id": null,
+      "match": "miss",
+      "match_credit": 0,
+      "rationale": "No candidate identifies nominal-versus-received share minting for fee-bearing vault deposits or demonstrates incumbent-holder dilution.",
+      "chain_handling": {
+        "kind": "standalone",
+        "linked_but_distinct_from": "F-14",
+        "decision": "No credit can be borrowed from the separately missed debt-repayment invariant."
+      },
+      "rubric_points": {
+        "maximum": 7,
+        "awarded": 0,
+        "cap_applied": null
+      },
+      "severity_comparison": {
+        "candidate_severity": null,
+        "relation": "unavailable_no_match",
+        "rank_delta": null
+      }
+    },
+    {
+      "truth_id": "F-08",
+      "canonical_class": "signature domain replay",
+      "canonical_severity": "high",
+      "assigned_candidate_id": "C-010",
+      "match": "exact",
+      "match_credit": 1,
+      "rationale": "C-010 reproduces omission of router and chain domain, independent per-router nonces, the required two approvals, and reuse of identical signature bytes to transfer twice the authorized amount.",
+      "evidence": [
+        "inputs/evidence/C-010/REPORT.md",
+        "inputs/evidence/C-010/reproduction.log",
+        "inputs/blind-consensus.json candidate C-010"
+      ],
+      "chain_handling": {
+        "kind": "standalone",
+        "linked_but_distinct_from": "F-09",
+        "decision": "Separately credited because domain separation and recipient binding have different prerequisites and fixes."
+      },
+      "rubric_points": {
+        "maximum": 7,
+        "pre_severity_cap": 7,
+        "awarded": 5,
+        "cap_applied": "Canonical per-finding cap of 5 because frozen consensus severity is medium."
+      },
+      "severity_comparison": {
+        "candidate_severity": "medium",
+        "relation": "undercall",
+        "rank_delta": -1
+      }
+    },
+    {
+      "truth_id": "F-09",
+      "canonical_class": "signature parameter substitution",
+      "canonical_severity": "high",
+      "assigned_candidate_id": "C-003",
+      "match": "exact",
+      "match_credit": 1,
+      "rationale": "C-003 reproduces that recipient is absent from the signed payload and shows a malicious relayer redirecting the full 25-token authorization to itself while consuming the nonce.",
+      "evidence": [
+        "inputs/evidence/C-003/REPORT.md",
+        "inputs/evidence/C-003/reproduction.log",
+        "inputs/blind-consensus.json candidate C-003"
+      ],
+      "chain_handling": {
+        "kind": "standalone",
+        "linked_but_distinct_from": "F-08",
+        "decision": "Separately credited; no duplicate collapse with domain replay."
+      },
+      "rubric_points": {
+        "maximum": 7,
+        "awarded": 7,
+        "cap_applied": null
+      },
+      "severity_comparison": {
+        "candidate_severity": "high",
+        "relation": "aligned",
+        "rank_delta": 0
+      }
+    },
+    {
+      "truth_id": "F-10",
+      "canonical_class": "cross-domain authentication / cross-contract invariant",
+      "canonical_severity": "critical",
+      "assigned_candidate_id": "C-002",
+      "match": "exact",
+      "match_credit": 1,
+      "rationale": "C-002 reproduces the missing xDomainMessageSender-to-remoteGateway comparison, fabricated bridge collateral from a mismatching remote application, and a 750-token borrow backed only by the fabricated 1,000-token credit.",
+      "evidence": [
+        "inputs/evidence/C-002/REPORT.md",
+        "inputs/evidence/C-002/reproduction.log",
+        "inputs/blind-consensus.json candidate C-002"
+      ],
+      "chain_handling": {
+        "kind": "standalone",
+        "linked_but_distinct_from": "F-11",
+        "decision": "Separately credited; remote-sender authentication is not nonce namespacing."
+      },
+      "rubric_points": {
+        "maximum": 10,
+        "awarded": 10,
+        "cap_applied": null
+      },
+      "severity_comparison": {
+        "candidate_severity": "critical",
+        "relation": "aligned",
+        "rank_delta": 0
+      }
+    },
+    {
+      "truth_id": "F-11",
+      "canonical_class": "cross-chain replay namespace / denial of service",
+      "canonical_severity": "medium",
+      "assigned_candidate_id": "C-007",
+      "match": "exact",
+      "match_credit": 1,
+      "rationale": "C-007 reproduces a global uint64 nonce key across two configured source chains: chain 10 nonce 7 succeeds and the otherwise-valid chain 20 nonce 7 reverts with no credit.",
+      "evidence": [
+        "inputs/evidence/C-007/REPORT.md",
+        "inputs/evidence/C-007/reproduction.log",
+        "inputs/blind-consensus.json candidate C-007"
+      ],
+      "chain_handling": {
+        "kind": "standalone",
+        "linked_but_distinct_from": "F-10",
+        "decision": "Separately credited; liveness collision is distinct from fabricated-credit authentication failure."
+      },
+      "rubric_points": {
+        "maximum": 4,
+        "awarded": 4,
+        "cap_applied": null
+      },
+      "severity_comparison": {
+        "candidate_severity": "medium",
+        "relation": "aligned",
+        "rank_delta": 0
+      }
+    },
+    {
+      "truth_id": "F-12",
+      "canonical_class": "initialization / configuration takeover",
+      "canonical_severity": "high",
+      "assigned_candidate_id": "C-005",
+      "match": "exact",
+      "match_credit": 1,
+      "rationale": "C-005 reproduces unrestricted repeated initialization, overwrites vault and operator after honest setup, drains the full module balance, and demonstrates seized execute authority.",
+      "evidence": [
+        "inputs/evidence/C-005/REPORT.md",
+        "inputs/evidence/C-005/reproduction.log",
+        "inputs/blind-consensus.json candidate C-005"
+      ],
+      "chain_handling": {
+        "kind": "standalone",
+        "decision": "Independent exact match."
+      },
+      "rubric_points": {
+        "maximum": 7,
+        "awarded": 7,
+        "cap_applied": null
+      },
+      "severity_comparison": {
+        "candidate_severity": "high",
+        "relation": "aligned",
+        "rank_delta": 0
+      }
+    },
+    {
+      "truth_id": "F-13",
+      "canonical_class": "stale oracle data",
+      "canonical_severity": "high",
+      "assigned_candidate_id": "C-009",
+      "match": "exact",
+      "match_credit": 1,
+      "rationale": "C-009 reproduces unconditional acceptance of a year-old positive primary answer and uses the two-dollar stale value to borrow 1,500 rather than the contemporaneous one-dollar comparator's 750.",
+      "evidence": [
+        "inputs/evidence/C-009/REPORT.md",
+        "inputs/evidence/C-009/reproduction.log",
+        "inputs/blind-consensus.json candidate C-009"
+      ],
+      "chain_handling": {
+        "kind": "standalone",
+        "decision": "Independent exact match; it remains distinct from F-02's fallback manipulation."
+      },
+      "rubric_points": {
+        "maximum": 7,
+        "awarded": 7,
+        "cap_applied": null
+      },
+      "severity_comparison": {
+        "candidate_severity": "high",
+        "relation": "aligned",
+        "rank_delta": 0
+      }
+    },
+    {
+      "truth_id": "F-14",
+      "canonical_class": "fee-on-transfer debt accounting",
+      "canonical_severity": "high",
+      "assigned_candidate_id": null,
+      "match": "miss",
+      "match_credit": 0,
+      "rationale": "No candidate identifies nominal debt reduction despite a fee-bearing stable token delivering less to the market or demonstrates the resulting reserve deficit.",
+      "chain_handling": {
+        "kind": "standalone",
+        "linked_but_distinct_from": "F-07",
+        "decision": "No candidate and no credit inherited from vault accounting."
+      },
+      "rubric_points": {
+        "maximum": 7,
+        "awarded": 0,
+        "cap_applied": null
+      },
+      "severity_comparison": {
+        "candidate_severity": null,
+        "relation": "unavailable_no_match",
+        "rank_delta": null
+      }
+    },
+    {
+      "truth_id": "F-15",
+      "canonical_class": "ECDSA malleability / replay accounting",
+      "canonical_severity": "high",
+      "assigned_candidate_id": "C-004",
+      "match": "exact",
+      "match_credit": 1,
+      "rationale": "C-004 reproduces raw-signature-byte replay keys combined with accepted low/high-s and v aliases; four encodings of one 20-token authorization pay 80 tokens, which includes and exceeds the committed two-encoding oracle.",
+      "evidence": [
+        "inputs/evidence/C-004/REPORT.md",
+        "inputs/evidence/C-004/reproduction.log",
+        "inputs/blind-consensus.json candidate C-004"
+      ],
+      "chain_handling": {
+        "kind": "standalone",
+        "decision": "Independent exact match."
+      },
+      "rubric_points": {
+        "maximum": 7,
+        "awarded": 7,
+        "cap_applied": null
+      },
+      "severity_comparison": {
+        "candidate_severity": "high",
+        "relation": "aligned",
+        "rank_delta": 0
+      }
+    }
+  ],
+  "candidate_dispositions": [
+    {
+      "candidate_id": "C-001",
+      "consensus_status": "reproduced",
+      "scope": "in_scope",
+      "consensus_severity": "critical",
+      "assigned_truth_id": "F-04",
+      "disposition": "partial_match",
+      "representative": true,
+      "duplicate_cluster": null,
+      "false_positive": false,
+      "rationale": "Same callback-before-debt defect, but recursive borrow is not the committed borrow-to-withdrawCollateral execution path and does not reach its localCollateral-zero oracle."
+    },
+    {
+      "candidate_id": "C-002",
+      "consensus_status": "reproduced",
+      "scope": "in_scope",
+      "consensus_severity": "critical",
+      "assigned_truth_id": "F-10",
+      "disposition": "exact_match",
+      "representative": true,
+      "duplicate_cluster": null,
+      "false_positive": false,
+      "rationale": "Exact remote-sender authentication failure and fabricated-collateral borrow impact."
+    },
+    {
+      "candidate_id": "C-003",
+      "consensus_status": "reproduced",
+      "scope": "in_scope",
+      "consensus_severity": "high",
+      "assigned_truth_id": "F-09",
+      "disposition": "exact_match",
+      "representative": true,
+      "duplicate_cluster": null,
+      "false_positive": false,
+      "rationale": "Exact recipient-substitution defect and redirected-transfer impact."
+    },
+    {
+      "candidate_id": "C-004",
+      "consensus_status": "reproduced",
+      "scope": "in_scope",
+      "consensus_severity": "high",
+      "assigned_truth_id": "F-15",
+      "disposition": "exact_match",
+      "representative": true,
+      "duplicate_cluster": null,
+      "false_positive": false,
+      "rationale": "Exact malleable encoding plus raw-signature replay-key defect."
+    },
+    {
+      "candidate_id": "C-005",
+      "consensus_status": "reproduced",
+      "scope": "in_scope",
+      "consensus_severity": "high",
+      "assigned_truth_id": "F-12",
+      "disposition": "exact_match",
+      "representative": true,
+      "duplicate_cluster": null,
+      "false_positive": false,
+      "rationale": "Exact repeated-initializer takeover and module asset/control impact."
+    },
+    {
+      "candidate_id": "C-006",
+      "consensus_status": "reproduced",
+      "scope": "in_scope",
+      "consensus_severity": "medium",
+      "assigned_truth_id": "F-05",
+      "disposition": "exact_match",
+      "representative": true,
+      "duplicate_cluster": null,
+      "false_positive": false,
+      "rationale": "Exact public-increase boolean bypass; canonical severity is undercalled by one rank."
+    },
+    {
+      "candidate_id": "C-007",
+      "consensus_status": "reproduced",
+      "scope": "in_scope",
+      "consensus_severity": "medium",
+      "assigned_truth_id": "F-11",
+      "disposition": "exact_match",
+      "representative": true,
+      "duplicate_cluster": null,
+      "false_positive": false,
+      "rationale": "Exact cross-source-chain nonce collision and denied-credit impact."
+    },
+    {
+      "candidate_id": "C-008",
+      "consensus_status": "reproduced",
+      "scope": "in_scope",
+      "consensus_severity": "high",
+      "assigned_truth_id": "F-02",
+      "disposition": "exact_match",
+      "representative": true,
+      "duplicate_cluster": null,
+      "false_positive": false,
+      "rationale": "Exact fallback spot manipulation and lending impact; does not receive F-01 composite credit."
+    },
+    {
+      "candidate_id": "C-009",
+      "consensus_status": "reproduced",
+      "scope": "in_scope",
+      "consensus_severity": "high",
+      "assigned_truth_id": "F-13",
+      "disposition": "exact_match",
+      "representative": true,
+      "duplicate_cluster": null,
+      "false_positive": false,
+      "rationale": "Exact stale-positive-feed acceptance and excessive-borrow impact."
+    },
+    {
+      "candidate_id": "C-010",
+      "consensus_status": "reproduced",
+      "scope": "in_scope",
+      "consensus_severity": "medium",
+      "assigned_truth_id": "F-08",
+      "disposition": "exact_match",
+      "representative": true,
+      "duplicate_cluster": null,
+      "false_positive": false,
+      "rationale": "Exact router-domain replay with the required second approval; canonical severity is undercalled by one rank."
+    },
+    {
+      "candidate_id": "C-011",
+      "consensus_status": "reproduced",
+      "scope": "in_scope",
+      "consensus_severity": "low",
+      "assigned_truth_id": null,
+      "disposition": "novel_valid",
+      "representative": true,
+      "duplicate_cluster": null,
+      "false_positive": false,
+      "rationale": "Reproduced first-share donation deposit denial with fully recoverable capital. It is unmatched because its tiny-supply rounding/availability mechanism and virtual-offset remediation are distinct from F-03's lending-collateral valuation path."
+    }
+  ],
+  "aggregate_dispositions": {
+    "truth_units": 15,
+    "exact_matches": 9,
+    "partial_matches": 1,
+    "misses": 5,
+    "raw_claims": 11,
+    "unique_candidate_clusters": 11,
+    "exact_match_candidates": 9,
+    "partial_match_candidates": 1,
+    "novel_valid_candidates": 1,
+    "invalid_candidates": 0,
+    "false_positive_clusters": 0,
+    "duplicate_claims": 0,
+    "duplicate_clusters": 0
+  },
+  "lists": {
+    "exact": [
+      "F-02:C-008",
+      "F-05:C-006",
+      "F-08:C-010",
+      "F-09:C-003",
+      "F-10:C-002",
+      "F-11:C-007",
+      "F-12:C-005",
+      "F-13:C-009",
+      "F-15:C-004"
+    ],
+    "partial": ["F-04:C-001"],
+    "missed": ["F-01", "F-03", "F-06", "F-07", "F-14"],
+    "novel_valid": ["C-011"],
+    "invalid": [],
+    "duplicates": []
+  }
+}

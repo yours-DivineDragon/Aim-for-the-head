@@ -1,0 +1,263 @@
+{
+  "schema": 1,
+  "candidateProcesses": 25,
+  "candidatePasses": 25,
+  "ambiguityDiscriminationProcesses": 4,
+  "candidates": [
+    {
+      "id": "AFH-001",
+      "freshProcess": true,
+      "embeddedNegativeControl": true,
+      "attempts": 1,
+      "path": "logs/candidate-AFH-001.log",
+      "sha256": "de59a62d721c6732303378c1ea17d364c7be7805b92b3172570bb332b13c617e",
+      "exitCode": 0
+    },
+    {
+      "id": "AFH-002",
+      "freshProcess": true,
+      "embeddedNegativeControl": true,
+      "attempts": 1,
+      "path": "logs/candidate-AFH-002.log",
+      "sha256": "58de74423e7cc944d8eee8888192b3723b77f8c6e1fac7a52554626163c5272c",
+      "exitCode": 0
+    },
+    {
+      "id": "AFH-003",
+      "freshProcess": true,
+      "embeddedNegativeControl": true,
+      "attempts": 1,
+      "path": "logs/candidate-AFH-003.log",
+      "sha256": "8200526459758fd22f6e1af84eba450768ca619a66ef6cde839d8d6e7c320398",
+      "exitCode": 0
+    },
+    {
+      "id": "AFH-004",
+      "freshProcess": true,
+      "embeddedNegativeControl": true,
+      "attempts": 1,
+      "path": "logs/candidate-AFH-004.log",
+      "sha256": "cfb4678a3313480cc53f9c9df434d3bef9ecd0e58a03bb8fe399c42ed735eba2",
+      "exitCode": 0
+    },
+    {
+      "id": "AFH-005",
+      "freshProcess": true,
+      "embeddedNegativeControl": true,
+      "attempts": 1,
+      "path": "logs/candidate-AFH-005.log",
+      "sha256": "5be710b69fb21967bf5ad0ee22a23aa7582ad135961179709db103aa22585ed7",
+      "exitCode": 0
+    },
+    {
+      "id": "AFH-006",
+      "freshProcess": true,
+      "embeddedNegativeControl": true,
+      "attempts": 1,
+      "path": "logs/candidate-AFH-006.log",
+      "sha256": "ae07c6afe08bc229059e22e5b4605d4c9b64362cb4c4f413a46846a8efe5947e",
+      "exitCode": 0
+    },
+    {
+      "id": "AFH-007",
+      "freshProcess": true,
+      "embeddedNegativeControl": true,
+      "attempts": 1,
+      "path": "logs/candidate-AFH-007.log",
+      "sha256": "bad40d26b49760f286c8d9e61e867fb9d299d352016326343c52c5e385fc8254",
+      "exitCode": 0
+    },
+    {
+      "id": "AFH-008",
+      "freshProcess": true,
+      "embeddedNegativeControl": true,
+      "attempts": 1,
+      "path": "logs/candidate-AFH-008.log",
+      "sha256": "c514b254fdfe22580c9c0f39033f81698a63351898f0eccff973ecc9843cec11",
+      "exitCode": 0
+    },
+    {
+      "id": "AFH-009",
+      "freshProcess": true,
+      "embeddedNegativeControl": true,
+      "attempts": 1,
+      "path": "logs/candidate-AFH-009.log",
+      "sha256": "390d01583154c39890b8780e5d86c4fc76fee85f1af2fc5bd9489a69c685b7c0",
+      "exitCode": 0
+    },
+    {
+      "id": "AFH-010",
+      "freshProcess": true,
+      "embeddedNegativeControl": true,
+      "attempts": 1,
+      "path": "logs/candidate-AFH-010.log",
+      "sha256": "4871fdd85e06c98c895097ba73b3c3c6661f0c37ce7d3d58336dffaf79186218",
+      "exitCode": 0
+    },
+    {
+      "id": "AFH-011",
+      "freshProcess": true,
+      "embeddedNegativeControl": true,
+      "attempts": 1,
+      "path": "logs/candidate-AFH-011.log",
+      "sha256": "e2f8768ac26ac0e6d28988033cd35feca0bf1573f20a7f4e3b617fae87bd2819",
+      "exitCode": 0
+    },
+    {
+      "id": "AFH-012",
+      "freshProcess": true,
+      "embeddedNegativeControl": true,
+      "attempts": 1,
+      "path": "logs/candidate-AFH-012.log",
+      "sha256": "ec1ac602a5a8b707b0685ecc815ab17df35d26ead5ee91158ff0541bf6b279c3",
+      "exitCode": 0
+    },
+    {
+      "id": "AFH-013",
+      "freshProcess": true,
+      "embeddedNegativeControl": true,
+      "attempts": 1,
+      "path": "logs/candidate-AFH-013.log",
+      "sha256": "a554ebb30159ea953de73272cd3257fbe99f5dd99fe5a5240f4dc90119cce41d",
+      "exitCode": 0
+    },
+    {
+      "id": "AFH-014",
+      "freshProcess": true,
+      "embeddedNegativeControl": true,
+      "attempts": 1,
+      "path": "logs/candidate-AFH-014.log",
+      "sha256": "93c7c4884f0496d2bed43065c344f9ff5e70271298902eac71bd75efdf11732e",
+      "exitCode": 0
+    },
+    {
+      "id": "AFH-015",
+      "freshProcess": true,
+      "embeddedNegativeControl": true,
+      "attempts": 1,
+      "path": "logs/candidate-AFH-015.log",
+      "sha256": "b60fcd601996b775b7f45a4815de087dc0adeea71f58ef147fe4b7be02d63a4e",
+      "exitCode": 0
+    },
+    {
+      "id": "AFH-016",
+      "freshProcess": true,
+      "embeddedNegativeControl": true,
+      "attempts": 1,
+      "path": "logs/candidate-AFH-016.log",
+      "sha256": "2b33b69e1f0137fd82cf81b5f67cc94c868a98aa14e8403d4a6891e790202599",
+      "exitCode": 0
+    },
+    {
+      "id": "AFH-017",
+      "freshProcess": true,
+      "embeddedNegativeControl": true,
+      "attempts": 1,
+      "path": "logs/candidate-AFH-017.log",
+      "sha256": "0319638682ec8ee811552b938ef73fc19e0eb090ba2ad4d3e4d9329cb536290c",
+      "exitCode": 0
+    },
+    {
+      "id": "AFH-018",
+      "freshProcess": true,
+      "embeddedNegativeControl": true,
+      "attempts": 1,
+      "path": "logs/candidate-AFH-018.log",
+      "sha256": "dd9f365d0942d8ff618cbc30eb5b49ff2f840f9573de9891305b35f39b1b0b08",
+      "exitCode": 0
+    },
+    {
+      "id": "AFH-019",
+      "freshProcess": true,
+      "embeddedNegativeControl": true,
+      "attempts": 1,
+      "path": "logs/candidate-AFH-019.log",
+      "sha256": "85b69814a56c16d84d1d009b8dd46d8ba4d124143765b7dc8dc11898c149c246",
+      "exitCode": 0
+    },
+    {
+      "id": "AFH-020",
+      "freshProcess": true,
+      "embeddedNegativeControl": true,
+      "attempts": 1,
+      "path": "logs/candidate-AFH-020.log",
+      "sha256": "8467de744d90f827cc3e178bc04c8eb3023052f5a8ff288b8c1496195f820a0c",
+      "exitCode": 0
+    },
+    {
+      "id": "AFH-021",
+      "freshProcess": true,
+      "embeddedNegativeControl": true,
+      "attempts": 2,
+      "path": "logs/candidate-AFH-021-attempt-2.log",
+      "sha256": "4967b769f487f19b42d0ec8d7779857307789d18e84d3da31e2651875dbf8d8e",
+      "exitCode": 0
+    },
+    {
+      "id": "AFH-022",
+      "freshProcess": true,
+      "embeddedNegativeControl": true,
+      "attempts": 1,
+      "path": "logs/candidate-AFH-022.log",
+      "sha256": "875492b24b790a9933f9f0e4bad19e90f0a64a2e789d3ee81deb943dc0e926bf",
+      "exitCode": 0
+    },
+    {
+      "id": "AFH-023",
+      "freshProcess": true,
+      "embeddedNegativeControl": true,
+      "attempts": 1,
+      "path": "logs/candidate-AFH-023.log",
+      "sha256": "a2830046101bc4f94d5f9aa7a02b849c37f33f72995d60daca4c5caba823f947",
+      "exitCode": 0
+    },
+    {
+      "id": "AFH-024",
+      "freshProcess": true,
+      "embeddedNegativeControl": true,
+      "attempts": 1,
+      "path": "logs/candidate-AFH-024.log",
+      "sha256": "811bf7438a05224f99fcdede3c43bcf1ddf8fb48585cb3d75140ca5dfc8804b0",
+      "exitCode": 0
+    },
+    {
+      "id": "AFH-025",
+      "freshProcess": true,
+      "embeddedNegativeControl": true,
+      "attempts": 1,
+      "path": "logs/candidate-AFH-025.log",
+      "sha256": "ad42f22d829617715213b7c127b7cde484baafa2077780b50d628de302b8817d",
+      "exitCode": 0
+    }
+  ],
+  "discrimination": [
+    {
+      "id": "MCB-006-vs-AFH-008",
+      "conclusion": "AFH-008 survives the canonical signed-floor repair, so checkpoint splitting with a positive product is a distinct unregistered defect and does not match MCB-006.",
+      "compile": {
+        "path": "logs/discrimination-MCB-006-compile.log",
+        "sha256": "3bab2994d615a002a07630a73eb89cc1885a2fa13fe857a3ed68ede8624b146a",
+        "exitCode": 0
+      },
+      "survivor": {
+        "path": "logs/discrimination-MCB-006-vs-AFH-008.log",
+        "sha256": "8df3a616f14ec460f654770d340970659050813020df02b39c76359b179d1ec3",
+        "exitCode": 0
+      }
+    },
+    {
+      "id": "MCB-015-vs-AFH-012",
+      "conclusion": "AFH-012 survives the registered zero-size-chain control. It identifies the shared missing-membership-uniqueness primitive through close/reopen, but not the zero-size setup, withdrawal, normalization, or deficit chain; factor 0.3 is the registered fragment boundary.",
+      "compile": {
+        "path": "logs/discrimination-MCB-015-compile.log",
+        "sha256": "e4cf683727fd35329e48cb9533bbdc805b3de46d125050f50488f7961b75330e",
+        "exitCode": 0
+      },
+      "survivor": {
+        "path": "logs/discrimination-MCB-015-vs-AFH-012.log",
+        "sha256": "a3d53179fe0350e823b6f863c68bb1d8386bca87749d9ec4a01aad7c91c09bf5",
+        "exitCode": 0
+      }
+    }
+  ]
+}

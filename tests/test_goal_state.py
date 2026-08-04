@@ -20,10 +20,14 @@ DEFAULT_GATES = (
     "independent-reproduction",
     "duplicate-check",
     "human-review",
+    "downstream-impact",
+    "composition-review",
 )
 EXHAUSTION_OBLIGATIONS = (
     "Complete the prioritized surface queue",
     "Record all coverage dimensions",
+    "Complete every mandatory deep-hunt pass",
+    "Resolve every supported primitive-to-consumer and primitive-to-primitive join",
     "Report residual risks and untested surfaces",
 )
 COVERAGE_DIMENSIONS = (
@@ -35,7 +39,26 @@ COVERAGE_DIMENSIONS = (
     "config-build",
     "historical-family",
     "falsification",
+    "business-invariant",
+    "consumer-propagation",
+    "boundary-arithmetic",
+    "external-semantics",
+    "sequence-interleaving",
+    "exploit-composition",
+    "economic-closure",
 )
+MANDATORY_PASSES = {
+    "business-invariant": (
+        "business-flow-and-state-machine-model",
+        "asset-liability-conservation-ledger",
+    ),
+    "consumer-propagation": ("mutable-value-to-downstream-consumer-map",),
+    "boundary-arithmetic": ("rounding-unit-and-zero-boundaries",),
+    "external-semantics": ("interface-promise-versus-runtime-delta-matrix",),
+    "sequence-interleaving": ("callback-and-action-sequence-matrix",),
+    "exploit-composition": ("primitive-join-graph",),
+    "economic-closure": ("funding-repayment-profit-and-system-loss-ledger",),
+}
 
 
 class GoalStateTests(unittest.TestCase):
@@ -89,6 +112,10 @@ class GoalStateTests(unittest.TestCase):
             "security_invariants": ["Archive entries remain inside the import directory"],
             "required_impact": ["Unauthorized filesystem write"],
             "realistic_configurations": ["Default release build"],
+            "business_flows": ["User archive becomes files below an import root"],
+            "accounting_invariants": ["Every output path remains rooted below import"],
+            "external_semantic_assumptions": ["Filesystem path resolution is canonical"],
+            "attacker_funding_sources": ["No funding is required for this fixture"],
         }
         contract["novelty_policy"] = "Check duplicates after the trigger is stable"
         contract_path.write_text(json.dumps(contract, indent=2) + "\n", encoding="utf-8")
@@ -123,6 +150,23 @@ class GoalStateTests(unittest.TestCase):
         for obligation in EXHAUSTION_OBLIGATIONS:
             result.extend(("--obligation", obligation))
         return result
+
+    def complete_mandatory_passes(self):
+        for dimension, items in MANDATORY_PASSES.items():
+            for item in items:
+                self.run_cli(
+                    "coverage",
+                    "--dir",
+                    self.root,
+                    "--dimension",
+                    dimension,
+                    "--item",
+                    item,
+                    "--status",
+                    "tested",
+                    "--evidence",
+                    f"artifacts/{dimension}-{item}.md",
+                )
 
     def test_init_scaffolds_and_refuses_overwrite(self):
         self.initialize()
@@ -218,7 +262,7 @@ class GoalStateTests(unittest.TestCase):
             for line in (self.root / "candidates.jsonl").read_text(encoding="utf-8").splitlines()
         ]
         self.assertEqual([record["revision"] for record in candidates], [1, 2])
-        self.run_cli(
+        finish = (
             "finish",
             "--dir",
             self.root,
@@ -231,10 +275,16 @@ class GoalStateTests(unittest.TestCase):
             "--evidence",
             "findings/C-001.md",
         )
+        incomplete = self.run_cli(*finish, expected=2)
+        self.assertIn("mandatory hunt pass", incomplete.stderr)
+        self.complete_mandatory_passes()
+        self.run_cli(*finish)
         self.run_cli("check", "--dir", self.root, "--phase", "terminal")
         status = json.loads(self.run_cli("status", "--dir", self.root).stdout)
         self.assertEqual(status["status"], "completed")
         self.assertEqual(status["outcome"], "validated")
+        self.assertEqual(status["workflow_version"], 2)
+        self.assertEqual(set(status["mandatory_passes"].values()), {"tested"})
         self.assertEqual(status["candidates"]["C-001"]["revision"], 2)
 
     def test_validated_candidate_rejects_missing_gate(self):
@@ -306,7 +356,7 @@ class GoalStateTests(unittest.TestCase):
             "artifacts/archive-import.log",
         )
         for dimension in COVERAGE_DIMENSIONS:
-            if dimension == "attack-surface":
+            if dimension == "attack-surface" or dimension in MANDATORY_PASSES:
                 continue
             self.run_cli(
                 "coverage",
@@ -321,6 +371,7 @@ class GoalStateTests(unittest.TestCase):
                 "--evidence",
                 f"artifacts/{dimension}.log",
             )
+        self.complete_mandatory_passes()
         self.run_cli(*finish_command)
         self.run_cli("check", "--dir", self.root, "--phase", "terminal")
 
@@ -465,6 +516,79 @@ class GoalStateTests(unittest.TestCase):
         self.assertIn("non-optional gates", result.stdout)
         self.assertIn("explicit requirement or omission", result.stdout)
         self.assertIn("waiver_policy", result.stdout)
+
+    def test_v2_contract_cannot_drop_a_mandatory_deep_hunt_pass(self):
+        self.initialize()
+        self.complete_contract()
+        contract_path = self.root / "contract.json"
+        contract = json.loads(contract_path.read_text(encoding="utf-8"))
+        del contract["search_requirements"]["mandatory_passes"]["exploit-composition"]
+        contract_path.write_text(json.dumps(contract, indent=2) + "\n", encoding="utf-8")
+        result = self.run_cli(
+            "check", "--dir", self.root, "--phase", "activation", expected=2
+        )
+        self.assertIn("mandatory passes omitted: exploit-composition", result.stdout)
+
+    def test_legacy_workflow_contract_remains_checkable(self):
+        self.initialize()
+        self.complete_contract()
+        contract_path = self.root / "contract.json"
+        contract = json.loads(contract_path.read_text(encoding="utf-8"))
+        contract["workflow_version"] = 1
+        del contract["search_requirements"]
+        for field in (
+            "business_flows",
+            "accounting_invariants",
+            "external_semantic_assumptions",
+            "attacker_funding_sources",
+        ):
+            del contract["threat_model"][field]
+        for gate in ("downstream-impact", "composition-review"):
+            contract["evidence_requirements"]["required_gates"].remove(gate)
+        contract_path.write_text(json.dumps(contract, indent=2) + "\n", encoding="utf-8")
+        self.run_cli("check", "--dir", self.root, "--phase", "activation")
+        self.run_cli(
+            "transition",
+            "--dir",
+            self.root,
+            "--status",
+            "active",
+            "--reason",
+            "Legacy contract approved",
+        )
+        gate_arguments = []
+        for gate in DEFAULT_GATES[:-2]:
+            gate_arguments.extend(("--gate", f"{gate}=artifacts/{gate}.txt"))
+        self.run_cli(
+            "candidate",
+            "--dir",
+            self.root,
+            "--id",
+            "C-LEGACY",
+            "--status",
+            "validated",
+            "--title",
+            "Legacy validated candidate",
+            "--summary",
+            "The legacy gate set remains valid",
+            "--evidence",
+            "artifacts/reproduction.log",
+            *gate_arguments,
+        )
+        self.run_cli(
+            "finish",
+            "--dir",
+            self.root,
+            "--outcome",
+            "validated",
+            "--candidate-id",
+            "C-LEGACY",
+            "--reason",
+            "Legacy validation passed",
+            "--evidence",
+            "reports/legacy.md",
+        )
+        self.run_cli("check", "--dir", self.root, "--phase", "terminal")
 
     def test_optional_gates_require_explicit_omission_reasons(self):
         self.initialize(mode="validation")

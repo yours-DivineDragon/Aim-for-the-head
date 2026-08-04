@@ -1,0 +1,6 @@
+command=/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node blind-review/consensus/run-consensus.mjs
+exit=0
+--- stdout ---
+{"candidateRunnerProcesses":26,"underlyingFreshCandidateTestProcesses":27,"adjudicationFreshProcesses":10,"totalFreshTargetTestProcesses":37,"disagreementCandidatesRerun":17,"agreementSampleCandidatesRerun":6,"additionalFullMatrixCandidatesRerun":2}
+
+--- stderr ---

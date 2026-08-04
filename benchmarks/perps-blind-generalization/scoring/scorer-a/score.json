@@ -1,0 +1,1169 @@
+{
+  "schemaVersion": 1,
+  "scorer": "scorer-a",
+  "benchmark": "meridian-clearing-blind",
+  "frozen": {
+    "blindConsensusCommit": "d07b5ed83def43f6293bd41eaf51e97dc2fec501",
+    "revealCommit": "e5ec59a2bcecf41e40cbb16df258bf9af92512bb",
+    "truthPlaintextCommitment": "fcf3d39b469073757a1191aba5eb870c655fb4f8b3efb862db07550a072ff66e",
+    "consensusSha256": "ba5d60af575433b6f730ca1e59b961a00dedfda67da416b25c3ea6370e3b2696",
+    "submissionSha256": "c5330151531671c7ed322a155abb7e5270b7e2d83ce4fa3df64a10a0790b29ef",
+    "sourceAggregateSha256": "bd7aacd7d51c679b4e40f83d6ca49d49b03b69490ad6751f50c81236e7ef5381",
+    "revealAggregateSha256": "dc808f47d8fc293a7f811d4f3b24622ad27387d9d7b95d5b2d692ee06430b03c"
+  },
+  "definitions": {
+    "factors": {
+      "exact": 1,
+      "substantialPartial": 0.6,
+      "fragment": 0.3,
+      "missed": 0
+    },
+    "rawUnitRecall": "Registered truth units with factor > 0 divided by 15; partials count as hit units but retain reduced weighted points.",
+    "empiricalCandidatePrecision": "Unique primary-matched candidate claims plus genuinely distinct valid-unregistered candidate claims, divided by reportable distinct candidate claims after supporting/duplicate consolidation.",
+    "rawSubmissionPrecision": "Submitted candidates that are not false positives divided by all 25 submitted candidates, before consolidation.",
+    "severityAccuracy": "Claim-scope accuracy compares the hunter label with post-reveal adjudicated scope; truth-label alignment separately compares primary labels with canonical unit labels and therefore treats the MCB-015 fragment as not Critical.",
+    "coverageRollups": "Overlapping deterministic tags derived from literal truth class tokens: business-logic, composed, cross-contract, integration, niche(edge-case or signed-fixed-point), access-control, and reentrancy."
+  },
+  "truthUnits": [
+    {
+      "id": "MCB-001",
+      "class": "access-control/cross-contract-risk",
+      "canonicalSeverity": "high",
+      "weight": 7,
+      "primaryCandidate": "AFH-001",
+      "cluster": [
+        "AFH-001"
+      ],
+      "factor": 1,
+      "earnedPoints": 7,
+      "level": "exact",
+      "categoryTags": [
+        "access-control",
+        "cross-contract"
+      ],
+      "rationale": "Exact callable mutator, missing governor check, non-governor transaction, and persistent tier change.",
+      "evidenceRefs": [
+        "logs/candidate-reruns.log",
+        "logs/hidden-reproduction-controls.log"
+      ],
+      "noDoubleCredit": "One primary candidate only; no supporting candidate contributes additional factor."
+    },
+    {
+      "id": "MCB-002",
+      "class": "reentrancy/state-observation",
+      "canonicalSeverity": "medium",
+      "weight": 5,
+      "primaryCandidate": "AFH-004",
+      "cluster": [
+        "AFH-004"
+      ],
+      "factor": 1,
+      "earnedPoints": 5,
+      "level": "exact",
+      "categoryTags": [
+        "reentrancy"
+      ],
+      "rationale": "Exact transfer-before-effects root with a stronger callback proof: one live request transfers and debits twice.",
+      "evidenceRefs": [
+        "logs/candidate-reruns.log",
+        "logs/hidden-reproduction-controls.log"
+      ],
+      "noDoubleCredit": "One primary candidate only; no supporting candidate contributes additional factor."
+    },
+    {
+      "id": "MCB-003",
+      "class": "external-token-semantics/accounting",
+      "canonicalSeverity": "high",
+      "weight": 7,
+      "primaryCandidate": "AFH-002",
+      "cluster": [
+        "AFH-002"
+      ],
+      "factor": 1,
+      "earnedPoints": 7,
+      "level": "exact",
+      "categoryTags": [
+        "integration"
+      ],
+      "rationale": "Exact nominal-versus-received deposit accounting with quantified 1000-wad credit for 900-wad receipt and victim shortfall.",
+      "evidenceRefs": [
+        "logs/candidate-reruns.log",
+        "logs/hidden-reproduction-controls.log"
+      ],
+      "noDoubleCredit": "One primary candidate only; no supporting candidate contributes additional factor."
+    },
+    {
+      "id": "MCB-004",
+      "class": "oracle-integration/edge-case",
+      "canonicalSeverity": "medium",
+      "weight": 5,
+      "primaryCandidate": "AFH-005",
+      "cluster": [
+        "AFH-005"
+      ],
+      "factor": 1,
+      "earnedPoints": 5,
+      "level": "exact",
+      "categoryTags": [
+        "integration",
+        "niche"
+      ],
+      "rationale": "Exact >18-decimal underflow, valid high-precision feed reproduction, and 18-decimal control.",
+      "evidenceRefs": [
+        "logs/candidate-reruns.log",
+        "logs/hidden-reproduction-controls.log"
+      ],
+      "noDoubleCredit": "One primary candidate only; no supporting candidate contributes additional factor."
+    },
+    {
+      "id": "MCB-005",
+      "class": "funding/economic-math",
+      "canonicalSeverity": "high",
+      "weight": 7,
+      "primaryCandidate": "AFH-007",
+      "cluster": [
+        "AFH-007"
+      ],
+      "factor": 1,
+      "earnedPoints": 7,
+      "level": "exact",
+      "categoryTags": [],
+      "rationale": "Exact missing signed lower clamp with actual negative growth far beyond the configured symmetric bound.",
+      "evidenceRefs": [
+        "logs/candidate-reruns.log",
+        "logs/hidden-reproduction-controls.log"
+      ],
+      "noDoubleCredit": "One primary candidate only; no supporting candidate contributes additional factor."
+    },
+    {
+      "id": "MCB-006",
+      "class": "signed-fixed-point/rounding",
+      "canonicalSeverity": "medium",
+      "weight": 5,
+      "primaryCandidate": "AFH-008",
+      "cluster": [
+        "AFH-008"
+      ],
+      "factor": 0.3,
+      "earnedPoints": 1.5,
+      "level": "fragment",
+      "categoryTags": [
+        "niche"
+      ],
+      "rationale": "Meaningful same-line rounding fragment, but the submission proves positive payer dust. The registered unit requires the negative-product floor direction; the canonical repair changes 0 to -1 for that case while leaving the submitted positive case at 0.",
+      "evidenceRefs": [
+        "logs/candidate-reruns.log",
+        "logs/hidden-reproduction-controls.log",
+        "logs/discrimination.log"
+      ],
+      "noDoubleCredit": "One primary candidate only; no supporting candidate contributes additional factor."
+    },
+    {
+      "id": "MCB-007",
+      "class": "portfolio-margin/nonlinear-risk",
+      "canonicalSeverity": "high",
+      "weight": 7,
+      "primaryCandidate": "AFH-013",
+      "cluster": [
+        "AFH-013"
+      ],
+      "factor": 1,
+      "earnedPoints": 7,
+      "level": "exact",
+      "categoryTags": [],
+      "rationale": "Exact sign-parity root and quantified 200-versus-600 margin result with a positive-correlation control.",
+      "evidenceRefs": [
+        "logs/candidate-reruns.log",
+        "logs/hidden-reproduction-controls.log"
+      ],
+      "noDoubleCredit": "One primary candidate only; no supporting candidate contributes additional factor."
+    },
+    {
+      "id": "MCB-008",
+      "class": "position-accounting/business-logic",
+      "canonicalSeverity": "high",
+      "weight": 8,
+      "primaryCandidate": "AFH-010",
+      "cluster": [
+        "AFH-010"
+      ],
+      "factor": 1,
+      "earnedPoints": 8,
+      "level": "exact",
+      "categoryTags": [
+        "business-logic"
+      ],
+      "rationale": "Exact cross-zero residual-basis root, both prices, and round-trip PnL consequence.",
+      "evidenceRefs": [
+        "logs/candidate-reruns.log",
+        "logs/hidden-reproduction-controls.log"
+      ],
+      "noDoubleCredit": "One primary candidate only; no supporting candidate contributes additional factor."
+    },
+    {
+      "id": "MCB-009",
+      "class": "cross-contract/open-interest-accounting",
+      "canonicalSeverity": "high",
+      "weight": 7,
+      "primaryCandidate": "AFH-011",
+      "cluster": [
+        "AFH-011"
+      ],
+      "factor": 1,
+      "earnedPoints": 7,
+      "level": "exact",
+      "categoryTags": [
+        "cross-contract"
+      ],
+      "rationale": "Exact abs(delta)-only OI growth, zero-live-exposure round trip, and downstream social-loss denominator divergence.",
+      "evidenceRefs": [
+        "logs/candidate-reruns.log",
+        "logs/hidden-reproduction-controls.log"
+      ],
+      "noDoubleCredit": "One primary candidate only; no supporting candidate contributes additional factor."
+    },
+    {
+      "id": "MCB-010",
+      "class": "execution/business-logic",
+      "canonicalSeverity": "high",
+      "weight": 7,
+      "primaryCandidate": "AFH-014",
+      "cluster": [
+        "AFH-014"
+      ],
+      "factor": 1,
+      "earnedPoints": 7,
+      "level": "exact",
+      "categoryTags": [
+        "business-logic"
+      ],
+      "rationale": "Exact unweighted arithmetic mean with 2000 arithmetic versus 2800 base-weighted price and a rejecting control.",
+      "evidenceRefs": [
+        "logs/candidate-reruns.log",
+        "logs/hidden-reproduction-controls.log"
+      ],
+      "noDoubleCredit": "One primary candidate only; no supporting candidate contributes additional factor."
+    },
+    {
+      "id": "MCB-011",
+      "class": "settlement/oracle-time-semantics",
+      "canonicalSeverity": "high",
+      "weight": 7,
+      "primaryCandidate": "AFH-006",
+      "cluster": [
+        "AFH-006"
+      ],
+      "factor": 1,
+      "earnedPoints": 7,
+      "level": "exact",
+      "categoryTags": [],
+      "rationale": "Exact post-cutoff latest-round selection with cutoff 2100, delayed 3000 recording, and no-update control.",
+      "evidenceRefs": [
+        "logs/candidate-reruns.log",
+        "logs/hidden-reproduction-controls.log"
+      ],
+      "noDoubleCredit": "One primary candidate only; no supporting candidate contributes additional factor."
+    },
+    {
+      "id": "MCB-012",
+      "class": "settlement/funding-state-order",
+      "canonicalSeverity": "high",
+      "weight": 7,
+      "primaryCandidate": "AFH-009",
+      "cluster": [
+        "AFH-009"
+      ],
+      "factor": 1,
+      "earnedPoints": 7,
+      "level": "exact",
+      "categoryTags": [],
+      "rationale": "Exact realize-before-checkpoint ordering and quantified omitted funding debit with checkpoint-first control.",
+      "evidenceRefs": [
+        "logs/candidate-reruns.log",
+        "logs/hidden-reproduction-controls.log"
+      ],
+      "noDoubleCredit": "One primary candidate only; no supporting candidate contributes additional factor."
+    },
+    {
+      "id": "MCB-013",
+      "class": "liquidation/state-machine",
+      "canonicalSeverity": "high",
+      "weight": 8,
+      "primaryCandidate": "AFH-018",
+      "cluster": [
+        "AFH-018"
+      ],
+      "factor": 1,
+      "earnedPoints": 8,
+      "level": "exact",
+      "categoryTags": [],
+      "rationale": "Exact timeout finalization with nonzero residual, unchanged distressed position, and cleared freeze.",
+      "evidenceRefs": [
+        "logs/candidate-reruns.log",
+        "logs/hidden-reproduction-controls.log"
+      ],
+      "noDoubleCredit": "One primary candidate only; no supporting candidate contributes additional factor."
+    },
+    {
+      "id": "MCB-014",
+      "class": "insurance/reserve-accounting",
+      "canonicalSeverity": "medium",
+      "weight": 5,
+      "primaryCandidate": "AFH-021",
+      "cluster": [
+        "AFH-021"
+      ],
+      "factor": 1,
+      "earnedPoints": 5,
+      "level": "exact",
+      "categoryTags": [],
+      "rationale": "Exact aggregate reserve decrement by returned rather than full bond, with per-key deletion and 50-wad phantom reserve.",
+      "evidenceRefs": [
+        "logs/candidate-reruns.log",
+        "logs/hidden-reproduction-controls.log"
+      ],
+      "noDoubleCredit": "One primary candidate only; no supporting candidate contributes additional factor."
+    },
+    {
+      "id": "MCB-015",
+      "class": "advanced-composition/critical-economic",
+      "canonicalSeverity": "critical",
+      "weight": 8,
+      "primaryCandidate": "AFH-012",
+      "cluster": [
+        "AFH-012"
+      ],
+      "factor": 0.6,
+      "earnedPoints": 4.8,
+      "level": "substantial_partial",
+      "categoryTags": [
+        "composed"
+      ],
+      "rationale": "Substantially correct duplicate-membership and repeated equity/risk consumers, but incomplete composition: the submission does not execute zero-size materialization, health-checked collateral withdrawal, or the normalized-price deficit. The registered primitive is credited once here only.",
+      "evidenceRefs": [
+        "logs/candidate-reruns.log",
+        "logs/hidden-reproduction-controls.log",
+        "logs/discrimination.log"
+      ],
+      "noDoubleCredit": "AFH-012 is the sole primary and is not also counted as valid-unregistered; its duplicate-list and repeated-consumer primitives are composition-internal to this partial credit."
+    }
+  ],
+  "candidates": [
+    {
+      "id": "AFH-001",
+      "classification": "primary_matched",
+      "truthId": "MCB-001",
+      "factorContribution": 1,
+      "claimedSeverity": "low",
+      "adjudicatedScopeSeverity": "high",
+      "scopeSeverityExact": false,
+      "truthCanonicalSeverity": "high",
+      "truthSeverityExact": false,
+      "reportableDistinctClaim": true,
+      "empiricalPrecisionNumerator": true,
+      "dependencies": [],
+      "reason": "Exact callable mutator, missing governor check, non-governor transaction, and persistent tier change.",
+      "evidenceRefs": [
+        "logs/candidate-reruns.log"
+      ]
+    },
+    {
+      "id": "AFH-002",
+      "classification": "primary_matched",
+      "truthId": "MCB-003",
+      "factorContribution": 1,
+      "claimedSeverity": "high",
+      "adjudicatedScopeSeverity": "high",
+      "scopeSeverityExact": true,
+      "truthCanonicalSeverity": "high",
+      "truthSeverityExact": true,
+      "reportableDistinctClaim": true,
+      "empiricalPrecisionNumerator": true,
+      "dependencies": [],
+      "reason": "Exact nominal-versus-received deposit accounting with quantified 1000-wad credit for 900-wad receipt and victim shortfall.",
+      "evidenceRefs": [
+        "logs/candidate-reruns.log"
+      ]
+    },
+    {
+      "id": "AFH-003",
+      "classification": "valid_unregistered",
+      "truthId": null,
+      "factorContribution": 0,
+      "claimedSeverity": "high",
+      "adjudicatedScopeSeverity": "high",
+      "scopeSeverityExact": true,
+      "truthCanonicalSeverity": null,
+      "truthSeverityExact": null,
+      "reportableDistinctClaim": true,
+      "empiricalPrecisionNumerator": true,
+      "dependencies": [],
+      "reason": "Distinct delayed-withdrawal route omits ClearingHouse health and freeze enforcement; frozen unhealthy extraction reproduced.",
+      "evidenceRefs": [
+        "logs/candidate-reruns.log"
+      ]
+    },
+    {
+      "id": "AFH-004",
+      "classification": "primary_matched",
+      "truthId": "MCB-002",
+      "factorContribution": 1,
+      "claimedSeverity": "medium",
+      "adjudicatedScopeSeverity": "medium",
+      "scopeSeverityExact": true,
+      "truthCanonicalSeverity": "medium",
+      "truthSeverityExact": true,
+      "reportableDistinctClaim": true,
+      "empiricalPrecisionNumerator": true,
+      "dependencies": [],
+      "reason": "Exact transfer-before-effects root with a stronger callback proof: one live request transfers and debits twice.",
+      "evidenceRefs": [
+        "logs/candidate-reruns.log"
+      ]
+    },
+    {
+      "id": "AFH-005",
+      "classification": "primary_matched",
+      "truthId": "MCB-004",
+      "factorContribution": 1,
+      "claimedSeverity": "medium",
+      "adjudicatedScopeSeverity": "medium",
+      "scopeSeverityExact": true,
+      "truthCanonicalSeverity": "medium",
+      "truthSeverityExact": true,
+      "reportableDistinctClaim": true,
+      "empiricalPrecisionNumerator": true,
+      "dependencies": [],
+      "reason": "Exact >18-decimal underflow, valid high-precision feed reproduction, and 18-decimal control.",
+      "evidenceRefs": [
+        "logs/candidate-reruns.log"
+      ]
+    },
+    {
+      "id": "AFH-006",
+      "classification": "primary_matched",
+      "truthId": "MCB-011",
+      "factorContribution": 1,
+      "claimedSeverity": "high",
+      "adjudicatedScopeSeverity": "high",
+      "scopeSeverityExact": true,
+      "truthCanonicalSeverity": "high",
+      "truthSeverityExact": true,
+      "reportableDistinctClaim": true,
+      "empiricalPrecisionNumerator": true,
+      "dependencies": [],
+      "reason": "Exact post-cutoff latest-round selection with cutoff 2100, delayed 3000 recording, and no-update control.",
+      "evidenceRefs": [
+        "logs/candidate-reruns.log"
+      ]
+    },
+    {
+      "id": "AFH-007",
+      "classification": "primary_matched",
+      "truthId": "MCB-005",
+      "factorContribution": 1,
+      "claimedSeverity": "high",
+      "adjudicatedScopeSeverity": "high",
+      "scopeSeverityExact": true,
+      "truthCanonicalSeverity": "high",
+      "truthSeverityExact": true,
+      "reportableDistinctClaim": true,
+      "empiricalPrecisionNumerator": true,
+      "dependencies": [],
+      "reason": "Exact missing signed lower clamp with actual negative growth far beyond the configured symmetric bound.",
+      "evidenceRefs": [
+        "logs/candidate-reruns.log"
+      ]
+    },
+    {
+      "id": "AFH-008",
+      "classification": "primary_matched",
+      "truthId": "MCB-006",
+      "factorContribution": 0.3,
+      "claimedSeverity": "low",
+      "adjudicatedScopeSeverity": "medium",
+      "scopeSeverityExact": false,
+      "truthCanonicalSeverity": "medium",
+      "truthSeverityExact": false,
+      "reportableDistinctClaim": true,
+      "empiricalPrecisionNumerator": true,
+      "dependencies": [],
+      "reason": "Meaningful same-line rounding fragment, but the submission proves positive payer dust. The registered unit requires the negative-product floor direction; the canonical repair changes 0 to -1 for that case while leaving the submitted positive case at 0.",
+      "evidenceRefs": [
+        "logs/candidate-reruns.log"
+      ]
+    },
+    {
+      "id": "AFH-009",
+      "classification": "primary_matched",
+      "truthId": "MCB-012",
+      "factorContribution": 1,
+      "claimedSeverity": "high",
+      "adjudicatedScopeSeverity": "high",
+      "scopeSeverityExact": true,
+      "truthCanonicalSeverity": "high",
+      "truthSeverityExact": true,
+      "reportableDistinctClaim": true,
+      "empiricalPrecisionNumerator": true,
+      "dependencies": [],
+      "reason": "Exact realize-before-checkpoint ordering and quantified omitted funding debit with checkpoint-first control.",
+      "evidenceRefs": [
+        "logs/candidate-reruns.log"
+      ]
+    },
+    {
+      "id": "AFH-010",
+      "classification": "primary_matched",
+      "truthId": "MCB-008",
+      "factorContribution": 1,
+      "claimedSeverity": "medium",
+      "adjudicatedScopeSeverity": "high",
+      "scopeSeverityExact": false,
+      "truthCanonicalSeverity": "high",
+      "truthSeverityExact": false,
+      "reportableDistinctClaim": true,
+      "empiricalPrecisionNumerator": true,
+      "dependencies": [],
+      "reason": "Exact cross-zero residual-basis root, both prices, and round-trip PnL consequence.",
+      "evidenceRefs": [
+        "logs/candidate-reruns.log"
+      ]
+    },
+    {
+      "id": "AFH-011",
+      "classification": "primary_matched",
+      "truthId": "MCB-009",
+      "factorContribution": 1,
+      "claimedSeverity": "high",
+      "adjudicatedScopeSeverity": "high",
+      "scopeSeverityExact": true,
+      "truthCanonicalSeverity": "high",
+      "truthSeverityExact": true,
+      "reportableDistinctClaim": true,
+      "empiricalPrecisionNumerator": true,
+      "dependencies": [],
+      "reason": "Exact abs(delta)-only OI growth, zero-live-exposure round trip, and downstream social-loss denominator divergence.",
+      "evidenceRefs": [
+        "logs/candidate-reruns.log"
+      ]
+    },
+    {
+      "id": "AFH-012",
+      "classification": "primary_matched",
+      "truthId": "MCB-015",
+      "factorContribution": 0.6,
+      "claimedSeverity": "medium",
+      "adjudicatedScopeSeverity": "medium",
+      "scopeSeverityExact": true,
+      "truthCanonicalSeverity": "critical",
+      "truthSeverityExact": false,
+      "reportableDistinctClaim": true,
+      "empiricalPrecisionNumerator": true,
+      "dependencies": [],
+      "reason": "Substantially correct duplicate-membership and repeated equity/risk consumers, but incomplete composition: the submission does not execute zero-size materialization, health-checked collateral withdrawal, or the normalized-price deficit. The registered primitive is credited once here only.",
+      "evidenceRefs": [
+        "logs/candidate-reruns.log"
+      ]
+    },
+    {
+      "id": "AFH-013",
+      "classification": "primary_matched",
+      "truthId": "MCB-007",
+      "factorContribution": 1,
+      "claimedSeverity": "high",
+      "adjudicatedScopeSeverity": "high",
+      "scopeSeverityExact": true,
+      "truthCanonicalSeverity": "high",
+      "truthSeverityExact": true,
+      "reportableDistinctClaim": true,
+      "empiricalPrecisionNumerator": true,
+      "dependencies": [],
+      "reason": "Exact sign-parity root and quantified 200-versus-600 margin result with a positive-correlation control.",
+      "evidenceRefs": [
+        "logs/candidate-reruns.log"
+      ]
+    },
+    {
+      "id": "AFH-014",
+      "classification": "primary_matched",
+      "truthId": "MCB-010",
+      "factorContribution": 1,
+      "claimedSeverity": "medium",
+      "adjudicatedScopeSeverity": "high",
+      "scopeSeverityExact": false,
+      "truthCanonicalSeverity": "high",
+      "truthSeverityExact": false,
+      "reportableDistinctClaim": true,
+      "empiricalPrecisionNumerator": true,
+      "dependencies": [],
+      "reason": "Exact unweighted arithmetic mean with 2000 arithmetic versus 2800 base-weighted price and a rejecting control.",
+      "evidenceRefs": [
+        "logs/candidate-reruns.log"
+      ]
+    },
+    {
+      "id": "AFH-015",
+      "classification": "valid_unregistered",
+      "truthId": null,
+      "factorContribution": 0,
+      "claimedSeverity": "low",
+      "adjudicatedScopeSeverity": "low",
+      "scopeSeverityExact": true,
+      "truthCanonicalSeverity": null,
+      "truthSeverityExact": null,
+      "reportableDistinctClaim": true,
+      "empiricalPrecisionNumerator": true,
+      "dependencies": [],
+      "reason": "Distinct uint64 nonce-word truncation aliases nonces 0 and 65536; genuine order-liveness defect.",
+      "evidenceRefs": [
+        "logs/candidate-reruns.log"
+      ]
+    },
+    {
+      "id": "AFH-016",
+      "classification": "valid_unregistered",
+      "truthId": null,
+      "factorContribution": 0,
+      "claimedSeverity": "high",
+      "adjudicatedScopeSeverity": "high",
+      "scopeSeverityExact": true,
+      "truthCanonicalSeverity": null,
+      "truthSeverityExact": null,
+      "reportableDistinctClaim": true,
+      "empiricalPrecisionNumerator": true,
+      "dependencies": [],
+      "reason": "Distinct bidder-account authorization omission lets a bidder mutate an unrelated victim account through the privileged fill callback.",
+      "evidenceRefs": [
+        "logs/candidate-reruns.log"
+      ]
+    },
+    {
+      "id": "AFH-017",
+      "classification": "valid_unregistered",
+      "truthId": null,
+      "factorContribution": 0,
+      "claimedSeverity": "critical",
+      "adjudicatedScopeSeverity": "high",
+      "scopeSeverityExact": false,
+      "truthCanonicalSeverity": null,
+      "truthSeverityExact": null,
+      "reportableDistinctClaim": true,
+      "empiricalPrecisionNumerator": true,
+      "dependencies": [
+        "AFH-018"
+      ],
+      "reason": "Distinct missing bidder bond/health closure forms a real High chain; AFH-018 is only a registered reachability dependency and is not recounted.",
+      "evidenceRefs": [
+        "logs/candidate-reruns.log",
+        "logs/severity-cap-c017.log"
+      ]
+    },
+    {
+      "id": "AFH-018",
+      "classification": "primary_matched",
+      "truthId": "MCB-013",
+      "factorContribution": 1,
+      "claimedSeverity": "high",
+      "adjudicatedScopeSeverity": "high",
+      "scopeSeverityExact": true,
+      "truthCanonicalSeverity": "high",
+      "truthSeverityExact": true,
+      "reportableDistinctClaim": true,
+      "empiricalPrecisionNumerator": true,
+      "dependencies": [],
+      "reason": "Exact timeout finalization with nonzero residual, unchanged distressed position, and cleared freeze.",
+      "evidenceRefs": [
+        "logs/candidate-reruns.log"
+      ]
+    },
+    {
+      "id": "AFH-019",
+      "classification": "valid_unregistered",
+      "truthId": null,
+      "factorContribution": 0,
+      "claimedSeverity": "high",
+      "adjudicatedScopeSeverity": "high",
+      "scopeSeverityExact": true,
+      "truthCanonicalSeverity": null,
+      "truthSeverityExact": null,
+      "reportableDistinctClaim": true,
+      "empiricalPrecisionNumerator": true,
+      "dependencies": [
+        "AFH-018"
+      ],
+      "reason": "Distinct missing finalized/expiry checks permit a precommitted post-finalization reveal; AFH-018 supplies residual reachability only.",
+      "evidenceRefs": [
+        "logs/candidate-reruns.log"
+      ]
+    },
+    {
+      "id": "AFH-020",
+      "classification": "valid_unregistered",
+      "truthId": null,
+      "factorContribution": 0,
+      "claimedSeverity": "high",
+      "adjudicatedScopeSeverity": "high",
+      "scopeSeverityExact": true,
+      "truthCanonicalSeverity": null,
+      "truthSeverityExact": null,
+      "reportableDistinctClaim": true,
+      "empiricalPrecisionNumerator": true,
+      "dependencies": [],
+      "reason": "Distinct shared-freeze and stale-lifecycle contradiction reopens an already settled position while the auction remains unfinalized.",
+      "evidenceRefs": [
+        "logs/candidate-reruns.log"
+      ]
+    },
+    {
+      "id": "AFH-021",
+      "classification": "primary_matched",
+      "truthId": "MCB-014",
+      "factorContribution": 1,
+      "claimedSeverity": "medium",
+      "adjudicatedScopeSeverity": "medium",
+      "scopeSeverityExact": true,
+      "truthCanonicalSeverity": "medium",
+      "truthSeverityExact": true,
+      "reportableDistinctClaim": true,
+      "empiricalPrecisionNumerator": true,
+      "dependencies": [],
+      "reason": "Exact aggregate reserve decrement by returned rather than full bond, with per-key deletion and 50-wad phantom reserve.",
+      "evidenceRefs": [
+        "logs/candidate-reruns.log"
+      ]
+    },
+    {
+      "id": "AFH-022",
+      "classification": "valid_unregistered",
+      "truthId": null,
+      "factorContribution": 0,
+      "claimedSeverity": "high",
+      "adjudicatedScopeSeverity": "high",
+      "scopeSeverityExact": true,
+      "truthCanonicalSeverity": null,
+      "truthSeverityExact": null,
+      "reportableDistinctClaim": true,
+      "empiricalPrecisionNumerator": true,
+      "dependencies": [],
+      "reason": "Distinct insurance-share ownership defect lets shareholders redeem third-party live auction bonds.",
+      "evidenceRefs": [
+        "logs/candidate-reruns.log"
+      ]
+    },
+    {
+      "id": "AFH-023",
+      "classification": "valid_unregistered",
+      "truthId": null,
+      "factorContribution": 0,
+      "claimedSeverity": "medium",
+      "adjudicatedScopeSeverity": "medium",
+      "scopeSeverityExact": true,
+      "truthCanonicalSeverity": null,
+      "truthSeverityExact": null,
+      "reportableDistinctClaim": true,
+      "empiricalPrecisionNumerator": true,
+      "dependencies": [],
+      "reason": "Distinct uncollectible trade-fee receivable inflates insurance NAV without token transfer or collection path.",
+      "evidenceRefs": [
+        "logs/candidate-reruns.log"
+      ]
+    },
+    {
+      "id": "AFH-024",
+      "classification": "valid_unregistered",
+      "truthId": null,
+      "factorContribution": 0,
+      "claimedSeverity": "high",
+      "adjudicatedScopeSeverity": "high",
+      "scopeSeverityExact": true,
+      "truthCanonicalSeverity": null,
+      "truthSeverityExact": null,
+      "reportableDistinctClaim": true,
+      "empiricalPrecisionNumerator": true,
+      "dependencies": [],
+      "reason": "Distinct venue output receipt/decimal normalization defect bypasses minimum output and creates phantom NAV.",
+      "evidenceRefs": [
+        "logs/candidate-reruns.log"
+      ]
+    },
+    {
+      "id": "AFH-025",
+      "classification": "valid_unregistered",
+      "truthId": null,
+      "factorContribution": 0,
+      "claimedSeverity": "high",
+      "adjudicatedScopeSeverity": "high",
+      "scopeSeverityExact": true,
+      "truthCanonicalSeverity": null,
+      "truthSeverityExact": null,
+      "reportableDistinctClaim": true,
+      "empiricalPrecisionNumerator": true,
+      "dependencies": [],
+      "reason": "Distinct uint256 execution-price to uint128 basis-domain split lets an allowlisted matcher burn signer collateral.",
+      "evidenceRefs": [
+        "logs/candidate-reruns.log"
+      ]
+    }
+  ],
+  "metrics": {
+    "unitCounts": {
+      "exact": 13,
+      "factor06": 1,
+      "factor03": 1,
+      "missed": 0
+    },
+    "rawUnitRecall": {
+      "numerator": 15,
+      "denominator": 15,
+      "percent": 100
+    },
+    "weighted": {
+      "earnedPoints": 93.3,
+      "availablePoints": 100,
+      "percent": 93.3
+    },
+    "registeredClassByClass": {
+      "access-control/cross-contract-risk": {
+        "truthIds": [
+          "MCB-001"
+        ],
+        "unitsHit": 1,
+        "unitCount": 1,
+        "rawRecallPercent": 100,
+        "earnedPoints": 7,
+        "availablePoints": 7,
+        "weightedPercent": 100
+      },
+      "reentrancy/state-observation": {
+        "truthIds": [
+          "MCB-002"
+        ],
+        "unitsHit": 1,
+        "unitCount": 1,
+        "rawRecallPercent": 100,
+        "earnedPoints": 5,
+        "availablePoints": 5,
+        "weightedPercent": 100
+      },
+      "external-token-semantics/accounting": {
+        "truthIds": [
+          "MCB-003"
+        ],
+        "unitsHit": 1,
+        "unitCount": 1,
+        "rawRecallPercent": 100,
+        "earnedPoints": 7,
+        "availablePoints": 7,
+        "weightedPercent": 100
+      },
+      "oracle-integration/edge-case": {
+        "truthIds": [
+          "MCB-004"
+        ],
+        "unitsHit": 1,
+        "unitCount": 1,
+        "rawRecallPercent": 100,
+        "earnedPoints": 5,
+        "availablePoints": 5,
+        "weightedPercent": 100
+      },
+      "funding/economic-math": {
+        "truthIds": [
+          "MCB-005"
+        ],
+        "unitsHit": 1,
+        "unitCount": 1,
+        "rawRecallPercent": 100,
+        "earnedPoints": 7,
+        "availablePoints": 7,
+        "weightedPercent": 100
+      },
+      "signed-fixed-point/rounding": {
+        "truthIds": [
+          "MCB-006"
+        ],
+        "unitsHit": 1,
+        "unitCount": 1,
+        "rawRecallPercent": 100,
+        "earnedPoints": 1.5,
+        "availablePoints": 5,
+        "weightedPercent": 30
+      },
+      "portfolio-margin/nonlinear-risk": {
+        "truthIds": [
+          "MCB-007"
+        ],
+        "unitsHit": 1,
+        "unitCount": 1,
+        "rawRecallPercent": 100,
+        "earnedPoints": 7,
+        "availablePoints": 7,
+        "weightedPercent": 100
+      },
+      "position-accounting/business-logic": {
+        "truthIds": [
+          "MCB-008"
+        ],
+        "unitsHit": 1,
+        "unitCount": 1,
+        "rawRecallPercent": 100,
+        "earnedPoints": 8,
+        "availablePoints": 8,
+        "weightedPercent": 100
+      },
+      "cross-contract/open-interest-accounting": {
+        "truthIds": [
+          "MCB-009"
+        ],
+        "unitsHit": 1,
+        "unitCount": 1,
+        "rawRecallPercent": 100,
+        "earnedPoints": 7,
+        "availablePoints": 7,
+        "weightedPercent": 100
+      },
+      "execution/business-logic": {
+        "truthIds": [
+          "MCB-010"
+        ],
+        "unitsHit": 1,
+        "unitCount": 1,
+        "rawRecallPercent": 100,
+        "earnedPoints": 7,
+        "availablePoints": 7,
+        "weightedPercent": 100
+      },
+      "settlement/oracle-time-semantics": {
+        "truthIds": [
+          "MCB-011"
+        ],
+        "unitsHit": 1,
+        "unitCount": 1,
+        "rawRecallPercent": 100,
+        "earnedPoints": 7,
+        "availablePoints": 7,
+        "weightedPercent": 100
+      },
+      "settlement/funding-state-order": {
+        "truthIds": [
+          "MCB-012"
+        ],
+        "unitsHit": 1,
+        "unitCount": 1,
+        "rawRecallPercent": 100,
+        "earnedPoints": 7,
+        "availablePoints": 7,
+        "weightedPercent": 100
+      },
+      "liquidation/state-machine": {
+        "truthIds": [
+          "MCB-013"
+        ],
+        "unitsHit": 1,
+        "unitCount": 1,
+        "rawRecallPercent": 100,
+        "earnedPoints": 8,
+        "availablePoints": 8,
+        "weightedPercent": 100
+      },
+      "insurance/reserve-accounting": {
+        "truthIds": [
+          "MCB-014"
+        ],
+        "unitsHit": 1,
+        "unitCount": 1,
+        "rawRecallPercent": 100,
+        "earnedPoints": 5,
+        "availablePoints": 5,
+        "weightedPercent": 100
+      },
+      "advanced-composition/critical-economic": {
+        "truthIds": [
+          "MCB-015"
+        ],
+        "unitsHit": 1,
+        "unitCount": 1,
+        "rawRecallPercent": 100,
+        "earnedPoints": 4.8,
+        "availablePoints": 8,
+        "weightedPercent": 60
+      }
+    },
+    "coverageRollups": {
+      "business-logic": {
+        "truthIds": [
+          "MCB-008",
+          "MCB-010"
+        ],
+        "unitsHit": 2,
+        "unitCount": 2,
+        "rawRecallPercent": 100,
+        "earnedPoints": 15,
+        "availablePoints": 15,
+        "weightedPercent": 100
+      },
+      "composed": {
+        "truthIds": [
+          "MCB-015"
+        ],
+        "unitsHit": 1,
+        "unitCount": 1,
+        "rawRecallPercent": 100,
+        "earnedPoints": 4.8,
+        "availablePoints": 8,
+        "weightedPercent": 60
+      },
+      "cross-contract": {
+        "truthIds": [
+          "MCB-001",
+          "MCB-009"
+        ],
+        "unitsHit": 2,
+        "unitCount": 2,
+        "rawRecallPercent": 100,
+        "earnedPoints": 14,
+        "availablePoints": 14,
+        "weightedPercent": 100
+      },
+      "integration": {
+        "truthIds": [
+          "MCB-003",
+          "MCB-004"
+        ],
+        "unitsHit": 2,
+        "unitCount": 2,
+        "rawRecallPercent": 100,
+        "earnedPoints": 12,
+        "availablePoints": 12,
+        "weightedPercent": 100
+      },
+      "niche": {
+        "truthIds": [
+          "MCB-004",
+          "MCB-006"
+        ],
+        "unitsHit": 2,
+        "unitCount": 2,
+        "rawRecallPercent": 100,
+        "earnedPoints": 6.5,
+        "availablePoints": 10,
+        "weightedPercent": 65
+      },
+      "access-control": {
+        "truthIds": [
+          "MCB-001"
+        ],
+        "unitsHit": 1,
+        "unitCount": 1,
+        "rawRecallPercent": 100,
+        "earnedPoints": 7,
+        "availablePoints": 7,
+        "weightedPercent": 100
+      },
+      "reentrancy": {
+        "truthIds": [
+          "MCB-002"
+        ],
+        "unitsHit": 1,
+        "unitCount": 1,
+        "rawRecallPercent": 100,
+        "earnedPoints": 5,
+        "availablePoints": 5,
+        "weightedPercent": 100
+      }
+    },
+    "candidateClassificationCounts": {
+      "primary_matched": 15,
+      "valid_unregistered": 10
+    },
+    "empiricalCandidatePrecision": {
+      "numerator": 25,
+      "denominator": 25,
+      "percent": 100
+    },
+    "rawSubmissionPrecision": {
+      "numerator": 25,
+      "denominator": 25,
+      "percent": 100
+    },
+    "falsePositiveCount": 0,
+    "supportingOrDuplicateCount": 0,
+    "severity": {
+      "claimScopeExact": {
+        "numerator": 20,
+        "denominator": 25,
+        "percent": 80
+      },
+      "primaryTruthLabelExact": {
+        "numerator": 10,
+        "denominator": 15,
+        "percent": 66.66666666666666
+      },
+      "claimedCriticalCandidates": [
+        "AFH-017"
+      ],
+      "adjudicatedCriticalCandidates": []
+    },
+    "criticalChain": {
+      "registeredTruthId": "MCB-015",
+      "primaryCandidate": "AFH-012",
+      "factor": 0.6,
+      "complete": false,
+      "result": "Partial primitive coverage only; no submitted candidate or cluster demonstrates the registered zero-size-to-withdrawal-to-deficit chain.",
+      "unrelatedClaimedCritical": {
+        "id": "AFH-017",
+        "adjudicatedSeverity": "high",
+        "evidence": "logs/severity-cap-c017.log"
+      }
+    },
+    "generatorCoverage": {
+      "registeredUnits": 15,
+      "distinctValidUnregisteredCandidates": 10,
+      "status": "coverage_defect",
+      "note": "Ten reproducible distinct defects were omitted from the registered author truth and are excluded from registered recall/points."
+    },
+    "verification": {
+      "hiddenReproductions": {
+        "passed": 15,
+        "total": 15
+      },
+      "hiddenControls": {
+        "passed": 15,
+        "total": 15
+      },
+      "ordinaryTests": {
+        "passed": 5,
+        "total": 5
+      },
+      "candidateIds": {
+        "passed": 25,
+        "total": 25
+      },
+      "candidateExecutions": {
+        "passed": 26,
+        "total": 26
+      },
+      "discriminationTests": {
+        "passed": 2,
+        "total": 2
+      },
+      "severityCapTests": {
+        "passed": 1,
+        "total": 1
+      },
+      "sourceManifestFiles": {
+        "passed": 31,
+        "total": 31
+      },
+      "compile": {
+        "solidityInputs": 15,
+        "artifacts": 25,
+        "status": "pass"
+      },
+      "sealVerifier": "pass",
+      "revealVerifier": "pass",
+      "consensusCheckerCleanClone": "pass",
+      "scorerChecker": "pass"
+    }
+  }
+}

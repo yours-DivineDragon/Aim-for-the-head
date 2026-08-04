@@ -1,0 +1,10 @@
+{
+  "label": "ordinary-suite",
+  "startedUtc": "2026-08-04T19:58:50.265Z",
+  "finishedUtc": "2026-08-04T19:58:55.611Z",
+  "cwd": "/workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/perps-blind-generalization",
+  "command": "npm test",
+  "exitCode": 0,
+  "stdout": "\n> meridian-clearing-blind-benchmark@1.0.0 test\n> node --test --test-concurrency=1 test/**/*.test.mjs\n\nThis version of µWS is not compatible with your Node.js build:\n\nError: Cannot find module '../binaries/uws_linux_x64_137.node'\nRequire stack:\n- /workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/perps-blind-generalization/node_modules/ganache/node_modules/@trufflesuite/uws-js-unofficial/src/uws.js\n- /workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/perps-blind-generalization/node_modules/ganache/dist/node/core.js\nFalling back to a NodeJS implementation; performance may be degraded.\n\n\n✔ governance configures markets, feeds, and funding parameters (864.048578ms)\n✔ a trader deposits collateral and opens a margined position (1036.2652ms)\n✔ portfolio execution enforces the declared aggregate limit (768.84042ms)\n✔ withdrawal requests respect their execution delay (1139.028839ms)\n✔ insurance shares track deposits and proportional redemptions (710.74369ms)\nℹ tests 5\nℹ suites 0\nℹ pass 5\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 5075.852109\n",
+  "stderr": "npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\nnpm notice\nnpm notice New minor version of npm available! 11.9.0 -> 11.19.0\nnpm notice Changelog: https://github.com/npm/cli/releases/tag/v11.19.0\nnpm notice To update run: npm install -g npm@11.19.0\nnpm notice\n"
+}

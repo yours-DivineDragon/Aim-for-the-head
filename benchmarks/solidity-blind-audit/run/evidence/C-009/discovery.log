@@ -1,0 +1,26 @@
+utc_start=2026-08-04T13:14:46Z
+command=bash run/evidence/C-009/reproduce.sh
+purpose=discovery
+This version of µWS is not compatible with your Node.js build:
+
+Error: Cannot find module '../binaries/uws_linux_x64_137.node'
+Require stack:
+- /tmp/aim-blind-hunt-75d19f5c.XA7jKe/target/node_modules/ganache/node_modules/@trufflesuite/uws-js-unofficial/src/uws.js
+- /tmp/aim-blind-hunt-75d19f5c.XA7jKe/target/node_modules/ganache/dist/node/core.js
+Falling back to a NodeJS implementation; performance may be degraded.
+
+
+{"oracle":"C-009-positive","feedAgeSeconds":"31536001","staleFeedPrice":"2000000000000000000","poolPrice":"1000000000000000000","poolBasedLimit":"750000000000000000000","debtAfter":"1500000000000000000000"}
+✔ positive: year-old positive feed answer remains authoritative and enables excess debt (3691.129711ms)
+{"oracle":"C-009-negative","boundedPrice":"1000000000000000000","excessBorrowRejected":true,"debtAfter":"0"}
+✔ negative comparator: an explicit freshness bound falls back to pool price and rejects the same debt (923.640495ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 5346.048318
+exit=0
+utc_end=2026-08-04T13:14:51Z

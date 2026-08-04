@@ -1,0 +1,64 @@
+$ /opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node blind-run/run-case.mjs AFH-021 --verify-only
+cwd=/workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/perps-blind-generalization
+exit=1
+
+
+file:///workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/perps-blind-generalization/blind-run/run-case.mjs:47
+      throw new Error(`${caseId}/${pattern} failed fresh reproduction (exit ${result.status}, oracle lines ${oracleLines.length})\n${combined}`);
+            ^
+
+Error: AFH-021/H-021 failed fresh reproduction (exit 1, oracle lines 0)
+This version of µWS is not compatible with your Node.js build:
+
+Error: Cannot find module '../binaries/uws_linux_x64_137.node'
+Require stack:
+- /workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/perps-blind-generalization/node_modules/ganache/node_modules/@trufflesuite/uws-js-unofficial/src/uws.js
+- /workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/perps-blind-generalization/node_modules/ganache/dist/node/core.js
+Falling back to a NodeJS implementation; performance may be degraded.
+
+
+✖ H-021 slashed bond leaves aggregate reservation with no live bond record (1268.569556ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1990.175308
+
+✖ failing tests:
+
+test at blind-run/poc/integration-accounting.test.mjs:116:1
+✖ H-021 slashed bond leaves aggregate reservation with no live bond record (1268.569556ms)
+  Error: transaction execution reverted (action="sendTransaction", data=null, reason=null, invocation=null, revert=null, transaction={ "data": "", "from": "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1", "to": "0x5b1869D9A4C187F2EAa108f3062412ecf0526b24" }, receipt={ "_type": "TransactionReceipt", "blobGasPrice": null, "blobGasUsed": null, "blockHash": "0x456164f97a966a1130c87da0c0ccd1fecc8d1b22bc82d4d11f61975db7c9d975", "blockNumber": 29, "contractAddress": null, "cumulativeGasUsed": "41061", "from": "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1", "gasPrice": "29604315", "gasUsed": "41061", "hash": "0xd5ad4df6787b3753a4849e3e57f84a3717deccbff8e39daad26ff4d9377b2445", "index": 0, "logs": [  ], "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000", "root": null, "status": 0, "to": "0x5b1869D9A4C187F2EAa108f3062412ecf0526b24" }, code=CALL_EXCEPTION, version=6.15.0)
+      at makeError (file:///workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/perps-blind-generalization/node_modules/ethers/lib.esm/utils/errors.js:132:21)
+      at assert (file:///workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/perps-blind-generalization/node_modules/ethers/lib.esm/utils/errors.js:151:15)
+      at checkReceipt (file:///workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/perps-blind-generalization/node_modules/ethers/lib.esm/providers/provider.js:1127:13)
+      at ContractTransactionResponse.wait (file:///workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/perps-blind-generalization/node_modules/ethers/lib.esm/providers/provider.js:1143:24)
+      at async ContractTransactionResponse.wait (file:///workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/perps-blind-generalization/node_modules/ethers/lib.esm/contract/wrappers.js:109:25)
+      at async makeUnhealthyAuction (file:///workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/perps-blind-generalization/blind-run/poc/integration-accounting.test.mjs:20:3)
+      at async TestContext.<anonymous> (file:///workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/perps-blind-generalization/blind-run/poc/integration-accounting.test.mjs:120:3)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    code: 'CALL_EXCEPTION',
+    action: 'sendTransaction',
+    data: null,
+    reason: null,
+    invocation: null,
+    revert: null,
+    transaction: { to: '0x5b1869D9A4C187F2EAa108f3062412ecf0526b24', from: '0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1', data: '' },
+    receipt: { provider: {}, to: '0x5b1869D9A4C187F2EAa108f3062412ecf0526b24', from: '0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1', contractAddress: null, hash: '0xd5ad4df6787b3753a4849e3e57f84a3717deccbff8e39daad26ff4d9377b2445', index: 0, blockHash: '0x456164f97a966a1130c87da0c0ccd1fecc8d1b22bc82d4d11f61975db7c9d975', blockNumber: 29, logsBloom: '0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000', gasUsed: 41061n, blobGasUsed: null, cumulativeGasUsed: 41061n, gasPrice: 29604315n, blobGasPrice: null, type: 2, status: 0, root: undefined },
+    shortMessage: 'transaction execution reverted'
+  }
+
+
+    at run (file:///workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/perps-blind-generalization/blind-run/run-case.mjs:47:13)
+    at file:///workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/perps-blind-generalization/blind-run/run-case.mjs:78:42
+    at Array.map (<anonymous>)
+    at file:///workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/perps-blind-generalization/blind-run/run-case.mjs:78:26
+    at ModuleJob.run (node:internal/modules/esm/module_job:430:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:661:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+
+Node.js v24.14.0

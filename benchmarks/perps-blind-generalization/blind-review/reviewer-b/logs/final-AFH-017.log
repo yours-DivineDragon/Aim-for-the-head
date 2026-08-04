@@ -1,0 +1,10 @@
+{
+  "label": "final-AFH-017",
+  "startedUtc": "2026-08-04T20:12:58.056Z",
+  "finishedUtc": "2026-08-04T20:13:02.127Z",
+  "cwd": "/workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/perps-blind-generalization",
+  "command": "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node --test --test-concurrency=1 --test-name-pattern=H-017 blind-run/poc/lifecycle.test.mjs",
+  "exitCode": 0,
+  "stdout": "This version of µWS is not compatible with your Node.js build:\n\nError: Cannot find module '../binaries/uws_linux_x64_137.node'\nRequire stack:\n- /workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/perps-blind-generalization/node_modules/ganache/node_modules/@trufflesuite/uws-js-unofficial/src/uws.js\n- /workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/perps-blind-generalization/node_modules/ganache/dist/node/core.js\nFalling back to a NodeJS implementation; performance may be degraded.\n\n\n{\"hunterId\":\"H-017\",\"bond\":\"0\",\"bidderEquityAfterFill\":\"16000000000000000000\",\"bidderInitial\":\"100000000000000000000\",\"finalPendingSocialLoss\":\"84000000000000000000\",\"finalResidualBase\":\"1000000000000000000\",\"ordinaryTradeControl\":\"reverted\"}\n✔ H-017 zero-bond fill bypasses bidder health and composes into a costless socialized deficit (3628.355738ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 4023.603379\n",
+  "stderr": ""
+}

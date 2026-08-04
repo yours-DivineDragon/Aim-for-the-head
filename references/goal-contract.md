@@ -21,6 +21,8 @@ write `none known` rather than silently omitting one.
 
 ## Assets and security properties
 - Assets:
+- Business flows and intended value movement:
+- Accounting identities and solvency/conservation properties:
 - Confidentiality properties:
 - Integrity properties:
 - Availability properties:
@@ -37,12 +39,15 @@ write `none known` rather than silently omitting one.
 - Privilege transitions:
 - Dangerous sinks or effects:
 - External dependencies:
+- External semantic promises versus assumptions:
 
 ## Security invariants
 - Invariant:
   - Why it matters:
   - Expected enforcement points:
   - Observable counterexample:
+- Downstream consumers of attacker-mutable values:
+- Candidate primitive joins and atomic funding sources:
 
 ## Operating assumptions
 - Deployment defaults:
@@ -89,6 +94,8 @@ that allows <attacker> to cause <required impact> under <realistic config>.
 - Independent reproduction:
 - Duplicate and scope check:
 - Human review:
+- Downstream consumer propagation:
+- Primitive composition and final system-impact closure:
 
 ## Non-success
 - Dead, unreachable, or test-only code:
@@ -129,10 +136,17 @@ activation. Its important fields are:
 | `success_conditions` | Observable conditions that satisfy the outcome |
 | `non_success_conditions` | Shortcuts and false positives that do not count |
 | `threat_model.*` | Attacker, assets, boundaries, invariants, impact, configs |
+| `threat_model.business_flows` | Intended value and authority movement |
+| `threat_model.accounting_invariants` | Cross-component conservation, solvency, and liability properties |
+| `threat_model.external_semantic_assumptions` | Verified promises separated from caller assumptions |
+| `threat_model.attacker_funding_sources` | Persistent, delegated, repeated, and atomic resources |
 | `evidence_requirements.required_gates` | Candidate gates required by this hunt |
 | `evidence_requirements.waivable_gates` | Exceptional gates that may be waived with a reason |
 | `evidence_requirements.omitted_gates` | Optional gates excluded before activation, mapped to reasons |
 | `novelty_policy` | When and how to check issues, reports, and prior fixes |
+| `search_requirements.mandatory_passes` | Deep-hunt artifacts required before completion |
+| `search_requirements.primitive_escalation_policy` | How primitives are traced through consumers and joins |
+| `search_requirements.impact_priority_policy` | When a lower-impact finding does not satisfy a highest-impact objective |
 | `budget` | Time, compute, token, or experiment limits |
 | `stop` | Finding count, exhaustion obligations, and blocked rule |
 
@@ -144,6 +158,18 @@ be pre-authorized as waivable only when equivalent discriminating evidence is
 named. Omit duplicate or human review only when genuinely inapplicable, map the
 gate to a reason in `omitted_gates` before activation, and disclose the omission
 in the result.
+
+Workflow version 2 also requires `downstream-impact` and
+`composition-review`. The first proves the strongest supported effect through
+direct consumers. The second compares the primitive with other active and
+rejected leads and records why each material join succeeds or fails. These are
+review obligations, not permission to infer impact without a combined proof.
+
+Keep every mandatory pass and exact item from
+[`deep-hunt.md`](deep-hunt.md) in `search_requirements.mandatory_passes`. A pass
+may conclude that a risk is inapplicable, but its evidence must demonstrate why
+under the approved threat model. Do not remove a pass because the default
+configuration is friendly or one local candidate already validated.
 
 ## Draft by mode
 
@@ -197,6 +223,15 @@ Before activation, answer these questions adversarially:
 8. Could a known issue be rediscovered and called novel?
 9. Could the run stop as “blocked” without naming an exact unlock?
 10. Could the same unproductive experiment be repeated with different wording?
+11. Could one successful path mark an entire surface or consumer graph tested?
+12. Could a local Low/Medium primitive combine with another state manipulation,
+    temporary funding source, or downstream consumer into High/Critical impact?
+13. Could an interface-compatible dependency violate an unstated balance,
+    rounding, callback, freshness, ordering, or identity assumption?
+14. Could the default unit configuration hide a zero-unit or reversed-rounding
+    boundary that the supported input domain permits?
+15. Could a same-function callback test miss a cross-function or cross-contract
+    action before the outer state is committed?
 
 Add a success or non-success clause for every shortcut that remains possible.
 
@@ -212,6 +247,8 @@ Activate only when all answers are yes:
 - Are realistic configurations named?
 - Are success and non-success conditions falsifiable?
 - Are evidence and independent-review gates defined?
+- Are business flows, conservation identities, consumers, external semantics,
+  attacker funding, and mandatory composition passes explicit?
 - Are budget, exhaustion, and blocked rules explicit?
 - Is state durable across context loss?
 

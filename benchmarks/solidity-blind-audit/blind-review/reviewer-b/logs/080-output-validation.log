@@ -1,0 +1,5 @@
+json_valid=true
+candidate_records=11
+unique_candidate_ids=11
+referenced_logs_present=16
+report_nonempty=true

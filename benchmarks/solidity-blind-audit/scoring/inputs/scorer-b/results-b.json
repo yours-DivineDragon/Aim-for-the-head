@@ -1,0 +1,400 @@
+{
+  "schema_version": "1.0.0",
+  "scorer": "post-reveal-b",
+  "benchmark": "aster-credit-solidity-blind-audit",
+  "input_verification": {
+    "json_files_checked": 8,
+    "json_files_valid": 8,
+    "regular_input_files_hashed": 65,
+    "supplied_sha256_matches": 3,
+    "supplied_sha256_mismatches": 0,
+    "ground_truth_hash_also_matches_metadata": true,
+    "hash_inventory": "scoring-output/input-hashes.sha256"
+  },
+  "population": {
+    "positive_truth_units": 15,
+    "precommitted_public_negative_control_units": 0,
+    "raw_claims": 11,
+    "unique_candidate_clusters": 11,
+    "valid_unique_candidate_clusters": 11,
+    "exact_matches": 9,
+    "partial_matches": 1,
+    "misses": 5,
+    "novel_valid_clusters": 1,
+    "false_positive_clusters": 0,
+    "duplicate_claims": 0
+  },
+  "metrics": {
+    "exact_recall": {
+      "formula": "exact_matches / positive_truth_units",
+      "raw_components": {
+        "exact_matches": 9,
+        "positive_truth_units": 15
+      },
+      "exact_fraction": "9/15 = 3/5",
+      "decimal": 0.6
+    },
+    "credit_recall": {
+      "formula": "sum(match_credit) / positive_truth_units",
+      "raw_components": {
+        "exact_credit": "9",
+        "partial_credit": "1/2",
+        "miss_credit": "0",
+        "credit_sum": "19/2",
+        "positive_truth_units": 15
+      },
+      "exact_fraction": "(19/2)/15 = 19/30",
+      "decimal": 0.6333333333333333
+    },
+    "severity_weighted_recall": {
+      "formula": "sum(truth_severity_weight * match_credit) / sum(truth_severity_weight)",
+      "severity_weights": {
+        "low": 1,
+        "medium": 2,
+        "high": 4,
+        "critical": 8
+      },
+      "raw_components": {
+        "exact_weight_credit": 38,
+        "partial_weight_credit": 2,
+        "miss_weight_credit": 0,
+        "weighted_credit_sum": 40,
+        "truth_weight_denominator": 62
+      },
+      "exact_fraction": "40/62 = 20/31",
+      "decimal": 0.6451612903225806
+    },
+    "unique_precision": {
+      "formula": "(exact_matches + 0.5 * partial_matches + novel_valid) / unique_candidate_clusters",
+      "raw_components": {
+        "exact_matches": 9,
+        "half_partial_matches": "1/2",
+        "novel_valid": 1,
+        "precision_credit": "21/2",
+        "unique_candidate_clusters": 11
+      },
+      "exact_fraction": "(21/2)/11 = 21/22",
+      "decimal": 0.9545454545454546
+    },
+    "raw_precision": {
+      "formula": "(exact_matches + 0.5 * partial_matches + novel_valid) / raw_claims",
+      "raw_components": {
+        "precision_credit": "21/2",
+        "raw_claims": 11
+      },
+      "exact_fraction": "(21/2)/11 = 21/22",
+      "decimal": 0.9545454545454546
+    },
+    "duplicate_rate": {
+      "formula": "(raw_claims - unique_candidate_clusters) / raw_claims",
+      "raw_components": {
+        "raw_claims": 11,
+        "unique_candidate_clusters": 11,
+        "duplicate_claims": 0
+      },
+      "exact_fraction": "0/11 = 0",
+      "decimal": 0
+    },
+    "claim_false_positive_rate": {
+      "formula": "false_positive_clusters / unique_candidate_clusters",
+      "raw_components": {
+        "false_positive_clusters": 0,
+        "unique_candidate_clusters": 11
+      },
+      "exact_fraction": "0/11 = 0",
+      "decimal": 0
+    },
+    "weighted_precision": {
+      "formula": null,
+      "raw_components": {
+        "candidate_consensus_severity_weight_denominator": 43,
+        "candidate_weighted_credit_under_natural_analog": 39
+      },
+      "exact_fraction": null,
+      "decimal": null,
+      "status": "unavailable_as_preregistered",
+      "reason": "inputs/preregistered-scoring.json references weighted_precision only as an operand of weighted_f1 and does not register a weighted-precision formula or specify whether numerator and denominator use candidate or truth severity. An official value would require inventing a rule after reveal."
+    },
+    "weighted_f1": {
+      "preregistered_formula": "2 * weighted_precision * weighted_recall / (weighted_precision + weighted_recall)",
+      "raw_components": {
+        "weighted_recall": "20/31",
+        "weighted_precision": null
+      },
+      "exact_fraction": null,
+      "decimal": null,
+      "status": "unavailable_as_preregistered",
+      "reason": "The preregistered weighted_f1 formula cannot be evaluated because its weighted_precision operand was never defined."
+    },
+    "non_preregistered_weighted_sensitivity": {
+      "headline_metric": false,
+      "assumption": "Use the natural candidate-severity-weighted analog of unique precision: sum(consensus candidate weight * candidate credit) / sum(consensus candidate weight), with novel_valid receiving full precision credit.",
+      "weighted_precision": {
+        "raw_components": {
+          "exact_candidate_weight_credit": 34,
+          "partial_candidate_weight_credit": 4,
+          "novel_valid_candidate_weight_credit": 1,
+          "numerator": 39,
+          "denominator": 43
+        },
+        "exact_fraction": "39/43",
+        "decimal": 0.9069767441860465
+      },
+      "weighted_f1": {
+        "formula": "2 * (39/43) * (20/31) / ((39/43) + (20/31))",
+        "exact_fraction": "1560/2069",
+        "decimal": 0.7539874335427743
+      }
+    },
+    "control_specificity": {
+      "formula": "1 - controls_with_unsupported_allegations / intact_negative_controls",
+      "raw_components": {
+        "controls_with_unsupported_allegations": 0,
+        "intact_negative_controls": 0
+      },
+      "exact_fraction": null,
+      "decimal": null,
+      "status": "null_zero_denominator",
+      "reason": "There are no precommitted public negative-control units. The 15 validation-map controls are patched exploit controls and were not silently reclassified as public negative controls."
+    },
+    "severity_calibration": {
+      "formula": "1 - weighted_absolute_rank_error / (3 * total_valid_finding_weight)",
+      "rank_map": {
+        "low": 0,
+        "medium": 1,
+        "high": 2,
+        "critical": 3
+      },
+      "weighting_interpretation": "Use frozen-consensus candidate severity weights for every valid unique candidate. For matched candidates, compare consensus rank with canonical rank; the unmatched novel-valid candidate has no canonical rank error and remains in total_valid_finding_weight.",
+      "raw_components": {
+        "total_valid_finding_weight": 43,
+        "weighted_absolute_rank_error": 12,
+        "error_terms": [
+          {
+            "candidate_id": "C-001",
+            "truth_id": "F-04",
+            "relation": "overcall",
+            "absolute_rank_error": 1,
+            "candidate_weight": 8,
+            "weighted_error": 8
+          },
+          {
+            "candidate_id": "C-006",
+            "truth_id": "F-05",
+            "relation": "undercall",
+            "absolute_rank_error": 1,
+            "candidate_weight": 2,
+            "weighted_error": 2
+          },
+          {
+            "candidate_id": "C-010",
+            "truth_id": "F-08",
+            "relation": "undercall",
+            "absolute_rank_error": 1,
+            "candidate_weight": 2,
+            "weighted_error": 2
+          }
+        ],
+        "overcalls": 1,
+        "undercalls": 2,
+        "aligned_matches": 7,
+        "unmatched_novel_valid_without_canonical_comparator": 1
+      },
+      "exact_fraction": "1 - 12/(3*43) = 117/129 = 39/43",
+      "decimal": 0.9069767441860465
+    }
+  },
+  "severity_breakdown": [
+    {
+      "canonical_severity": "critical",
+      "truth_units": 2,
+      "exact": 1,
+      "partial": 0,
+      "miss": 1,
+      "credit_sum": "1",
+      "credit_recall_fraction": "1/2",
+      "credit_recall_decimal": 0.5,
+      "severity_weight_denominator": 16,
+      "weighted_credit": 8
+    },
+    {
+      "canonical_severity": "high",
+      "truth_units": 10,
+      "exact": 7,
+      "partial": 1,
+      "miss": 2,
+      "credit_sum": "15/2",
+      "credit_recall_fraction": "(15/2)/10 = 3/4",
+      "credit_recall_decimal": 0.75,
+      "severity_weight_denominator": 40,
+      "weighted_credit": 30
+    },
+    {
+      "canonical_severity": "medium",
+      "truth_units": 3,
+      "exact": 1,
+      "partial": 0,
+      "miss": 2,
+      "credit_sum": "1",
+      "credit_recall_fraction": "1/3",
+      "credit_recall_decimal": 0.3333333333333333,
+      "severity_weight_denominator": 6,
+      "weighted_credit": 2
+    },
+    {
+      "canonical_severity": "low",
+      "truth_units": 0,
+      "exact": 0,
+      "partial": 0,
+      "miss": 0,
+      "credit_sum": "0",
+      "credit_recall_fraction": null,
+      "credit_recall_decimal": null,
+      "reason": "No committed low-severity truth units. C-011 is novel_valid, not a planted-recall unit.",
+      "severity_weight_denominator": 0,
+      "weighted_credit": 0
+    }
+  ],
+  "class_breakdown": [
+    {"class": "multi-contract oracle/accounting exploit chain", "truth_id": "F-01", "candidate_id": null, "match": "miss", "credit": 0},
+    {"class": "oracle manipulation", "truth_id": "F-02", "candidate_id": "C-008", "match": "exact", "credit": 1},
+    {"class": "ERC-4626 integration accounting", "truth_id": "F-03", "candidate_id": null, "match": "miss", "credit": 0},
+    {"class": "cross-function cross-contract reentrancy", "truth_id": "F-04", "candidate_id": "C-001", "match": "partial", "credit": 0.5},
+    {"class": "access control / incorrect boolean logic", "truth_id": "F-05", "candidate_id": "C-006", "match": "exact", "credit": 1},
+    {"class": "ERC-4626 rounding direction", "truth_id": "F-06", "candidate_id": null, "match": "miss", "credit": 0},
+    {"class": "fee-on-transfer accounting", "truth_id": "F-07", "candidate_id": null, "match": "miss", "credit": 0},
+    {"class": "signature domain replay", "truth_id": "F-08", "candidate_id": "C-010", "match": "exact", "credit": 1},
+    {"class": "signature parameter substitution", "truth_id": "F-09", "candidate_id": "C-003", "match": "exact", "credit": 1},
+    {"class": "cross-domain authentication / cross-contract invariant", "truth_id": "F-10", "candidate_id": "C-002", "match": "exact", "credit": 1},
+    {"class": "cross-chain replay namespace / denial of service", "truth_id": "F-11", "candidate_id": "C-007", "match": "exact", "credit": 1},
+    {"class": "initialization / configuration takeover", "truth_id": "F-12", "candidate_id": "C-005", "match": "exact", "credit": 1},
+    {"class": "stale oracle data", "truth_id": "F-13", "candidate_id": "C-009", "match": "exact", "credit": 1},
+    {"class": "fee-on-transfer debt accounting", "truth_id": "F-14", "candidate_id": null, "match": "miss", "credit": 0},
+    {"class": "ECDSA malleability / replay accounting", "truth_id": "F-15", "candidate_id": "C-004", "match": "exact", "credit": 1}
+  ],
+  "claim_lists": {
+    "exact": ["F-02:C-008", "F-05:C-006", "F-08:C-010", "F-09:C-003", "F-10:C-002", "F-11:C-007", "F-12:C-005", "F-13:C-009", "F-15:C-004"],
+    "partial": ["F-04:C-001"],
+    "missed": ["F-01", "F-03", "F-06", "F-07", "F-14"],
+    "novel_valid": ["C-011"],
+    "invalid": [],
+    "duplicates": []
+  },
+  "committed_104_point_rubric": {
+    "maximum": 104,
+    "finding_points_before_false_positive_deductions": 64,
+    "false_positive_deductions": 0,
+    "unrounded_score": 64,
+    "rounding_rule": "Round only the final score to the nearest 0.5 point.",
+    "final_score": 64,
+    "fraction_of_maximum": "64/104 = 8/13",
+    "decimal_fraction_of_maximum": 0.6153846153846154,
+    "per_finding": [
+      {"truth_id": "F-01", "maximum": 12, "match": "miss", "pre_cap_points": 0, "cap": null, "awarded": 0},
+      {"truth_id": "F-02", "maximum": 7, "match": "exact", "pre_cap_points": 7, "cap": null, "awarded": 7},
+      {"truth_id": "F-03", "maximum": 4, "match": "miss", "pre_cap_points": 0, "cap": null, "awarded": 0},
+      {"truth_id": "F-04", "maximum": 7, "match": "partial", "pre_cap_points": 5, "cap": "partial band maximum 5; generic overcall cap 5.6 is nonbinding", "awarded": 5},
+      {"truth_id": "F-05", "maximum": 7, "match": "exact", "pre_cap_points": 7, "cap": 5, "cap_reason": "reported medium or lower", "awarded": 5},
+      {"truth_id": "F-06", "maximum": 4, "match": "miss", "pre_cap_points": 0, "cap": null, "awarded": 0},
+      {"truth_id": "F-07", "maximum": 7, "match": "miss", "pre_cap_points": 0, "cap": null, "awarded": 0},
+      {"truth_id": "F-08", "maximum": 7, "match": "exact", "pre_cap_points": 7, "cap": 5, "cap_reason": "reported medium or lower", "awarded": 5},
+      {"truth_id": "F-09", "maximum": 7, "match": "exact", "pre_cap_points": 7, "cap": null, "awarded": 7},
+      {"truth_id": "F-10", "maximum": 10, "match": "exact", "pre_cap_points": 10, "cap": null, "awarded": 10},
+      {"truth_id": "F-11", "maximum": 4, "match": "exact", "pre_cap_points": 4, "cap": null, "awarded": 4},
+      {"truth_id": "F-12", "maximum": 7, "match": "exact", "pre_cap_points": 7, "cap": null, "awarded": 7},
+      {"truth_id": "F-13", "maximum": 7, "match": "exact", "pre_cap_points": 7, "cap": null, "awarded": 7},
+      {"truth_id": "F-14", "maximum": 7, "match": "miss", "pre_cap_points": 0, "cap": null, "awarded": 0},
+      {"truth_id": "F-15", "maximum": 7, "match": "exact", "pre_cap_points": 7, "cap": null, "awarded": 7}
+    ],
+    "false_positive_deduction_components": {
+      "unsupported_low_or_medium": 0,
+      "unsupported_high_or_critical": 0,
+      "claimed_patched_negative_control_exploitable": 0
+    },
+    "novel_valid_handling": "C-011 earns no planted-rubric points and incurs no false-positive deduction."
+  },
+  "resource_efficiency": {
+    "run_count": 1,
+    "utc_start": "2026-08-04T12:47:32.768Z",
+    "utc_end": "2026-08-04T13:32:25.000Z",
+    "elapsed_seconds": 2692.232,
+    "elapsed_exact_fraction_seconds": "336529/125",
+    "elapsed_human": "44m 52.232s",
+    "wall_clock_budget_seconds": 10800,
+    "budget_exhausted": false,
+    "budget_utilization": {
+      "exact_fraction": "336529/1350000",
+      "decimal": 0.24928074074074075
+    },
+    "validated_candidates_per_hour": {
+      "exact_fraction": "4950000/336529",
+      "decimal": 14.708984961177194
+    },
+    "exact_matches_per_hour": {
+      "exact_fraction": "4050000/336529",
+      "decimal": 12.034624059144977
+    },
+    "match_credit_per_hour": {
+      "exact_fraction": "4275000/336529",
+      "decimal": 12.703214284653031
+    },
+    "mean_elapsed_seconds_per_validated_candidate": {
+      "exact_fraction": "336529/1375",
+      "decimal": 244.74836363636364
+    },
+    "local_counts": {
+      "aim_experiment_events": 12,
+      "validated_candidates": 11,
+      "rejected_candidate_families": 7,
+      "confirmed_compile_invocations": 37,
+      "completed_test_processes": 36,
+      "completed_test_cases": 76,
+      "passed_test_cases": 74,
+      "failed_test_cases": 2,
+      "interrupted_aggregate_validation_processes": 1,
+      "source_files_read": 14,
+      "solidity_lines_read": 709,
+      "evidence_files_hashed": 68
+    },
+    "failed_test_case_context": "Two preserved harness-only first attempts; corrected target-independent harnesses passed twice and in final validation.",
+    "service_side_tool_invocations": "unavailable",
+    "service_side_model_input_tokens": "unavailable",
+    "service_side_model_output_tokens": "unavailable",
+    "service_side_compute_or_cost": "unavailable",
+    "time_to_first_valid_candidate": "unavailable",
+    "per_candidate_elapsed_time": "unavailable"
+  },
+  "protocol_deviations_and_limitations": [
+    {
+      "kind": "preregistration_omission",
+      "effect": "Official weighted precision and weighted F1 are null.",
+      "detail": "No weighted-precision formula appears in inputs/preregistered-scoring.json. A clearly segregated, non-headline sensitivity calculation is provided, but it is not represented as preregistered."
+    },
+    {
+      "kind": "severity_calibration_operationalization",
+      "effect": "The published calibration is reproducible but depends on an explicit interpretation of underspecified component names.",
+      "detail": "The file registers the aggregate formula but not rank numbering, which severity weights apply to error terms, or novel-valid treatment. This scorer uses ranks low=0 through critical=3, frozen-consensus candidate weights, and all valid unique candidates in the denominator."
+    },
+    {
+      "kind": "matching_boundary",
+      "effect": "C-011 is novel_valid and F-03 remains missed.",
+      "detail": "Although both involve direct vault donations, C-011's tiny-supply zero-share deposit denial and virtual-offset fix are materially different from F-03's posted-collateral valuation path and lending-integration fix."
+    },
+    {
+      "kind": "control_population",
+      "effect": "Control specificity is null.",
+      "detail": "Patched exploit controls in validation-map.json are not precommitted public negative-control units and were not reclassified."
+    }
+  ],
+  "arithmetic_attestation": {
+    "exact_plus_partial_plus_miss_equals_truth_units": true,
+    "candidate_dispositions_sum_to_raw_claims": true,
+    "truth_weight_sum_recomputed": 62,
+    "rubric_maximum_sum_recomputed": 104,
+    "rubric_awarded_sum_recomputed": 64,
+    "json_validation_passed": true,
+    "one_to_one_uniqueness_validation_passed": true,
+    "hash_inventory_validation_passed": true,
+    "arithmetic_validation_passed": true
+  }
+}

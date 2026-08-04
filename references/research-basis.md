@@ -72,6 +72,44 @@ Planet](https://blog.trailofbits.com/2026/07/02/field-reports-from-patch-the-pla
 and [From Naptime to Big
 Sleep](https://projectzero.google/2024/10/from-naptime-to-big-sleep.html).
 
+## Standards expose semantic and arithmetic integration boundaries
+
+ERC-20 standardizes a callable token API and requires callers to handle a false
+return, but it does not state that a nominal transfer argument must equal the
+recipient's observed balance increase. This supports treating exact balance
+movement as an integration assumption that must be verified or measured rather
+than inferred from ABI compatibility.
+
+ERC-4626 distinguishes approximate conversion views from mutation previews,
+warns that preview/conversion results can be manipulable, and specifies opposing
+rounding directions that favor the vault: shares issued and assets returned
+round down, while assets charged and shares burned round up. This supports the
+exact boundary matrix and the requirement to trace a manipulable conversion
+through every security consumer.
+
+Solidity's official security guidance states that any external call hands over
+control, that reentrancy can involve multi-contract state, and that state effects
+should be committed before interactions. This supports enumerating all
+cross-function and cross-contract actions reachable at each interaction point
+rather than testing only same-function recursion.
+
+Sources: [ERC-20](https://eips.ethereum.org/EIPS/eip-20),
+[ERC-4626](https://eips.ethereum.org/EIPS/eip-4626), and
+[Solidity security considerations](https://docs.soliditylang.org/en/latest/security-considerations.html#reentrancy).
+
+## Composed attacks require sequence synthesis and economic closure
+
+Qin et al. model flash-loan attacks as optimization over protocol and ecosystem
+state, including atomic repayment and profit. FlashSyn later synthesizes
+multi-invocation adversarial transactions and searches parameters that maximize
+profit. These primary results support two design inferences here: retain
+temporary funding as an attacker capability when the environment permits it,
+and require one compatible execution to close principal, fees, profit, and
+system loss rather than combining separately demonstrated primitives in prose.
+
+Sources: [Attacking the DeFi Ecosystem with Flash Loans for Fun and
+Profit](https://arxiv.org/abs/2003.03810) and [FlashSyn](https://arxiv.org/abs/2206.10708).
+
 ## Variant analysis needs abstraction plus controls
 
 CodeQL defines variant analysis as using a known vulnerability as a seed for
@@ -129,3 +167,11 @@ The evidence above leads to these deliberate choices:
    erase the contract or failed experiments.
 10. End with a typed terminal outcome and residual risk, never an unsupported
     declaration that the target is secure.
+11. Model business flows and system-wide conservation before promoting a local
+    effect.
+12. Treat ABI compatibility and nominal arguments as distinct from measured
+    external semantics.
+13. Trace every primitive through consumers, interleavings, and compatible
+    joins before closing the surface.
+14. Require arithmetic boundary cases and a final attacker/system/third-party
+    impact ledger before calling a composed result.

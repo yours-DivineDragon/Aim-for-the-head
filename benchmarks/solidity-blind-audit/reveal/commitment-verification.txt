@@ -1,0 +1,34 @@
+Blind benchmark commitment verification
+======================================
+
+Pre-reveal checkpoints
+----------------------
+Target GitHub commit: 75d19f5c283c5e2fe6b1a5913b1ca4b82462c21d
+Hunter submission GitHub commit: 2818814bb8473740c38cf88c66e88f9d55973a22
+Blind-review local commit before reveal: 889ad973ed5fa309f52949fb2c6de7d263a55d8f
+Blind-review tree: 570c99732a6461673346896129b5afa6a3daf504
+
+Published and recomputed values
+-------------------------------
+Source manifest: 9ac26ede2c9b8e3f45910a1e8207c10ec418999106571061211fc339ad84c926
+Ciphertext: 5b73c297c2797056a22fc344736c145785ca2a7e3df19e0fd8d6f5010c683601
+Ground truth: b200a4a2908b88a3db88d485a173fe60a434968bc8a785a3d3b202aea4031475
+Passphrase: 02cf0ce1141eef87196ed86f8d8903b845eb832827c02c77525fa726877a2654
+
+The decrypted ground-truth.json hashes byte-for-byte to the published ground-
+truth commitment. All ten entries in SHA256SUMS pass. The private canary appears
+zero times in the target, hunter, reviewer, and consensus artifacts created
+before reveal.
+
+Hidden-suite replay
+-------------------
+The first operator invocation used the repository working directory rather than
+the fresh validation directory. Node discovered zero tests, so that invocation
+was rejected as a harness error and received no evidentiary credit.
+
+The exact command was then run from the correct isolated validation root:
+
+  node --test --test-concurrency=1 .hidden/tests/*.test.mjs
+
+Result: 30 tests, 2 suites, 30 passed, 0 failed. This comprises 15 canonical
+exploit reproductions and 15 patched controls.

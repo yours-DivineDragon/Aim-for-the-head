@@ -1,0 +1,1263 @@
+$ python3 ../../scripts/goal_state.py event --dir regression-v2/goal-state --kind mapping --summary Completed the target source, business-flow, trust-boundary, mutable-value consumer, sequence, and economic closure maps. --evidence regression-v2/maps/business-flow-and-state-machine-model.md --evidence regression-v2/maps/mutable-value-to-downstream-consumer-map.md
+{
+  "schema_version": 1,
+  "sequence": 2,
+  "timestamp": "2026-08-04T16:53:23Z",
+  "kind": "mapping",
+  "summary": "Completed the target source, business-flow, trust-boundary, mutable-value consumer, sequence, and economic closure maps.",
+  "evidence": [
+    "regression-v2/maps/business-flow-and-state-machine-model.md",
+    "regression-v2/maps/mutable-value-to-downstream-consumer-map.md"
+  ]
+}
+
+$ python3 ../../scripts/goal_state.py event --dir regression-v2/goal-state --kind experiment --summary Executed six deep positive cases with matched condition-changing controls in two fresh Node processes. --evidence regression-v2/evidence/deep-regressions.log --evidence regression-v2/evidence/deep-regressions-independent.log --hypothesis Boundary, downstream-consumer, cross-function, semantic-delta, and primitive-join tests expose the six formerly incomplete or missed truth units. --classification supports
+{
+  "schema_version": 1,
+  "sequence": 3,
+  "timestamp": "2026-08-04T16:53:23Z",
+  "kind": "experiment",
+  "summary": "Executed six deep positive cases with matched condition-changing controls in two fresh Node processes.",
+  "evidence": [
+    "regression-v2/evidence/deep-regressions.log",
+    "regression-v2/evidence/deep-regressions-independent.log"
+  ],
+  "hypothesis": "Boundary, downstream-consumer, cross-function, semantic-delta, and primitive-join tests expose the six formerly incomplete or missed truth units.",
+  "classification": "supports"
+}
+
+$ python3 ../../scripts/goal_state.py event --dir regression-v2/goal-state --kind experiment --summary Reexecuted nine retained exact packets against the same frozen source manifest. --evidence regression-v2/evidence/retained-exact-regressions.log --evidence regression-v2/evidence/source-manifest.log --hypothesis Workflow-v2 precision gates retain the prior exact claims without introducing unsupported candidates. --classification supports
+{
+  "schema_version": 1,
+  "sequence": 4,
+  "timestamp": "2026-08-04T16:53:23Z",
+  "kind": "experiment",
+  "summary": "Reexecuted nine retained exact packets against the same frozen source manifest.",
+  "evidence": [
+    "regression-v2/evidence/retained-exact-regressions.log",
+    "regression-v2/evidence/source-manifest.log"
+  ],
+  "hypothesis": "Workflow-v2 precision gates retain the prior exact claims without introducing unsupported candidates.",
+  "classification": "supports"
+}
+
+$ python3 ../../scripts/goal_state.py event --dir regression-v2/goal-state --kind observation --summary The disclosed regression candidate set contains fifteen distinct supported units and no unsupported or duplicate cluster. --evidence regression-v2/submission/candidates.json --evidence regression-v2/maps/primitive-join-graph.md
+{
+  "schema_version": 1,
+  "sequence": 5,
+  "timestamp": "2026-08-04T16:53:23Z",
+  "kind": "observation",
+  "summary": "The disclosed regression candidate set contains fifteen distinct supported units and no unsupported or duplicate cluster.",
+  "evidence": [
+    "regression-v2/submission/candidates.json",
+    "regression-v2/maps/primitive-join-graph.md"
+  ]
+}
+
+$ python3 ../../scripts/goal_state.py coverage --dir regression-v2/goal-state --dimension source-read --item complete Solidity and entry-point census --status inspected --evidence regression-v2/maps/business-flow-and-state-machine-model.md --note All public target contracts and their direct support interfaces were mapped.
+{
+  "schema_version": 1,
+  "sequence": 1,
+  "timestamp": "2026-08-04T16:53:23Z",
+  "dimension": "source-read",
+  "item": "complete Solidity and entry-point census",
+  "status": "inspected",
+  "evidence": [
+    "regression-v2/maps/business-flow-and-state-machine-model.md"
+  ],
+  "note": "All public target contracts and their direct support interfaces were mapped."
+}
+
+$ python3 ../../scripts/goal_state.py coverage --dir regression-v2/goal-state --dimension attack-surface --item lending vault oracle pool bridge signature and strategy surfaces --status tested --evidence regression-v2/submission/candidates.json --note Every ranked surface has a positive execution and a discriminating control.
+{
+  "schema_version": 1,
+  "sequence": 2,
+  "timestamp": "2026-08-04T16:53:23Z",
+  "dimension": "attack-surface",
+  "item": "lending vault oracle pool bridge signature and strategy surfaces",
+  "status": "tested",
+  "evidence": [
+    "regression-v2/submission/candidates.json"
+  ],
+  "note": "Every ranked surface has a positive execution and a discriminating control."
+}
+
+$ python3 ../../scripts/goal_state.py coverage --dir regression-v2/goal-state --dimension trust-boundary --item public callback token feed messenger signature and initialization boundaries --status tested --evidence regression-v2/maps/interface-promise-versus-runtime-delta-matrix.md --evidence regression-v2/maps/callback-and-action-sequence-matrix.md
+{
+  "schema_version": 1,
+  "sequence": 3,
+  "timestamp": "2026-08-04T16:53:23Z",
+  "dimension": "trust-boundary",
+  "item": "public callback token feed messenger signature and initialization boundaries",
+  "status": "tested",
+  "evidence": [
+    "regression-v2/maps/interface-promise-versus-runtime-delta-matrix.md",
+    "regression-v2/maps/callback-and-action-sequence-matrix.md"
+  ],
+  "note": ""
+}
+
+$ python3 ../../scripts/goal_state.py coverage --dir regression-v2/goal-state --dimension state-invariant --item solvency authorization replay accounting and lifecycle invariants --status tested --evidence regression-v2/maps/asset-liability-conservation-ledger.md
+{
+  "schema_version": 1,
+  "sequence": 4,
+  "timestamp": "2026-08-04T16:53:23Z",
+  "dimension": "state-invariant",
+  "item": "solvency authorization replay accounting and lifecycle invariants",
+  "status": "tested",
+  "evidence": [
+    "regression-v2/maps/asset-liability-conservation-ledger.md"
+  ],
+  "note": ""
+}
+
+$ python3 ../../scripts/goal_state.py coverage --dir regression-v2/goal-state --dimension runtime-corpus --item ordinary suite retained packets and deep regression corpus --status tested --evidence regression-v2/evidence/execution-summary.json
+{
+  "schema_version": 1,
+  "sequence": 5,
+  "timestamp": "2026-08-04T16:53:23Z",
+  "dimension": "runtime-corpus",
+  "item": "ordinary suite retained packets and deep regression corpus",
+  "status": "tested",
+  "evidence": [
+    "regression-v2/evidence/execution-summary.json"
+  ],
+  "note": ""
+}
+
+$ python3 ../../scripts/goal_state.py coverage --dir regression-v2/goal-state --dimension config-build --item pinned optimized compiler and deterministic local chain --status tested --evidence regression-v2/evidence/ordinary-suite.log --evidence regression-v2/evidence/source-manifest.log
+{
+  "schema_version": 1,
+  "sequence": 6,
+  "timestamp": "2026-08-04T16:53:23Z",
+  "dimension": "config-build",
+  "item": "pinned optimized compiler and deterministic local chain",
+  "status": "tested",
+  "evidence": [
+    "regression-v2/evidence/ordinary-suite.log",
+    "regression-v2/evidence/source-manifest.log"
+  ],
+  "note": ""
+}
+
+$ python3 ../../scripts/goal_state.py coverage --dir regression-v2/goal-state --dimension historical-family --item revealed-target contamination and baseline family comparison --status inspected --evidence BASELINE_RECORD.md --evidence IMPROVEMENT_STUDY.md --note Used only to label the regression and later adjudicate it; no blind or novelty claim is made.
+{
+  "schema_version": 1,
+  "sequence": 7,
+  "timestamp": "2026-08-04T16:53:24Z",
+  "dimension": "historical-family",
+  "item": "revealed-target contamination and baseline family comparison",
+  "status": "inspected",
+  "evidence": [
+    "BASELINE_RECORD.md",
+    "IMPROVEMENT_STUDY.md"
+  ],
+  "note": "Used only to label the regression and later adjudicate it; no blind or novelty claim is made."
+}
+
+$ python3 ../../scripts/goal_state.py coverage --dir regression-v2/goal-state --dimension falsification --item matched condition-changing controls for every claim --status tested --evidence regression-v2/evidence/deep-regressions.log --evidence regression-v2/evidence/retained-exact-regressions.log
+{
+  "schema_version": 1,
+  "sequence": 8,
+  "timestamp": "2026-08-04T16:53:24Z",
+  "dimension": "falsification",
+  "item": "matched condition-changing controls for every claim",
+  "status": "tested",
+  "evidence": [
+    "regression-v2/evidence/deep-regressions.log",
+    "regression-v2/evidence/retained-exact-regressions.log"
+  ],
+  "note": ""
+}
+
+$ python3 ../../scripts/goal_state.py coverage --dir regression-v2/goal-state --dimension business-invariant --item business-flow-and-state-machine-model --status tested --evidence regression-v2/maps/business-flow-and-state-machine-model.md
+{
+  "schema_version": 1,
+  "sequence": 9,
+  "timestamp": "2026-08-04T16:53:24Z",
+  "dimension": "business-invariant",
+  "item": "business-flow-and-state-machine-model",
+  "status": "tested",
+  "evidence": [
+    "regression-v2/maps/business-flow-and-state-machine-model.md"
+  ],
+  "note": ""
+}
+
+$ python3 ../../scripts/goal_state.py coverage --dir regression-v2/goal-state --dimension business-invariant --item asset-liability-conservation-ledger --status tested --evidence regression-v2/maps/asset-liability-conservation-ledger.md
+{
+  "schema_version": 1,
+  "sequence": 10,
+  "timestamp": "2026-08-04T16:53:24Z",
+  "dimension": "business-invariant",
+  "item": "asset-liability-conservation-ledger",
+  "status": "tested",
+  "evidence": [
+    "regression-v2/maps/asset-liability-conservation-ledger.md"
+  ],
+  "note": ""
+}
+
+$ python3 ../../scripts/goal_state.py coverage --dir regression-v2/goal-state --dimension consumer-propagation --item mutable-value-to-downstream-consumer-map --status tested --evidence regression-v2/maps/mutable-value-to-downstream-consumer-map.md
+{
+  "schema_version": 1,
+  "sequence": 11,
+  "timestamp": "2026-08-04T16:53:24Z",
+  "dimension": "consumer-propagation",
+  "item": "mutable-value-to-downstream-consumer-map",
+  "status": "tested",
+  "evidence": [
+    "regression-v2/maps/mutable-value-to-downstream-consumer-map.md"
+  ],
+  "note": ""
+}
+
+$ python3 ../../scripts/goal_state.py coverage --dir regression-v2/goal-state --dimension boundary-arithmetic --item rounding-unit-and-zero-boundaries --status tested --evidence regression-v2/maps/rounding-unit-and-zero-boundaries.md --evidence regression-v2/evidence/deep-regressions.log
+{
+  "schema_version": 1,
+  "sequence": 12,
+  "timestamp": "2026-08-04T16:53:24Z",
+  "dimension": "boundary-arithmetic",
+  "item": "rounding-unit-and-zero-boundaries",
+  "status": "tested",
+  "evidence": [
+    "regression-v2/maps/rounding-unit-and-zero-boundaries.md",
+    "regression-v2/evidence/deep-regressions.log"
+  ],
+  "note": ""
+}
+
+$ python3 ../../scripts/goal_state.py coverage --dir regression-v2/goal-state --dimension external-semantics --item interface-promise-versus-runtime-delta-matrix --status tested --evidence regression-v2/maps/interface-promise-versus-runtime-delta-matrix.md --evidence regression-v2/evidence/deep-regressions.log
+{
+  "schema_version": 1,
+  "sequence": 13,
+  "timestamp": "2026-08-04T16:53:24Z",
+  "dimension": "external-semantics",
+  "item": "interface-promise-versus-runtime-delta-matrix",
+  "status": "tested",
+  "evidence": [
+    "regression-v2/maps/interface-promise-versus-runtime-delta-matrix.md",
+    "regression-v2/evidence/deep-regressions.log"
+  ],
+  "note": ""
+}
+
+$ python3 ../../scripts/goal_state.py coverage --dir regression-v2/goal-state --dimension sequence-interleaving --item callback-and-action-sequence-matrix --status tested --evidence regression-v2/maps/callback-and-action-sequence-matrix.md --evidence regression-v2/evidence/deep-regressions.log
+{
+  "schema_version": 1,
+  "sequence": 14,
+  "timestamp": "2026-08-04T16:53:24Z",
+  "dimension": "sequence-interleaving",
+  "item": "callback-and-action-sequence-matrix",
+  "status": "tested",
+  "evidence": [
+    "regression-v2/maps/callback-and-action-sequence-matrix.md",
+    "regression-v2/evidence/deep-regressions.log"
+  ],
+  "note": ""
+}
+
+$ python3 ../../scripts/goal_state.py coverage --dir regression-v2/goal-state --dimension exploit-composition --item primitive-join-graph --status tested --evidence regression-v2/maps/primitive-join-graph.md --evidence regression-v2/evidence/deep-regressions.log
+{
+  "schema_version": 1,
+  "sequence": 15,
+  "timestamp": "2026-08-04T16:53:24Z",
+  "dimension": "exploit-composition",
+  "item": "primitive-join-graph",
+  "status": "tested",
+  "evidence": [
+    "regression-v2/maps/primitive-join-graph.md",
+    "regression-v2/evidence/deep-regressions.log"
+  ],
+  "note": ""
+}
+
+$ python3 ../../scripts/goal_state.py coverage --dir regression-v2/goal-state --dimension economic-closure --item funding-repayment-profit-and-system-loss-ledger --status tested --evidence regression-v2/maps/funding-repayment-profit-and-system-loss-ledger.md --evidence regression-v2/evidence/deep-regressions.log
+{
+  "schema_version": 1,
+  "sequence": 16,
+  "timestamp": "2026-08-04T16:53:24Z",
+  "dimension": "economic-closure",
+  "item": "funding-repayment-profit-and-system-loss-ledger",
+  "status": "tested",
+  "evidence": [
+    "regression-v2/maps/funding-repayment-profit-and-system-loss-ledger.md",
+    "regression-v2/evidence/deep-regressions.log"
+  ],
+  "note": ""
+}
+
+$ python3 ../../scripts/goal_state.py candidate --dir regression-v2/goal-state --id R2-01 --status lead --title Two attacker-controlled valuation rates close a flash-funded market drain --summary Spot manipulation alone leaves the limit below flash repayment; the joined rates raise it above 150,000. The lender is repaid, the actor retains 49,950 stable, and the market loses 150,000 to undercollateralized debt. --evidence regression-v2/submission/candidates.json --evidence regression-v2/tests/deep-regressions.test.mjs
+{
+  "schema_version": 1,
+  "sequence": 1,
+  "timestamp": "2026-08-04T16:53:24Z",
+  "id": "R2-01",
+  "revision": 1,
+  "status": "lead",
+  "title": "Two attacker-controlled valuation rates close a flash-funded market drain",
+  "summary": "Spot manipulation alone leaves the limit below flash repayment; the joined rates raise it above 150,000. The lender is repaid, the actor retains 49,950 stable, and the market loses 150,000 to undercollateralized debt.",
+  "evidence": [
+    "regression-v2/submission/candidates.json",
+    "regression-v2/tests/deep-regressions.test.mjs"
+  ],
+  "gates": {},
+  "waivers": {},
+  "failed_gate": null
+}
+
+$ python3 ../../scripts/goal_state.py candidate --dir regression-v2/goal-state --id R2-01 --status validated --title Two attacker-controlled valuation rates close a flash-funded market drain --summary Spot manipulation alone leaves the limit below flash repayment; the joined rates raise it above 150,000. The lender is repaid, the actor retains 49,950 stable, and the market loses 150,000 to undercollateralized debt. --evidence regression-v2/tests/deep-regressions.test.mjs --evidence regression-v2/evidence/deep-regressions.log --evidence regression-v2/evidence/deep-regressions-independent.log --evidence regression-v2/maps/funding-repayment-profit-and-system-loss-ledger.md --gate attacker-control=regression-v2/submission/candidates.json R2-01 attacker path --gate reachability=regression-v2/tests/deep-regressions.test.mjs public-entry execution --gate defense-analysis=regression-v2/submission/candidates.json R2-01 root cause and negative control --gate security-impact=regression-v2/evidence/deep-regressions.log asserted final impact oracle --gate realistic-configuration=regression-v2/evidence/execution-summary.json pinned local release-like environment --gate safe-reproduction=regression-v2/tests/deep-regressions.test.mjs isolated deterministic harness --gate release-reproduction=regression-v2/evidence/execution-summary.json unmodified optimized target run --gate negative-control=regression-v2/evidence/deep-regressions.log matched condition-changing control --gate independent-reproduction=regression-v2/evidence/deep-regressions-independent.log fresh process execution --gate downstream-impact=regression-v2/submission/candidates.json R2-01 demonstrated impact --gate composition-review=regression-v2/maps/primitive-join-graph.md joined or explicitly closed compatible primitives
+{
+  "schema_version": 1,
+  "sequence": 2,
+  "timestamp": "2026-08-04T16:53:24Z",
+  "id": "R2-01",
+  "revision": 2,
+  "status": "validated",
+  "title": "Two attacker-controlled valuation rates close a flash-funded market drain",
+  "summary": "Spot manipulation alone leaves the limit below flash repayment; the joined rates raise it above 150,000. The lender is repaid, the actor retains 49,950 stable, and the market loses 150,000 to undercollateralized debt.",
+  "evidence": [
+    "regression-v2/tests/deep-regressions.test.mjs",
+    "regression-v2/evidence/deep-regressions.log",
+    "regression-v2/evidence/deep-regressions-independent.log",
+    "regression-v2/maps/funding-repayment-profit-and-system-loss-ledger.md"
+  ],
+  "gates": {
+    "attacker-control": "regression-v2/submission/candidates.json R2-01 attacker path",
+    "reachability": "regression-v2/tests/deep-regressions.test.mjs public-entry execution",
+    "defense-analysis": "regression-v2/submission/candidates.json R2-01 root cause and negative control",
+    "security-impact": "regression-v2/evidence/deep-regressions.log asserted final impact oracle",
+    "realistic-configuration": "regression-v2/evidence/execution-summary.json pinned local release-like environment",
+    "safe-reproduction": "regression-v2/tests/deep-regressions.test.mjs isolated deterministic harness",
+    "release-reproduction": "regression-v2/evidence/execution-summary.json unmodified optimized target run",
+    "negative-control": "regression-v2/evidence/deep-regressions.log matched condition-changing control",
+    "independent-reproduction": "regression-v2/evidence/deep-regressions-independent.log fresh process execution",
+    "downstream-impact": "regression-v2/submission/candidates.json R2-01 demonstrated impact",
+    "composition-review": "regression-v2/maps/primitive-join-graph.md joined or explicitly closed compatible primitives"
+  },
+  "waivers": {},
+  "failed_gate": null
+}
+
+$ python3 ../../scripts/goal_state.py candidate --dir regression-v2/goal-state --id R2-02 --status lead --title Fallback oracle trusts an instantaneous constant-product reserve ratio --summary The retained packet moves the oracle above 100 stable per asset and borrows materially more than the one-dollar comparator permits. --evidence regression-v2/submission/candidates.json --evidence run/evidence/C-008/REPORT.md
+{
+  "schema_version": 1,
+  "sequence": 3,
+  "timestamp": "2026-08-04T16:53:24Z",
+  "id": "R2-02",
+  "revision": 1,
+  "status": "lead",
+  "title": "Fallback oracle trusts an instantaneous constant-product reserve ratio",
+  "summary": "The retained packet moves the oracle above 100 stable per asset and borrows materially more than the one-dollar comparator permits.",
+  "evidence": [
+    "regression-v2/submission/candidates.json",
+    "run/evidence/C-008/REPORT.md"
+  ],
+  "gates": {},
+  "waivers": {},
+  "failed_gate": null
+}
+
+$ python3 ../../scripts/goal_state.py candidate --dir regression-v2/goal-state --id R2-02 --status validated --title Fallback oracle trusts an instantaneous constant-product reserve ratio --summary The retained packet moves the oracle above 100 stable per asset and borrows materially more than the one-dollar comparator permits. --evidence run/evidence/C-008/REPORT.md --evidence run/evidence/C-008/repro.test.mjs --evidence regression-v2/evidence/retained-exact-regressions.log --gate attacker-control=regression-v2/submission/candidates.json R2-02 attacker path --gate reachability=run/evidence/C-008/REPORT.md public-entry execution --gate defense-analysis=regression-v2/submission/candidates.json R2-02 root cause and negative control --gate security-impact=regression-v2/evidence/retained-exact-regressions.log asserted final impact oracle --gate realistic-configuration=regression-v2/evidence/execution-summary.json pinned local release-like environment --gate safe-reproduction=run/evidence/C-008/REPORT.md isolated deterministic harness --gate release-reproduction=regression-v2/evidence/execution-summary.json unmodified optimized target run --gate negative-control=regression-v2/evidence/retained-exact-regressions.log matched condition-changing control --gate independent-reproduction=run/evidence/C-008/reproduction.log fresh process execution --gate downstream-impact=regression-v2/submission/candidates.json R2-02 demonstrated impact --gate composition-review=regression-v2/maps/primitive-join-graph.md joined or explicitly closed compatible primitives
+{
+  "schema_version": 1,
+  "sequence": 4,
+  "timestamp": "2026-08-04T16:53:24Z",
+  "id": "R2-02",
+  "revision": 2,
+  "status": "validated",
+  "title": "Fallback oracle trusts an instantaneous constant-product reserve ratio",
+  "summary": "The retained packet moves the oracle above 100 stable per asset and borrows materially more than the one-dollar comparator permits.",
+  "evidence": [
+    "run/evidence/C-008/REPORT.md",
+    "run/evidence/C-008/repro.test.mjs",
+    "regression-v2/evidence/retained-exact-regressions.log"
+  ],
+  "gates": {
+    "attacker-control": "regression-v2/submission/candidates.json R2-02 attacker path",
+    "reachability": "run/evidence/C-008/REPORT.md public-entry execution",
+    "defense-analysis": "regression-v2/submission/candidates.json R2-02 root cause and negative control",
+    "security-impact": "regression-v2/evidence/retained-exact-regressions.log asserted final impact oracle",
+    "realistic-configuration": "regression-v2/evidence/execution-summary.json pinned local release-like environment",
+    "safe-reproduction": "run/evidence/C-008/REPORT.md isolated deterministic harness",
+    "release-reproduction": "regression-v2/evidence/execution-summary.json unmodified optimized target run",
+    "negative-control": "regression-v2/evidence/retained-exact-regressions.log matched condition-changing control",
+    "independent-reproduction": "run/evidence/C-008/reproduction.log fresh process execution",
+    "downstream-impact": "regression-v2/submission/candidates.json R2-02 demonstrated impact",
+    "composition-review": "regression-v2/maps/primitive-join-graph.md joined or explicitly closed compatible primitives"
+  },
+  "waivers": {},
+  "failed_gate": null
+}
+
+$ python3 ../../scripts/goal_state.py candidate --dir regression-v2/goal-state --id R2-03 --status lead --title Unsolicited vault balances inflate already-posted lending collateral --summary The existing borrower's limit rises from 75 to about 143.18 without any collateral-share change. --evidence regression-v2/submission/candidates.json --evidence regression-v2/tests/deep-regressions.test.mjs
+{
+  "schema_version": 1,
+  "sequence": 5,
+  "timestamp": "2026-08-04T16:53:24Z",
+  "id": "R2-03",
+  "revision": 1,
+  "status": "lead",
+  "title": "Unsolicited vault balances inflate already-posted lending collateral",
+  "summary": "The existing borrower's limit rises from 75 to about 143.18 without any collateral-share change.",
+  "evidence": [
+    "regression-v2/submission/candidates.json",
+    "regression-v2/tests/deep-regressions.test.mjs"
+  ],
+  "gates": {},
+  "waivers": {},
+  "failed_gate": null
+}
+
+$ python3 ../../scripts/goal_state.py candidate --dir regression-v2/goal-state --id R2-03 --status validated --title Unsolicited vault balances inflate already-posted lending collateral --summary The existing borrower's limit rises from 75 to about 143.18 without any collateral-share change. --evidence regression-v2/tests/deep-regressions.test.mjs --evidence regression-v2/evidence/deep-regressions.log --evidence regression-v2/evidence/deep-regressions-independent.log --evidence regression-v2/maps/mutable-value-to-downstream-consumer-map.md --gate attacker-control=regression-v2/submission/candidates.json R2-03 attacker path --gate reachability=regression-v2/tests/deep-regressions.test.mjs public-entry execution --gate defense-analysis=regression-v2/submission/candidates.json R2-03 root cause and negative control --gate security-impact=regression-v2/evidence/deep-regressions.log asserted final impact oracle --gate realistic-configuration=regression-v2/evidence/execution-summary.json pinned local release-like environment --gate safe-reproduction=regression-v2/tests/deep-regressions.test.mjs isolated deterministic harness --gate release-reproduction=regression-v2/evidence/execution-summary.json unmodified optimized target run --gate negative-control=regression-v2/evidence/deep-regressions.log matched condition-changing control --gate independent-reproduction=regression-v2/evidence/deep-regressions-independent.log fresh process execution --gate downstream-impact=regression-v2/submission/candidates.json R2-03 demonstrated impact --gate composition-review=regression-v2/maps/primitive-join-graph.md joined or explicitly closed compatible primitives
+{
+  "schema_version": 1,
+  "sequence": 6,
+  "timestamp": "2026-08-04T16:53:24Z",
+  "id": "R2-03",
+  "revision": 2,
+  "status": "validated",
+  "title": "Unsolicited vault balances inflate already-posted lending collateral",
+  "summary": "The existing borrower's limit rises from 75 to about 143.18 without any collateral-share change.",
+  "evidence": [
+    "regression-v2/tests/deep-regressions.test.mjs",
+    "regression-v2/evidence/deep-regressions.log",
+    "regression-v2/evidence/deep-regressions-independent.log",
+    "regression-v2/maps/mutable-value-to-downstream-consumer-map.md"
+  ],
+  "gates": {
+    "attacker-control": "regression-v2/submission/candidates.json R2-03 attacker path",
+    "reachability": "regression-v2/tests/deep-regressions.test.mjs public-entry execution",
+    "defense-analysis": "regression-v2/submission/candidates.json R2-03 root cause and negative control",
+    "security-impact": "regression-v2/evidence/deep-regressions.log asserted final impact oracle",
+    "realistic-configuration": "regression-v2/evidence/execution-summary.json pinned local release-like environment",
+    "safe-reproduction": "regression-v2/tests/deep-regressions.test.mjs isolated deterministic harness",
+    "release-reproduction": "regression-v2/evidence/execution-summary.json unmodified optimized target run",
+    "negative-control": "regression-v2/evidence/deep-regressions.log matched condition-changing control",
+    "independent-reproduction": "regression-v2/evidence/deep-regressions-independent.log fresh process execution",
+    "downstream-impact": "regression-v2/submission/candidates.json R2-03 demonstrated impact",
+    "composition-review": "regression-v2/maps/primitive-join-graph.md joined or explicitly closed compatible primitives"
+  },
+  "waivers": {},
+  "failed_gate": null
+}
+
+$ python3 ../../scripts/goal_state.py candidate --dir regression-v2/goal-state --id R2-04 --status lead --title Borrow callback withdraws collateral before debt is committed --summary The actor ends with 500 stable and all 1,000 original shares while the market records 500 debt and zero local collateral. --evidence regression-v2/submission/candidates.json --evidence regression-v2/tests/deep-regressions.test.mjs
+{
+  "schema_version": 1,
+  "sequence": 7,
+  "timestamp": "2026-08-04T16:53:24Z",
+  "id": "R2-04",
+  "revision": 1,
+  "status": "lead",
+  "title": "Borrow callback withdraws collateral before debt is committed",
+  "summary": "The actor ends with 500 stable and all 1,000 original shares while the market records 500 debt and zero local collateral.",
+  "evidence": [
+    "regression-v2/submission/candidates.json",
+    "regression-v2/tests/deep-regressions.test.mjs"
+  ],
+  "gates": {},
+  "waivers": {},
+  "failed_gate": null
+}
+
+$ python3 ../../scripts/goal_state.py candidate --dir regression-v2/goal-state --id R2-04 --status validated --title Borrow callback withdraws collateral before debt is committed --summary The actor ends with 500 stable and all 1,000 original shares while the market records 500 debt and zero local collateral. --evidence regression-v2/tests/deep-regressions.test.mjs --evidence regression-v2/evidence/deep-regressions.log --evidence regression-v2/evidence/deep-regressions-independent.log --evidence regression-v2/maps/callback-and-action-sequence-matrix.md --gate attacker-control=regression-v2/submission/candidates.json R2-04 attacker path --gate reachability=regression-v2/tests/deep-regressions.test.mjs public-entry execution --gate defense-analysis=regression-v2/submission/candidates.json R2-04 root cause and negative control --gate security-impact=regression-v2/evidence/deep-regressions.log asserted final impact oracle --gate realistic-configuration=regression-v2/evidence/execution-summary.json pinned local release-like environment --gate safe-reproduction=regression-v2/tests/deep-regressions.test.mjs isolated deterministic harness --gate release-reproduction=regression-v2/evidence/execution-summary.json unmodified optimized target run --gate negative-control=regression-v2/evidence/deep-regressions.log matched condition-changing control --gate independent-reproduction=regression-v2/evidence/deep-regressions-independent.log fresh process execution --gate downstream-impact=regression-v2/submission/candidates.json R2-04 demonstrated impact --gate composition-review=regression-v2/maps/primitive-join-graph.md joined or explicitly closed compatible primitives
+{
+  "schema_version": 1,
+  "sequence": 8,
+  "timestamp": "2026-08-04T16:53:24Z",
+  "id": "R2-04",
+  "revision": 2,
+  "status": "validated",
+  "title": "Borrow callback withdraws collateral before debt is committed",
+  "summary": "The actor ends with 500 stable and all 1,000 original shares while the market records 500 debt and zero local collateral.",
+  "evidence": [
+    "regression-v2/tests/deep-regressions.test.mjs",
+    "regression-v2/evidence/deep-regressions.log",
+    "regression-v2/evidence/deep-regressions-independent.log",
+    "regression-v2/maps/callback-and-action-sequence-matrix.md"
+  ],
+  "gates": {
+    "attacker-control": "regression-v2/submission/candidates.json R2-04 attacker path",
+    "reachability": "regression-v2/tests/deep-regressions.test.mjs public-entry execution",
+    "defense-analysis": "regression-v2/submission/candidates.json R2-04 root cause and negative control",
+    "security-impact": "regression-v2/evidence/deep-regressions.log asserted final impact oracle",
+    "realistic-configuration": "regression-v2/evidence/execution-summary.json pinned local release-like environment",
+    "safe-reproduction": "regression-v2/tests/deep-regressions.test.mjs isolated deterministic harness",
+    "release-reproduction": "regression-v2/evidence/execution-summary.json unmodified optimized target run",
+    "negative-control": "regression-v2/evidence/deep-regressions.log matched condition-changing control",
+    "independent-reproduction": "regression-v2/evidence/deep-regressions-independent.log fresh process execution",
+    "downstream-impact": "regression-v2/submission/candidates.json R2-04 demonstrated impact",
+    "composition-review": "regression-v2/maps/primitive-join-graph.md joined or explicitly closed compatible primitives"
+  },
+  "waivers": {},
+  "failed_gate": null
+}
+
+$ python3 ../../scripts/goal_state.py candidate --dir regression-v2/goal-state --id R2-05 --status lead --title Collateral-factor authorization permits public increases --summary A non-guardian globally weakens collateralization and increases available debt from the original 750-unit boundary. --evidence regression-v2/submission/candidates.json --evidence run/evidence/C-006/REPORT.md
+{
+  "schema_version": 1,
+  "sequence": 9,
+  "timestamp": "2026-08-04T16:53:24Z",
+  "id": "R2-05",
+  "revision": 1,
+  "status": "lead",
+  "title": "Collateral-factor authorization permits public increases",
+  "summary": "A non-guardian globally weakens collateralization and increases available debt from the original 750-unit boundary.",
+  "evidence": [
+    "regression-v2/submission/candidates.json",
+    "run/evidence/C-006/REPORT.md"
+  ],
+  "gates": {},
+  "waivers": {},
+  "failed_gate": null
+}
+
+$ python3 ../../scripts/goal_state.py candidate --dir regression-v2/goal-state --id R2-05 --status validated --title Collateral-factor authorization permits public increases --summary A non-guardian globally weakens collateralization and increases available debt from the original 750-unit boundary. --evidence run/evidence/C-006/REPORT.md --evidence run/evidence/C-006/repro.test.mjs --evidence regression-v2/evidence/retained-exact-regressions.log --gate attacker-control=regression-v2/submission/candidates.json R2-05 attacker path --gate reachability=run/evidence/C-006/REPORT.md public-entry execution --gate defense-analysis=regression-v2/submission/candidates.json R2-05 root cause and negative control --gate security-impact=regression-v2/evidence/retained-exact-regressions.log asserted final impact oracle --gate realistic-configuration=regression-v2/evidence/execution-summary.json pinned local release-like environment --gate safe-reproduction=run/evidence/C-006/REPORT.md isolated deterministic harness --gate release-reproduction=regression-v2/evidence/execution-summary.json unmodified optimized target run --gate negative-control=regression-v2/evidence/retained-exact-regressions.log matched condition-changing control --gate independent-reproduction=run/evidence/C-006/reproduction.log fresh process execution --gate downstream-impact=regression-v2/submission/candidates.json R2-05 demonstrated impact --gate composition-review=regression-v2/maps/primitive-join-graph.md joined or explicitly closed compatible primitives
+{
+  "schema_version": 1,
+  "sequence": 10,
+  "timestamp": "2026-08-04T16:53:24Z",
+  "id": "R2-05",
+  "revision": 2,
+  "status": "validated",
+  "title": "Collateral-factor authorization permits public increases",
+  "summary": "A non-guardian globally weakens collateralization and increases available debt from the original 750-unit boundary.",
+  "evidence": [
+    "run/evidence/C-006/REPORT.md",
+    "run/evidence/C-006/repro.test.mjs",
+    "regression-v2/evidence/retained-exact-regressions.log"
+  ],
+  "gates": {
+    "attacker-control": "regression-v2/submission/candidates.json R2-05 attacker path",
+    "reachability": "run/evidence/C-006/REPORT.md public-entry execution",
+    "defense-analysis": "regression-v2/submission/candidates.json R2-05 root cause and negative control",
+    "security-impact": "regression-v2/evidence/retained-exact-regressions.log asserted final impact oracle",
+    "realistic-configuration": "regression-v2/evidence/execution-summary.json pinned local release-like environment",
+    "safe-reproduction": "run/evidence/C-006/REPORT.md isolated deterministic harness",
+    "release-reproduction": "regression-v2/evidence/execution-summary.json unmodified optimized target run",
+    "negative-control": "regression-v2/evidence/retained-exact-regressions.log matched condition-changing control",
+    "independent-reproduction": "run/evidence/C-006/reproduction.log fresh process execution",
+    "downstream-impact": "regression-v2/submission/candidates.json R2-05 demonstrated impact",
+    "composition-review": "regression-v2/maps/primitive-join-graph.md joined or explicitly closed compatible primitives"
+  },
+  "waivers": {},
+  "failed_gate": null
+}
+
+$ python3 ../../scripts/goal_state.py candidate --dir regression-v2/goal-state --id R2-06 --status lead --title Withdrawal floor rounding can transfer assets while burning zero shares --summary The caller receives one asset while its share balance and total supply remain unchanged. --evidence regression-v2/submission/candidates.json --evidence regression-v2/tests/deep-regressions.test.mjs
+{
+  "schema_version": 1,
+  "sequence": 11,
+  "timestamp": "2026-08-04T16:53:24Z",
+  "id": "R2-06",
+  "revision": 1,
+  "status": "lead",
+  "title": "Withdrawal floor rounding can transfer assets while burning zero shares",
+  "summary": "The caller receives one asset while its share balance and total supply remain unchanged.",
+  "evidence": [
+    "regression-v2/submission/candidates.json",
+    "regression-v2/tests/deep-regressions.test.mjs"
+  ],
+  "gates": {},
+  "waivers": {},
+  "failed_gate": null
+}
+
+$ python3 ../../scripts/goal_state.py candidate --dir regression-v2/goal-state --id R2-06 --status validated --title Withdrawal floor rounding can transfer assets while burning zero shares --summary The caller receives one asset while its share balance and total supply remain unchanged. --evidence regression-v2/tests/deep-regressions.test.mjs --evidence regression-v2/evidence/deep-regressions.log --evidence regression-v2/evidence/deep-regressions-independent.log --evidence regression-v2/maps/rounding-unit-and-zero-boundaries.md --gate attacker-control=regression-v2/submission/candidates.json R2-06 attacker path --gate reachability=regression-v2/tests/deep-regressions.test.mjs public-entry execution --gate defense-analysis=regression-v2/submission/candidates.json R2-06 root cause and negative control --gate security-impact=regression-v2/evidence/deep-regressions.log asserted final impact oracle --gate realistic-configuration=regression-v2/evidence/execution-summary.json pinned local release-like environment --gate safe-reproduction=regression-v2/tests/deep-regressions.test.mjs isolated deterministic harness --gate release-reproduction=regression-v2/evidence/execution-summary.json unmodified optimized target run --gate negative-control=regression-v2/evidence/deep-regressions.log matched condition-changing control --gate independent-reproduction=regression-v2/evidence/deep-regressions-independent.log fresh process execution --gate downstream-impact=regression-v2/submission/candidates.json R2-06 demonstrated impact --gate composition-review=regression-v2/maps/primitive-join-graph.md joined or explicitly closed compatible primitives
+{
+  "schema_version": 1,
+  "sequence": 12,
+  "timestamp": "2026-08-04T16:53:25Z",
+  "id": "R2-06",
+  "revision": 2,
+  "status": "validated",
+  "title": "Withdrawal floor rounding can transfer assets while burning zero shares",
+  "summary": "The caller receives one asset while its share balance and total supply remain unchanged.",
+  "evidence": [
+    "regression-v2/tests/deep-regressions.test.mjs",
+    "regression-v2/evidence/deep-regressions.log",
+    "regression-v2/evidence/deep-regressions-independent.log",
+    "regression-v2/maps/rounding-unit-and-zero-boundaries.md"
+  ],
+  "gates": {
+    "attacker-control": "regression-v2/submission/candidates.json R2-06 attacker path",
+    "reachability": "regression-v2/tests/deep-regressions.test.mjs public-entry execution",
+    "defense-analysis": "regression-v2/submission/candidates.json R2-06 root cause and negative control",
+    "security-impact": "regression-v2/evidence/deep-regressions.log asserted final impact oracle",
+    "realistic-configuration": "regression-v2/evidence/execution-summary.json pinned local release-like environment",
+    "safe-reproduction": "regression-v2/tests/deep-regressions.test.mjs isolated deterministic harness",
+    "release-reproduction": "regression-v2/evidence/execution-summary.json unmodified optimized target run",
+    "negative-control": "regression-v2/evidence/deep-regressions.log matched condition-changing control",
+    "independent-reproduction": "regression-v2/evidence/deep-regressions-independent.log fresh process execution",
+    "downstream-impact": "regression-v2/submission/candidates.json R2-06 demonstrated impact",
+    "composition-review": "regression-v2/maps/primitive-join-graph.md joined or explicitly closed compatible primitives"
+  },
+  "waivers": {},
+  "failed_gate": null
+}
+
+$ python3 ../../scripts/goal_state.py candidate --dir regression-v2/goal-state --id R2-07 --status lead --title Vault deposit mints claims from requested rather than received assets --summary The attacker balance rises from 200 to 209 while the incumbent's redeemable value falls from 900 to 891. --evidence regression-v2/submission/candidates.json --evidence regression-v2/tests/deep-regressions.test.mjs
+{
+  "schema_version": 1,
+  "sequence": 13,
+  "timestamp": "2026-08-04T16:53:25Z",
+  "id": "R2-07",
+  "revision": 1,
+  "status": "lead",
+  "title": "Vault deposit mints claims from requested rather than received assets",
+  "summary": "The attacker balance rises from 200 to 209 while the incumbent's redeemable value falls from 900 to 891.",
+  "evidence": [
+    "regression-v2/submission/candidates.json",
+    "regression-v2/tests/deep-regressions.test.mjs"
+  ],
+  "gates": {},
+  "waivers": {},
+  "failed_gate": null
+}
+
+$ python3 ../../scripts/goal_state.py candidate --dir regression-v2/goal-state --id R2-07 --status validated --title Vault deposit mints claims from requested rather than received assets --summary The attacker balance rises from 200 to 209 while the incumbent's redeemable value falls from 900 to 891. --evidence regression-v2/tests/deep-regressions.test.mjs --evidence regression-v2/evidence/deep-regressions.log --evidence regression-v2/evidence/deep-regressions-independent.log --evidence regression-v2/maps/interface-promise-versus-runtime-delta-matrix.md --gate attacker-control=regression-v2/submission/candidates.json R2-07 attacker path --gate reachability=regression-v2/tests/deep-regressions.test.mjs public-entry execution --gate defense-analysis=regression-v2/submission/candidates.json R2-07 root cause and negative control --gate security-impact=regression-v2/evidence/deep-regressions.log asserted final impact oracle --gate realistic-configuration=regression-v2/evidence/execution-summary.json pinned local release-like environment --gate safe-reproduction=regression-v2/tests/deep-regressions.test.mjs isolated deterministic harness --gate release-reproduction=regression-v2/evidence/execution-summary.json unmodified optimized target run --gate negative-control=regression-v2/evidence/deep-regressions.log matched condition-changing control --gate independent-reproduction=regression-v2/evidence/deep-regressions-independent.log fresh process execution --gate downstream-impact=regression-v2/submission/candidates.json R2-07 demonstrated impact --gate composition-review=regression-v2/maps/primitive-join-graph.md joined or explicitly closed compatible primitives
+{
+  "schema_version": 1,
+  "sequence": 14,
+  "timestamp": "2026-08-04T16:53:25Z",
+  "id": "R2-07",
+  "revision": 2,
+  "status": "validated",
+  "title": "Vault deposit mints claims from requested rather than received assets",
+  "summary": "The attacker balance rises from 200 to 209 while the incumbent's redeemable value falls from 900 to 891.",
+  "evidence": [
+    "regression-v2/tests/deep-regressions.test.mjs",
+    "regression-v2/evidence/deep-regressions.log",
+    "regression-v2/evidence/deep-regressions-independent.log",
+    "regression-v2/maps/interface-promise-versus-runtime-delta-matrix.md"
+  ],
+  "gates": {
+    "attacker-control": "regression-v2/submission/candidates.json R2-07 attacker path",
+    "reachability": "regression-v2/tests/deep-regressions.test.mjs public-entry execution",
+    "defense-analysis": "regression-v2/submission/candidates.json R2-07 root cause and negative control",
+    "security-impact": "regression-v2/evidence/deep-regressions.log asserted final impact oracle",
+    "realistic-configuration": "regression-v2/evidence/execution-summary.json pinned local release-like environment",
+    "safe-reproduction": "regression-v2/tests/deep-regressions.test.mjs isolated deterministic harness",
+    "release-reproduction": "regression-v2/evidence/execution-summary.json unmodified optimized target run",
+    "negative-control": "regression-v2/evidence/deep-regressions.log matched condition-changing control",
+    "independent-reproduction": "regression-v2/evidence/deep-regressions-independent.log fresh process execution",
+    "downstream-impact": "regression-v2/submission/candidates.json R2-07 demonstrated impact",
+    "composition-review": "regression-v2/maps/primitive-join-graph.md joined or explicitly closed compatible primitives"
+  },
+  "waivers": {},
+  "failed_gate": null
+}
+
+$ python3 ../../scripts/goal_state.py candidate --dir regression-v2/goal-state --id R2-08 --status lead --title Transfer authorization omits chain and verifying-contract domain --summary Twice the signed token amount leaves the owner through two independent nonce namespaces. --evidence regression-v2/submission/candidates.json --evidence run/evidence/C-010/REPORT.md
+{
+  "schema_version": 1,
+  "sequence": 15,
+  "timestamp": "2026-08-04T16:53:25Z",
+  "id": "R2-08",
+  "revision": 1,
+  "status": "lead",
+  "title": "Transfer authorization omits chain and verifying-contract domain",
+  "summary": "Twice the signed token amount leaves the owner through two independent nonce namespaces.",
+  "evidence": [
+    "regression-v2/submission/candidates.json",
+    "run/evidence/C-010/REPORT.md"
+  ],
+  "gates": {},
+  "waivers": {},
+  "failed_gate": null
+}
+
+$ python3 ../../scripts/goal_state.py candidate --dir regression-v2/goal-state --id R2-08 --status validated --title Transfer authorization omits chain and verifying-contract domain --summary Twice the signed token amount leaves the owner through two independent nonce namespaces. --evidence run/evidence/C-010/REPORT.md --evidence run/evidence/C-010/repro.test.mjs --evidence regression-v2/evidence/retained-exact-regressions.log --gate attacker-control=regression-v2/submission/candidates.json R2-08 attacker path --gate reachability=run/evidence/C-010/REPORT.md public-entry execution --gate defense-analysis=regression-v2/submission/candidates.json R2-08 root cause and negative control --gate security-impact=regression-v2/evidence/retained-exact-regressions.log asserted final impact oracle --gate realistic-configuration=regression-v2/evidence/execution-summary.json pinned local release-like environment --gate safe-reproduction=run/evidence/C-010/REPORT.md isolated deterministic harness --gate release-reproduction=regression-v2/evidence/execution-summary.json unmodified optimized target run --gate negative-control=regression-v2/evidence/retained-exact-regressions.log matched condition-changing control --gate independent-reproduction=run/evidence/C-010/reproduction.log fresh process execution --gate downstream-impact=regression-v2/submission/candidates.json R2-08 demonstrated impact --gate composition-review=regression-v2/maps/primitive-join-graph.md joined or explicitly closed compatible primitives
+{
+  "schema_version": 1,
+  "sequence": 16,
+  "timestamp": "2026-08-04T16:53:25Z",
+  "id": "R2-08",
+  "revision": 2,
+  "status": "validated",
+  "title": "Transfer authorization omits chain and verifying-contract domain",
+  "summary": "Twice the signed token amount leaves the owner through two independent nonce namespaces.",
+  "evidence": [
+    "run/evidence/C-010/REPORT.md",
+    "run/evidence/C-010/repro.test.mjs",
+    "regression-v2/evidence/retained-exact-regressions.log"
+  ],
+  "gates": {
+    "attacker-control": "regression-v2/submission/candidates.json R2-08 attacker path",
+    "reachability": "run/evidence/C-010/REPORT.md public-entry execution",
+    "defense-analysis": "regression-v2/submission/candidates.json R2-08 root cause and negative control",
+    "security-impact": "regression-v2/evidence/retained-exact-regressions.log asserted final impact oracle",
+    "realistic-configuration": "regression-v2/evidence/execution-summary.json pinned local release-like environment",
+    "safe-reproduction": "run/evidence/C-010/REPORT.md isolated deterministic harness",
+    "release-reproduction": "regression-v2/evidence/execution-summary.json unmodified optimized target run",
+    "negative-control": "regression-v2/evidence/retained-exact-regressions.log matched condition-changing control",
+    "independent-reproduction": "run/evidence/C-010/reproduction.log fresh process execution",
+    "downstream-impact": "regression-v2/submission/candidates.json R2-08 demonstrated impact",
+    "composition-review": "regression-v2/maps/primitive-join-graph.md joined or explicitly closed compatible primitives"
+  },
+  "waivers": {},
+  "failed_gate": null
+}
+
+$ python3 ../../scripts/goal_state.py candidate --dir regression-v2/goal-state --id R2-09 --status lead --title Transfer authorization does not bind the recipient --summary The relayer receives the full signed amount and consumes the owner's nonce. --evidence regression-v2/submission/candidates.json --evidence run/evidence/C-003/REPORT.md
+{
+  "schema_version": 1,
+  "sequence": 17,
+  "timestamp": "2026-08-04T16:53:25Z",
+  "id": "R2-09",
+  "revision": 1,
+  "status": "lead",
+  "title": "Transfer authorization does not bind the recipient",
+  "summary": "The relayer receives the full signed amount and consumes the owner's nonce.",
+  "evidence": [
+    "regression-v2/submission/candidates.json",
+    "run/evidence/C-003/REPORT.md"
+  ],
+  "gates": {},
+  "waivers": {},
+  "failed_gate": null
+}
+
+$ python3 ../../scripts/goal_state.py candidate --dir regression-v2/goal-state --id R2-09 --status validated --title Transfer authorization does not bind the recipient --summary The relayer receives the full signed amount and consumes the owner's nonce. --evidence run/evidence/C-003/REPORT.md --evidence run/evidence/C-003/repro.test.mjs --evidence regression-v2/evidence/retained-exact-regressions.log --gate attacker-control=regression-v2/submission/candidates.json R2-09 attacker path --gate reachability=run/evidence/C-003/REPORT.md public-entry execution --gate defense-analysis=regression-v2/submission/candidates.json R2-09 root cause and negative control --gate security-impact=regression-v2/evidence/retained-exact-regressions.log asserted final impact oracle --gate realistic-configuration=regression-v2/evidence/execution-summary.json pinned local release-like environment --gate safe-reproduction=run/evidence/C-003/REPORT.md isolated deterministic harness --gate release-reproduction=regression-v2/evidence/execution-summary.json unmodified optimized target run --gate negative-control=regression-v2/evidence/retained-exact-regressions.log matched condition-changing control --gate independent-reproduction=run/evidence/C-003/reproduction.log fresh process execution --gate downstream-impact=regression-v2/submission/candidates.json R2-09 demonstrated impact --gate composition-review=regression-v2/maps/primitive-join-graph.md joined or explicitly closed compatible primitives
+{
+  "schema_version": 1,
+  "sequence": 18,
+  "timestamp": "2026-08-04T16:53:25Z",
+  "id": "R2-09",
+  "revision": 2,
+  "status": "validated",
+  "title": "Transfer authorization does not bind the recipient",
+  "summary": "The relayer receives the full signed amount and consumes the owner's nonce.",
+  "evidence": [
+    "run/evidence/C-003/REPORT.md",
+    "run/evidence/C-003/repro.test.mjs",
+    "regression-v2/evidence/retained-exact-regressions.log"
+  ],
+  "gates": {
+    "attacker-control": "regression-v2/submission/candidates.json R2-09 attacker path",
+    "reachability": "run/evidence/C-003/REPORT.md public-entry execution",
+    "defense-analysis": "regression-v2/submission/candidates.json R2-09 root cause and negative control",
+    "security-impact": "regression-v2/evidence/retained-exact-regressions.log asserted final impact oracle",
+    "realistic-configuration": "regression-v2/evidence/execution-summary.json pinned local release-like environment",
+    "safe-reproduction": "run/evidence/C-003/REPORT.md isolated deterministic harness",
+    "release-reproduction": "regression-v2/evidence/execution-summary.json unmodified optimized target run",
+    "negative-control": "regression-v2/evidence/retained-exact-regressions.log matched condition-changing control",
+    "independent-reproduction": "run/evidence/C-003/reproduction.log fresh process execution",
+    "downstream-impact": "regression-v2/submission/candidates.json R2-09 demonstrated impact",
+    "composition-review": "regression-v2/maps/primitive-join-graph.md joined or explicitly closed compatible primitives"
+  },
+  "waivers": {},
+  "failed_gate": null
+}
+
+$ python3 ../../scripts/goal_state.py candidate --dir regression-v2/goal-state --id R2-10 --status lead --title Bridge finalization ignores the authenticated remote sender --summary A mismatching remote creates 1,000 bridge-collateral units and extracts 750 stable without locked backing. --evidence regression-v2/submission/candidates.json --evidence run/evidence/C-002/REPORT.md
+{
+  "schema_version": 1,
+  "sequence": 19,
+  "timestamp": "2026-08-04T16:53:25Z",
+  "id": "R2-10",
+  "revision": 1,
+  "status": "lead",
+  "title": "Bridge finalization ignores the authenticated remote sender",
+  "summary": "A mismatching remote creates 1,000 bridge-collateral units and extracts 750 stable without locked backing.",
+  "evidence": [
+    "regression-v2/submission/candidates.json",
+    "run/evidence/C-002/REPORT.md"
+  ],
+  "gates": {},
+  "waivers": {},
+  "failed_gate": null
+}
+
+$ python3 ../../scripts/goal_state.py candidate --dir regression-v2/goal-state --id R2-10 --status validated --title Bridge finalization ignores the authenticated remote sender --summary A mismatching remote creates 1,000 bridge-collateral units and extracts 750 stable without locked backing. --evidence run/evidence/C-002/REPORT.md --evidence run/evidence/C-002/repro.test.mjs --evidence regression-v2/evidence/retained-exact-regressions.log --gate attacker-control=regression-v2/submission/candidates.json R2-10 attacker path --gate reachability=run/evidence/C-002/REPORT.md public-entry execution --gate defense-analysis=regression-v2/submission/candidates.json R2-10 root cause and negative control --gate security-impact=regression-v2/evidence/retained-exact-regressions.log asserted final impact oracle --gate realistic-configuration=regression-v2/evidence/execution-summary.json pinned local release-like environment --gate safe-reproduction=run/evidence/C-002/REPORT.md isolated deterministic harness --gate release-reproduction=regression-v2/evidence/execution-summary.json unmodified optimized target run --gate negative-control=regression-v2/evidence/retained-exact-regressions.log matched condition-changing control --gate independent-reproduction=run/evidence/C-002/reproduction.log fresh process execution --gate downstream-impact=regression-v2/submission/candidates.json R2-10 demonstrated impact --gate composition-review=regression-v2/maps/primitive-join-graph.md joined or explicitly closed compatible primitives
+{
+  "schema_version": 1,
+  "sequence": 20,
+  "timestamp": "2026-08-04T16:53:25Z",
+  "id": "R2-10",
+  "revision": 2,
+  "status": "validated",
+  "title": "Bridge finalization ignores the authenticated remote sender",
+  "summary": "A mismatching remote creates 1,000 bridge-collateral units and extracts 750 stable without locked backing.",
+  "evidence": [
+    "run/evidence/C-002/REPORT.md",
+    "run/evidence/C-002/repro.test.mjs",
+    "regression-v2/evidence/retained-exact-regressions.log"
+  ],
+  "gates": {
+    "attacker-control": "regression-v2/submission/candidates.json R2-10 attacker path",
+    "reachability": "run/evidence/C-002/REPORT.md public-entry execution",
+    "defense-analysis": "regression-v2/submission/candidates.json R2-10 root cause and negative control",
+    "security-impact": "regression-v2/evidence/retained-exact-regressions.log asserted final impact oracle",
+    "realistic-configuration": "regression-v2/evidence/execution-summary.json pinned local release-like environment",
+    "safe-reproduction": "run/evidence/C-002/REPORT.md isolated deterministic harness",
+    "release-reproduction": "regression-v2/evidence/execution-summary.json unmodified optimized target run",
+    "negative-control": "regression-v2/evidence/retained-exact-regressions.log matched condition-changing control",
+    "independent-reproduction": "run/evidence/C-002/reproduction.log fresh process execution",
+    "downstream-impact": "regression-v2/submission/candidates.json R2-10 demonstrated impact",
+    "composition-review": "regression-v2/maps/primitive-join-graph.md joined or explicitly closed compatible primitives"
+  },
+  "waivers": {},
+  "failed_gate": null
+}
+
+$ python3 ../../scripts/goal_state.py candidate --dir regression-v2/goal-state --id R2-11 --status lead --title Bridge replay state collides across configured source chains --summary The first credit succeeds and the second valid cross-chain credit is denied, leaving its beneficiary uncredited. --evidence regression-v2/submission/candidates.json --evidence run/evidence/C-007/REPORT.md
+{
+  "schema_version": 1,
+  "sequence": 21,
+  "timestamp": "2026-08-04T16:53:25Z",
+  "id": "R2-11",
+  "revision": 1,
+  "status": "lead",
+  "title": "Bridge replay state collides across configured source chains",
+  "summary": "The first credit succeeds and the second valid cross-chain credit is denied, leaving its beneficiary uncredited.",
+  "evidence": [
+    "regression-v2/submission/candidates.json",
+    "run/evidence/C-007/REPORT.md"
+  ],
+  "gates": {},
+  "waivers": {},
+  "failed_gate": null
+}
+
+$ python3 ../../scripts/goal_state.py candidate --dir regression-v2/goal-state --id R2-11 --status validated --title Bridge replay state collides across configured source chains --summary The first credit succeeds and the second valid cross-chain credit is denied, leaving its beneficiary uncredited. --evidence run/evidence/C-007/REPORT.md --evidence run/evidence/C-007/repro.test.mjs --evidence regression-v2/evidence/retained-exact-regressions.log --gate attacker-control=regression-v2/submission/candidates.json R2-11 attacker path --gate reachability=run/evidence/C-007/REPORT.md public-entry execution --gate defense-analysis=regression-v2/submission/candidates.json R2-11 root cause and negative control --gate security-impact=regression-v2/evidence/retained-exact-regressions.log asserted final impact oracle --gate realistic-configuration=regression-v2/evidence/execution-summary.json pinned local release-like environment --gate safe-reproduction=run/evidence/C-007/REPORT.md isolated deterministic harness --gate release-reproduction=regression-v2/evidence/execution-summary.json unmodified optimized target run --gate negative-control=regression-v2/evidence/retained-exact-regressions.log matched condition-changing control --gate independent-reproduction=run/evidence/C-007/reproduction.log fresh process execution --gate downstream-impact=regression-v2/submission/candidates.json R2-11 demonstrated impact --gate composition-review=regression-v2/maps/primitive-join-graph.md joined or explicitly closed compatible primitives
+{
+  "schema_version": 1,
+  "sequence": 22,
+  "timestamp": "2026-08-04T16:53:25Z",
+  "id": "R2-11",
+  "revision": 2,
+  "status": "validated",
+  "title": "Bridge replay state collides across configured source chains",
+  "summary": "The first credit succeeds and the second valid cross-chain credit is denied, leaving its beneficiary uncredited.",
+  "evidence": [
+    "run/evidence/C-007/REPORT.md",
+    "run/evidence/C-007/repro.test.mjs",
+    "regression-v2/evidence/retained-exact-regressions.log"
+  ],
+  "gates": {
+    "attacker-control": "regression-v2/submission/candidates.json R2-11 attacker path",
+    "reachability": "run/evidence/C-007/REPORT.md public-entry execution",
+    "defense-analysis": "regression-v2/submission/candidates.json R2-11 root cause and negative control",
+    "security-impact": "regression-v2/evidence/retained-exact-regressions.log asserted final impact oracle",
+    "realistic-configuration": "regression-v2/evidence/execution-summary.json pinned local release-like environment",
+    "safe-reproduction": "run/evidence/C-007/REPORT.md isolated deterministic harness",
+    "release-reproduction": "regression-v2/evidence/execution-summary.json unmodified optimized target run",
+    "negative-control": "regression-v2/evidence/retained-exact-regressions.log matched condition-changing control",
+    "independent-reproduction": "run/evidence/C-007/reproduction.log fresh process execution",
+    "downstream-impact": "regression-v2/submission/candidates.json R2-11 demonstrated impact",
+    "composition-review": "regression-v2/maps/primitive-join-graph.md joined or explicitly closed compatible primitives"
+  },
+  "waivers": {},
+  "failed_gate": null
+}
+
+$ python3 ../../scripts/goal_state.py candidate --dir regression-v2/goal-state --id R2-12 --status lead --title Strategy initialization can be repeated to seize privileged roles --summary The attacker drains the module balance and seizes its two privileged execution identities. --evidence regression-v2/submission/candidates.json --evidence run/evidence/C-005/REPORT.md
+{
+  "schema_version": 1,
+  "sequence": 23,
+  "timestamp": "2026-08-04T16:53:25Z",
+  "id": "R2-12",
+  "revision": 1,
+  "status": "lead",
+  "title": "Strategy initialization can be repeated to seize privileged roles",
+  "summary": "The attacker drains the module balance and seizes its two privileged execution identities.",
+  "evidence": [
+    "regression-v2/submission/candidates.json",
+    "run/evidence/C-005/REPORT.md"
+  ],
+  "gates": {},
+  "waivers": {},
+  "failed_gate": null
+}
+
+$ python3 ../../scripts/goal_state.py candidate --dir regression-v2/goal-state --id R2-12 --status validated --title Strategy initialization can be repeated to seize privileged roles --summary The attacker drains the module balance and seizes its two privileged execution identities. --evidence run/evidence/C-005/REPORT.md --evidence run/evidence/C-005/repro.test.mjs --evidence regression-v2/evidence/retained-exact-regressions.log --gate attacker-control=regression-v2/submission/candidates.json R2-12 attacker path --gate reachability=run/evidence/C-005/REPORT.md public-entry execution --gate defense-analysis=regression-v2/submission/candidates.json R2-12 root cause and negative control --gate security-impact=regression-v2/evidence/retained-exact-regressions.log asserted final impact oracle --gate realistic-configuration=regression-v2/evidence/execution-summary.json pinned local release-like environment --gate safe-reproduction=run/evidence/C-005/REPORT.md isolated deterministic harness --gate release-reproduction=regression-v2/evidence/execution-summary.json unmodified optimized target run --gate negative-control=regression-v2/evidence/retained-exact-regressions.log matched condition-changing control --gate independent-reproduction=run/evidence/C-005/reproduction.log fresh process execution --gate downstream-impact=regression-v2/submission/candidates.json R2-12 demonstrated impact --gate composition-review=regression-v2/maps/primitive-join-graph.md joined or explicitly closed compatible primitives
+{
+  "schema_version": 1,
+  "sequence": 24,
+  "timestamp": "2026-08-04T16:53:25Z",
+  "id": "R2-12",
+  "revision": 2,
+  "status": "validated",
+  "title": "Strategy initialization can be repeated to seize privileged roles",
+  "summary": "The attacker drains the module balance and seizes its two privileged execution identities.",
+  "evidence": [
+    "run/evidence/C-005/REPORT.md",
+    "run/evidence/C-005/repro.test.mjs",
+    "regression-v2/evidence/retained-exact-regressions.log"
+  ],
+  "gates": {
+    "attacker-control": "regression-v2/submission/candidates.json R2-12 attacker path",
+    "reachability": "run/evidence/C-005/REPORT.md public-entry execution",
+    "defense-analysis": "regression-v2/submission/candidates.json R2-12 root cause and negative control",
+    "security-impact": "regression-v2/evidence/retained-exact-regressions.log asserted final impact oracle",
+    "realistic-configuration": "regression-v2/evidence/execution-summary.json pinned local release-like environment",
+    "safe-reproduction": "run/evidence/C-005/REPORT.md isolated deterministic harness",
+    "release-reproduction": "regression-v2/evidence/execution-summary.json unmodified optimized target run",
+    "negative-control": "regression-v2/evidence/retained-exact-regressions.log matched condition-changing control",
+    "independent-reproduction": "run/evidence/C-005/reproduction.log fresh process execution",
+    "downstream-impact": "regression-v2/submission/candidates.json R2-12 demonstrated impact",
+    "composition-review": "regression-v2/maps/primitive-join-graph.md joined or explicitly closed compatible primitives"
+  },
+  "waivers": {},
+  "failed_gate": null
+}
+
+$ python3 ../../scripts/goal_state.py candidate --dir regression-v2/goal-state --id R2-13 --status lead --title Primary oracle accepts expired price rounds --summary The stale round permits 1,500 stable debt where the current one-dollar value supports 750. --evidence regression-v2/submission/candidates.json --evidence run/evidence/C-009/REPORT.md
+{
+  "schema_version": 1,
+  "sequence": 25,
+  "timestamp": "2026-08-04T16:53:25Z",
+  "id": "R2-13",
+  "revision": 1,
+  "status": "lead",
+  "title": "Primary oracle accepts expired price rounds",
+  "summary": "The stale round permits 1,500 stable debt where the current one-dollar value supports 750.",
+  "evidence": [
+    "regression-v2/submission/candidates.json",
+    "run/evidence/C-009/REPORT.md"
+  ],
+  "gates": {},
+  "waivers": {},
+  "failed_gate": null
+}
+
+$ python3 ../../scripts/goal_state.py candidate --dir regression-v2/goal-state --id R2-13 --status validated --title Primary oracle accepts expired price rounds --summary The stale round permits 1,500 stable debt where the current one-dollar value supports 750. --evidence run/evidence/C-009/REPORT.md --evidence run/evidence/C-009/repro.test.mjs --evidence regression-v2/evidence/retained-exact-regressions.log --gate attacker-control=regression-v2/submission/candidates.json R2-13 attacker path --gate reachability=run/evidence/C-009/REPORT.md public-entry execution --gate defense-analysis=regression-v2/submission/candidates.json R2-13 root cause and negative control --gate security-impact=regression-v2/evidence/retained-exact-regressions.log asserted final impact oracle --gate realistic-configuration=regression-v2/evidence/execution-summary.json pinned local release-like environment --gate safe-reproduction=run/evidence/C-009/REPORT.md isolated deterministic harness --gate release-reproduction=regression-v2/evidence/execution-summary.json unmodified optimized target run --gate negative-control=regression-v2/evidence/retained-exact-regressions.log matched condition-changing control --gate independent-reproduction=run/evidence/C-009/reproduction.log fresh process execution --gate downstream-impact=regression-v2/submission/candidates.json R2-13 demonstrated impact --gate composition-review=regression-v2/maps/primitive-join-graph.md joined or explicitly closed compatible primitives
+{
+  "schema_version": 1,
+  "sequence": 26,
+  "timestamp": "2026-08-04T16:53:25Z",
+  "id": "R2-13",
+  "revision": 2,
+  "status": "validated",
+  "title": "Primary oracle accepts expired price rounds",
+  "summary": "The stale round permits 1,500 stable debt where the current one-dollar value supports 750.",
+  "evidence": [
+    "run/evidence/C-009/REPORT.md",
+    "run/evidence/C-009/repro.test.mjs",
+    "regression-v2/evidence/retained-exact-regressions.log"
+  ],
+  "gates": {
+    "attacker-control": "regression-v2/submission/candidates.json R2-13 attacker path",
+    "reachability": "run/evidence/C-009/REPORT.md public-entry execution",
+    "defense-analysis": "regression-v2/submission/candidates.json R2-13 root cause and negative control",
+    "security-impact": "regression-v2/evidence/retained-exact-regressions.log asserted final impact oracle",
+    "realistic-configuration": "regression-v2/evidence/execution-summary.json pinned local release-like environment",
+    "safe-reproduction": "run/evidence/C-009/REPORT.md isolated deterministic harness",
+    "release-reproduction": "regression-v2/evidence/execution-summary.json unmodified optimized target run",
+    "negative-control": "regression-v2/evidence/retained-exact-regressions.log matched condition-changing control",
+    "independent-reproduction": "run/evidence/C-009/reproduction.log fresh process execution",
+    "downstream-impact": "regression-v2/submission/candidates.json R2-13 demonstrated impact",
+    "composition-review": "regression-v2/maps/primitive-join-graph.md joined or explicitly closed compatible primitives"
+  },
+  "waivers": {},
+  "failed_gate": null
+}
+
+$ python3 ../../scripts/goal_state.py candidate --dir regression-v2/goal-state --id R2-14 --status lead --title Nominal repayment clears more debt than the market receives --summary Debt becomes zero even though the market receives only 45 and ends five stable below its pre-borrow reserve. --evidence regression-v2/submission/candidates.json --evidence regression-v2/tests/deep-regressions.test.mjs
+{
+  "schema_version": 1,
+  "sequence": 27,
+  "timestamp": "2026-08-04T16:53:25Z",
+  "id": "R2-14",
+  "revision": 1,
+  "status": "lead",
+  "title": "Nominal repayment clears more debt than the market receives",
+  "summary": "Debt becomes zero even though the market receives only 45 and ends five stable below its pre-borrow reserve.",
+  "evidence": [
+    "regression-v2/submission/candidates.json",
+    "regression-v2/tests/deep-regressions.test.mjs"
+  ],
+  "gates": {},
+  "waivers": {},
+  "failed_gate": null
+}
+
+$ python3 ../../scripts/goal_state.py candidate --dir regression-v2/goal-state --id R2-14 --status validated --title Nominal repayment clears more debt than the market receives --summary Debt becomes zero even though the market receives only 45 and ends five stable below its pre-borrow reserve. --evidence regression-v2/tests/deep-regressions.test.mjs --evidence regression-v2/evidence/deep-regressions.log --evidence regression-v2/evidence/deep-regressions-independent.log --evidence regression-v2/maps/interface-promise-versus-runtime-delta-matrix.md --gate attacker-control=regression-v2/submission/candidates.json R2-14 attacker path --gate reachability=regression-v2/tests/deep-regressions.test.mjs public-entry execution --gate defense-analysis=regression-v2/submission/candidates.json R2-14 root cause and negative control --gate security-impact=regression-v2/evidence/deep-regressions.log asserted final impact oracle --gate realistic-configuration=regression-v2/evidence/execution-summary.json pinned local release-like environment --gate safe-reproduction=regression-v2/tests/deep-regressions.test.mjs isolated deterministic harness --gate release-reproduction=regression-v2/evidence/execution-summary.json unmodified optimized target run --gate negative-control=regression-v2/evidence/deep-regressions.log matched condition-changing control --gate independent-reproduction=regression-v2/evidence/deep-regressions-independent.log fresh process execution --gate downstream-impact=regression-v2/submission/candidates.json R2-14 demonstrated impact --gate composition-review=regression-v2/maps/primitive-join-graph.md joined or explicitly closed compatible primitives
+{
+  "schema_version": 1,
+  "sequence": 28,
+  "timestamp": "2026-08-04T16:53:25Z",
+  "id": "R2-14",
+  "revision": 2,
+  "status": "validated",
+  "title": "Nominal repayment clears more debt than the market receives",
+  "summary": "Debt becomes zero even though the market receives only 45 and ends five stable below its pre-borrow reserve.",
+  "evidence": [
+    "regression-v2/tests/deep-regressions.test.mjs",
+    "regression-v2/evidence/deep-regressions.log",
+    "regression-v2/evidence/deep-regressions-independent.log",
+    "regression-v2/maps/interface-promise-versus-runtime-delta-matrix.md"
+  ],
+  "gates": {
+    "attacker-control": "regression-v2/submission/candidates.json R2-14 attacker path",
+    "reachability": "regression-v2/tests/deep-regressions.test.mjs public-entry execution",
+    "defense-analysis": "regression-v2/submission/candidates.json R2-14 root cause and negative control",
+    "security-impact": "regression-v2/evidence/deep-regressions.log asserted final impact oracle",
+    "realistic-configuration": "regression-v2/evidence/execution-summary.json pinned local release-like environment",
+    "safe-reproduction": "regression-v2/tests/deep-regressions.test.mjs isolated deterministic harness",
+    "release-reproduction": "regression-v2/evidence/execution-summary.json unmodified optimized target run",
+    "negative-control": "regression-v2/evidence/deep-regressions.log matched condition-changing control",
+    "independent-reproduction": "regression-v2/evidence/deep-regressions-independent.log fresh process execution",
+    "downstream-impact": "regression-v2/submission/candidates.json R2-14 demonstrated impact",
+    "composition-review": "regression-v2/maps/primitive-join-graph.md joined or explicitly closed compatible primitives"
+  },
+  "waivers": {},
+  "failed_gate": null
+}
+
+$ python3 ../../scripts/goal_state.py candidate --dir regression-v2/goal-state --id R2-15 --status lead --title Raw signature-byte replay protection is bypassed by ECDSA malleability --summary One authorization pays the account twice. --evidence regression-v2/submission/candidates.json --evidence run/evidence/C-004/REPORT.md
+{
+  "schema_version": 1,
+  "sequence": 29,
+  "timestamp": "2026-08-04T16:53:25Z",
+  "id": "R2-15",
+  "revision": 1,
+  "status": "lead",
+  "title": "Raw signature-byte replay protection is bypassed by ECDSA malleability",
+  "summary": "One authorization pays the account twice.",
+  "evidence": [
+    "regression-v2/submission/candidates.json",
+    "run/evidence/C-004/REPORT.md"
+  ],
+  "gates": {},
+  "waivers": {},
+  "failed_gate": null
+}
+
+$ python3 ../../scripts/goal_state.py candidate --dir regression-v2/goal-state --id R2-15 --status validated --title Raw signature-byte replay protection is bypassed by ECDSA malleability --summary One authorization pays the account twice. --evidence run/evidence/C-004/REPORT.md --evidence run/evidence/C-004/repro.test.mjs --evidence regression-v2/evidence/retained-exact-regressions.log --gate attacker-control=regression-v2/submission/candidates.json R2-15 attacker path --gate reachability=run/evidence/C-004/REPORT.md public-entry execution --gate defense-analysis=regression-v2/submission/candidates.json R2-15 root cause and negative control --gate security-impact=regression-v2/evidence/retained-exact-regressions.log asserted final impact oracle --gate realistic-configuration=regression-v2/evidence/execution-summary.json pinned local release-like environment --gate safe-reproduction=run/evidence/C-004/REPORT.md isolated deterministic harness --gate release-reproduction=regression-v2/evidence/execution-summary.json unmodified optimized target run --gate negative-control=regression-v2/evidence/retained-exact-regressions.log matched condition-changing control --gate independent-reproduction=run/evidence/C-004/reproduction.log fresh process execution --gate downstream-impact=regression-v2/submission/candidates.json R2-15 demonstrated impact --gate composition-review=regression-v2/maps/primitive-join-graph.md joined or explicitly closed compatible primitives
+{
+  "schema_version": 1,
+  "sequence": 30,
+  "timestamp": "2026-08-04T16:53:25Z",
+  "id": "R2-15",
+  "revision": 2,
+  "status": "validated",
+  "title": "Raw signature-byte replay protection is bypassed by ECDSA malleability",
+  "summary": "One authorization pays the account twice.",
+  "evidence": [
+    "run/evidence/C-004/REPORT.md",
+    "run/evidence/C-004/repro.test.mjs",
+    "regression-v2/evidence/retained-exact-regressions.log"
+  ],
+  "gates": {
+    "attacker-control": "regression-v2/submission/candidates.json R2-15 attacker path",
+    "reachability": "run/evidence/C-004/REPORT.md public-entry execution",
+    "defense-analysis": "regression-v2/submission/candidates.json R2-15 root cause and negative control",
+    "security-impact": "regression-v2/evidence/retained-exact-regressions.log asserted final impact oracle",
+    "realistic-configuration": "regression-v2/evidence/execution-summary.json pinned local release-like environment",
+    "safe-reproduction": "run/evidence/C-004/REPORT.md isolated deterministic harness",
+    "release-reproduction": "regression-v2/evidence/execution-summary.json unmodified optimized target run",
+    "negative-control": "regression-v2/evidence/retained-exact-regressions.log matched condition-changing control",
+    "independent-reproduction": "run/evidence/C-004/reproduction.log fresh process execution",
+    "downstream-impact": "regression-v2/submission/candidates.json R2-15 demonstrated impact",
+    "composition-review": "regression-v2/maps/primitive-join-graph.md joined or explicitly closed compatible primitives"
+  },
+  "waivers": {},
+  "failed_gate": null
+}
+
+$ python3 ../../scripts/goal_state.py finish --dir regression-v2/goal-state --outcome validated --reason Fifteen distinct regression candidates passed every workflow-v2 evidence gate and every mandatory deep-hunt pass on the frozen target. --candidate-id R2-01 --evidence regression-v2/submission/candidates.json --evidence regression-v2/evidence/execution-summary.json --evidence regression-v2/maps/primitive-join-graph.md --residual-risk The same-target run is post-reveal and cannot measure blind generalization. --residual-risk Unbounded protocol state spaces can retain variants outside the deterministic corpus.
+{
+  "outcome": "validated",
+  "reason": "Fifteen distinct regression candidates passed every workflow-v2 evidence gate and every mandatory deep-hunt pass on the frozen target.",
+  "from_status": "active",
+  "candidate_id": "R2-01",
+  "evidence": [
+    "regression-v2/submission/candidates.json",
+    "regression-v2/evidence/execution-summary.json",
+    "regression-v2/maps/primitive-join-graph.md"
+  ],
+  "residual_risks": [
+    "The same-target run is post-reveal and cannot measure blind generalization.",
+    "Unbounded protocol state spaces can retain variants outside the deterministic corpus."
+  ],
+  "obligations": [],
+  "unlock": null,
+  "completed_at": "2026-08-04T16:53:25Z"
+}
+
+$ python3 ../../scripts/goal_state.py check --dir regression-v2/goal-state --phase terminal
+{
+  "phase": "terminal",
+  "valid": true,
+  "errors": []
+}
+
+$ python3 ../../scripts/goal_state.py status --dir regression-v2/goal-state
+{
+  "candidates": {
+    "R2-01": {
+      "revision": 2,
+      "status": "validated",
+      "title": "Two attacker-controlled valuation rates close a flash-funded market drain"
+    },
+    "R2-02": {
+      "revision": 2,
+      "status": "validated",
+      "title": "Fallback oracle trusts an instantaneous constant-product reserve ratio"
+    },
+    "R2-03": {
+      "revision": 2,
+      "status": "validated",
+      "title": "Unsolicited vault balances inflate already-posted lending collateral"
+    },
+    "R2-04": {
+      "revision": 2,
+      "status": "validated",
+      "title": "Borrow callback withdraws collateral before debt is committed"
+    },
+    "R2-05": {
+      "revision": 2,
+      "status": "validated",
+      "title": "Collateral-factor authorization permits public increases"
+    },
+    "R2-06": {
+      "revision": 2,
+      "status": "validated",
+      "title": "Withdrawal floor rounding can transfer assets while burning zero shares"
+    },
+    "R2-07": {
+      "revision": 2,
+      "status": "validated",
+      "title": "Vault deposit mints claims from requested rather than received assets"
+    },
+    "R2-08": {
+      "revision": 2,
+      "status": "validated",
+      "title": "Transfer authorization omits chain and verifying-contract domain"
+    },
+    "R2-09": {
+      "revision": 2,
+      "status": "validated",
+      "title": "Transfer authorization does not bind the recipient"
+    },
+    "R2-10": {
+      "revision": 2,
+      "status": "validated",
+      "title": "Bridge finalization ignores the authenticated remote sender"
+    },
+    "R2-11": {
+      "revision": 2,
+      "status": "validated",
+      "title": "Bridge replay state collides across configured source chains"
+    },
+    "R2-12": {
+      "revision": 2,
+      "status": "validated",
+      "title": "Strategy initialization can be repeated to seize privileged roles"
+    },
+    "R2-13": {
+      "revision": 2,
+      "status": "validated",
+      "title": "Primary oracle accepts expired price rounds"
+    },
+    "R2-14": {
+      "revision": 2,
+      "status": "validated",
+      "title": "Nominal repayment clears more debt than the market receives"
+    },
+    "R2-15": {
+      "revision": 2,
+      "status": "validated",
+      "title": "Raw signature-byte replay protection is bypassed by ECDSA malleability"
+    }
+  },
+  "counts": {
+    "candidate_revisions": 30,
+    "coverage_revisions": 16,
+    "events": 6
+  },
+  "coverage": {
+    "attack-surface": {
+      "tested": 1
+    },
+    "boundary-arithmetic": {
+      "tested": 1
+    },
+    "business-invariant": {
+      "tested": 2
+    },
+    "config-build": {
+      "tested": 1
+    },
+    "consumer-propagation": {
+      "tested": 1
+    },
+    "economic-closure": {
+      "tested": 1
+    },
+    "exploit-composition": {
+      "tested": 1
+    },
+    "external-semantics": {
+      "tested": 1
+    },
+    "falsification": {
+      "tested": 1
+    },
+    "historical-family": {
+      "inspected": 1
+    },
+    "runtime-corpus": {
+      "tested": 1
+    },
+    "sequence-interleaving": {
+      "tested": 1
+    },
+    "source-read": {
+      "inspected": 1
+    },
+    "state-invariant": {
+      "tested": 1
+    },
+    "trust-boundary": {
+      "tested": 1
+    }
+  },
+  "directory": "/workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/solidity-blind-audit/regression-v2/goal-state",
+  "last_event": {
+    "evidence": [
+      "regression-v2/submission/candidates.json",
+      "regression-v2/evidence/execution-summary.json",
+      "regression-v2/maps/primitive-join-graph.md"
+    ],
+    "kind": "terminal",
+    "schema_version": 1,
+    "sequence": 6,
+    "summary": "validated: Fifteen distinct regression candidates passed every workflow-v2 evidence gate and every mandatory deep-hunt pass on the frozen target.",
+    "timestamp": "2026-08-04T16:53:25Z"
+  },
+  "mandatory_passes": {
+    "boundary-arithmetic/rounding-unit-and-zero-boundaries": "tested",
+    "business-invariant/asset-liability-conservation-ledger": "tested",
+    "business-invariant/business-flow-and-state-machine-model": "tested",
+    "consumer-propagation/mutable-value-to-downstream-consumer-map": "tested",
+    "economic-closure/funding-repayment-profit-and-system-loss-ledger": "tested",
+    "exploit-composition/primitive-join-graph": "tested",
+    "external-semantics/interface-promise-versus-runtime-delta-matrix": "tested",
+    "sequence-interleaving/callback-and-action-sequence-matrix": "tested"
+  },
+  "outcome": "validated",
+  "status": "completed",
+  "terminal": {
+    "candidate_id": "R2-01",
+    "completed_at": "2026-08-04T16:53:25Z",
+    "evidence": [
+      "regression-v2/submission/candidates.json",
+      "regression-v2/evidence/execution-summary.json",
+      "regression-v2/maps/primitive-join-graph.md"
+    ],
+    "from_status": "active",
+    "obligations": [],
+    "outcome": "validated",
+    "reason": "Fifteen distinct regression candidates passed every workflow-v2 evidence gate and every mandatory deep-hunt pass on the frozen target.",
+    "residual_risks": [
+      "The same-target run is post-reveal and cannot measure blind generalization.",
+      "Unbounded protocol state spaces can retain variants outside the deterministic corpus."
+    ],
+    "unlock": null
+  },
+  "workflow_version": 2
+}

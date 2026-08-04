@@ -1,0 +1,49 @@
+$ /opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node --test --test-concurrency=1 scoring/consensus/discrimination.test.mjs
+cwd=/workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/perps-blind-generalization
+exit=1
+
+This version of µWS is not compatible with your Node.js build:
+
+Error: Cannot find module '../binaries/uws_linux_x64_137.node'
+Require stack:
+- /workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/perps-blind-generalization/node_modules/ganache/node_modules/@trufflesuite/uws-js-unofficial/src/uws.js
+- /workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/perps-blind-generalization/node_modules/ganache/dist/node/core.js
+Falling back to a NodeJS implementation; performance may be degraded.
+
+
+{"boundary":"MCB-006-vs-AFH-008","vulnerable":{"negativeProduct":"0","positiveProduct":"0"},"canonicalSignedFloorControl":{"negativeProduct":"-1","positiveProduct":"0"},"candidatePositiveCeilControl":{"negativeProduct":"0","positiveProduct":"1"},"conclusion":"different signed preconditions, different obligations, reciprocal non-fixing controls"}
+✔ MCB-006 and AFH-008 have opposite signed domains and non-interchangeable repairs (44718.394111ms)
+✖ MCB-015 full chain is blocked by its zero-size control while AFH-012 close/reopen survives (30559.57174ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 1
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 76017.821867
+
+✖ failing tests:
+
+test at scoring/consensus/discrimination.test.mjs:148:1
+✖ MCB-015 full chain is blocked by its zero-size control while AFH-012 close/reopen survives (30559.57174ms)
+  Error: transaction execution reverted (action="sendTransaction", data=null, reason=null, invocation=null, revert=null, transaction={ "data": "", "from": "0xFFcf8FDEE72ac11b5c542428B35EEF5769C409f0", "to": "0x0290FB167208Af455bB137780163b7B7a9a10C16" }, receipt={ "_type": "TransactionReceipt", "blobGasPrice": null, "blobGasUsed": null, "blockHash": "0xe20c5dfc7d5572c08f071dbac21011ee8c11c7a6a7a15302b0f53fdb08eb6fa6", "blockNumber": 26, "contractAddress": null, "cumulativeGasUsed": "103616", "from": "0xFFcf8FDEE72ac11b5c542428B35EEF5769C409f0", "gasPrice": "43249596", "gasUsed": "103616", "hash": "0x4722b05e314efa51d4ab69c3a853058e435fc6b49f43a20bf4d1b1e2ff263ca9", "index": 0, "logs": [  ], "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000", "root": null, "status": 0, "to": "0x0290FB167208Af455bB137780163b7B7a9a10C16" }, code=CALL_EXCEPTION, version=6.15.0)
+      at makeError (file:///workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/perps-blind-generalization/node_modules/ethers/lib.esm/utils/errors.js:132:21)
+      at assert (file:///workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/perps-blind-generalization/node_modules/ethers/lib.esm/utils/errors.js:151:15)
+      at checkReceipt (file:///workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/perps-blind-generalization/node_modules/ethers/lib.esm/providers/provider.js:1127:13)
+      at ContractTransactionResponse.wait (file:///workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/perps-blind-generalization/node_modules/ethers/lib.esm/providers/provider.js:1143:24)
+      at async ContractTransactionResponse.wait (file:///workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/perps-blind-generalization/node_modules/ethers/lib.esm/contract/wrappers.js:109:25)
+      at async TestContext.<anonymous> (file:///workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/perps-blind-generalization/scoring/consensus/discrimination.test.mjs:154:5)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    code: 'CALL_EXCEPTION',
+    action: 'sendTransaction',
+    data: null,
+    reason: null,
+    invocation: null,
+    revert: null,
+    transaction: { to: '0x0290FB167208Af455bB137780163b7B7a9a10C16', from: '0xFFcf8FDEE72ac11b5c542428B35EEF5769C409f0', data: '' },
+    receipt: { provider: {}, to: '0x0290FB167208Af455bB137780163b7B7a9a10C16', from: '0xFFcf8FDEE72ac11b5c542428B35EEF5769C409f0', contractAddress: null, hash: '0x4722b05e314efa51d4ab69c3a853058e435fc6b49f43a20bf4d1b1e2ff263ca9', index: 0, blockHash: '0xe20c5dfc7d5572c08f071dbac21011ee8c11c7a6a7a15302b0f53fdb08eb6fa6', blockNumber: 26, logsBloom: '0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000', gasUsed: 103616n, blobGasUsed: null, cumulativeGasUsed: 103616n, gasPrice: 43249596n, blobGasPrice: null, type: 2, status: 0, root: undefined },
+    shortMessage: 'transaction execution reverted'
+  }
+

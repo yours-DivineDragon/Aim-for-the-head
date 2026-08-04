@@ -1,0 +1,1176 @@
+{
+  "schema": 1,
+  "adjudication": "final-score-consensus",
+  "inputs": {
+    "scorerCommit": "a3ba6036d5c7b7902f775fd80ef4a6eccdf7c63f",
+    "truthPlaintextCommitmentSha256": "fcf3d39b469073757a1191aba5eb870c655fb4f8b3efb862db07550a072ff66e",
+    "consensusSha256": "ba5d60af575433b6f730ca1e59b961a00dedfda67da416b25c3ea6370e3b2696",
+    "scorerAScoreSha256": "01035f9e76c4707bba4912fda4dc99777e414b41025eb0d52bb668b719fbb98f",
+    "scorerBScoreSha256": "756e9984b7168567b971a6c73ae1c23910ce3a04b7ba59d302cfaafb4d059aa9",
+    "submissionSha256": "c5330151531671c7ed322a155abb7e5270b7e2d83ce4fa3df64a10a0790b29ef",
+    "sourceAggregateSha256": "bd7aacd7d51c679b4e40f83d6ca49d49b03b69490ad6751f50c81236e7ef5381",
+    "revealAggregateSha256": "dc808f47d8fc293a7f811d4f3b24622ad27387d9d7b95d5b2d692ee06430b03c"
+  },
+  "metricDefinitions": {
+    "exact": "factor 1.0: complete registered root cause, feasible preconditions/impact, distinguishing evidence and control",
+    "factor06": "factor 0.6: substantially correct registered root cause and impact with incomplete reproduction",
+    "factor03": "factor 0.3: meaningful registered root-cause fragment; composition-nearby primitives are capped here without the exact chain",
+    "miss": "factor 0: absent, incorrect, or semantically distinct defect",
+    "rawRecall": "registered truth units with nonzero factor divided by 15",
+    "factorNormalizedRecall": "sum of all 15 evidence factors divided by 15",
+    "weightedScore": "sum(weight × factor) divided by preregistered 100 points",
+    "rawEmpiricalPrecision": "(primary matched + supporting/duplicate + valid unregistered) raw claims / all 25 raw claims",
+    "deduplicatedEmpiricalPrecision": "distinct valid root-cause clusters / all distinct submitted clusters",
+    "severityAccuracy": "canonical severity equals frozen blind-consensus final_severity for nonzero-credit registered primaries; misses excluded"
+  },
+  "truthUnits": [
+    {
+      "id": "MCB-001",
+      "canonicalClass": "access-control/cross-contract-risk",
+      "classTags": [
+        "access",
+        "cross-contract"
+      ],
+      "severity": "high",
+      "weight": 7,
+      "factor": 1,
+      "points": 7,
+      "outcome": "exact",
+      "primaryCandidate": "AFH-001",
+      "candidateSeverity": "low",
+      "severityCorrect": false,
+      "rationale": "Exact missing-governor callable mutation, untrusted transaction, and persistent tier change; conservative Low consensus severity does not change match credit."
+    },
+    {
+      "id": "MCB-002",
+      "canonicalClass": "reentrancy/state-observation",
+      "classTags": [
+        "reentrancy",
+        "integration"
+      ],
+      "severity": "medium",
+      "weight": 5,
+      "factor": 1,
+      "points": 5,
+      "outcome": "exact",
+      "primaryCandidate": "AFH-004",
+      "candidateSeverity": "medium",
+      "severityCorrect": true,
+      "rationale": "Exact transfer-before-effects ordering with callback-visible/live request reuse and doubled transfer/debit; CEI control matches the registered repair."
+    },
+    {
+      "id": "MCB-003",
+      "canonicalClass": "external-token-semantics/accounting",
+      "classTags": [
+        "integration"
+      ],
+      "severity": "high",
+      "weight": 7,
+      "factor": 1,
+      "points": 7,
+      "outcome": "exact",
+      "primaryCandidate": "AFH-002",
+      "candidateSeverity": "high",
+      "severityCorrect": true,
+      "rationale": "Exact requested-versus-received accounting: 1,000 nominal credits against 900 received, with downstream shortfall and exact-delta control."
+    },
+    {
+      "id": "MCB-004",
+      "canonicalClass": "oracle-integration/edge-case",
+      "classTags": [
+        "integration",
+        "niche"
+      ],
+      "severity": "medium",
+      "weight": 5,
+      "factor": 1,
+      "points": 5,
+      "outcome": "exact",
+      "primaryCandidate": "AFH-005",
+      "candidateSeverity": "medium",
+      "severityCorrect": true,
+      "rationale": "Exact greater-than-18 feed normalization underflow with a valid high-precision feed and an 18-decimal control."
+    },
+    {
+      "id": "MCB-005",
+      "canonicalClass": "funding/economic-math",
+      "classTags": [
+        "business-logic"
+      ],
+      "severity": "high",
+      "weight": 7,
+      "factor": 1,
+      "points": 7,
+      "outcome": "exact",
+      "primaryCandidate": "AFH-007",
+      "candidateSeverity": "high",
+      "severityCorrect": true,
+      "rationale": "Exact missing negative funding clamp, signed magnitude beyond the symmetric bound, cash relevance, and positive-direction control."
+    },
+    {
+      "id": "MCB-006",
+      "canonicalClass": "signed-fixed-point/rounding",
+      "classTags": [
+        "business-logic",
+        "niche"
+      ],
+      "severity": "medium",
+      "weight": 5,
+      "factor": 0,
+      "points": 0,
+      "outcome": "missed",
+      "primaryCandidate": null,
+      "candidateSeverity": null,
+      "severityCorrect": null,
+      "rationale": "Missed. AFH-008 uses a positive product and checkpoint remainder loss. It survives signed-floor repair; the reciprocal positive-ceil repair leaves the registered negative product wrong."
+    },
+    {
+      "id": "MCB-007",
+      "canonicalClass": "portfolio-margin/nonlinear-risk",
+      "classTags": [
+        "business-logic"
+      ],
+      "severity": "high",
+      "weight": 7,
+      "factor": 1,
+      "points": 7,
+      "outcome": "exact",
+      "primaryCandidate": "AFH-013",
+      "candidateSeverity": "high",
+      "severityCorrect": true,
+      "rationale": "Exact correlation/exposure sign-parity error with quantified under-margining and a genuine-hedge control."
+    },
+    {
+      "id": "MCB-008",
+      "canonicalClass": "position-accounting/business-logic",
+      "classTags": [
+        "business-logic"
+      ],
+      "severity": "high",
+      "weight": 8,
+      "factor": 1,
+      "points": 8,
+      "outcome": "exact",
+      "primaryCandidate": "AFH-010",
+      "candidateSeverity": "medium",
+      "severityCorrect": false,
+      "rationale": "Exact cross-zero residual-basis error, separated closed-leg PnL, both prices, and round-trip consequence."
+    },
+    {
+      "id": "MCB-009",
+      "canonicalClass": "cross-contract/open-interest-accounting",
+      "classTags": [
+        "business-logic",
+        "cross-contract"
+      ],
+      "severity": "high",
+      "weight": 7,
+      "factor": 1,
+      "points": 7,
+      "outcome": "exact",
+      "primaryCandidate": "AFH-011",
+      "candidateSeverity": "medium",
+      "severityCorrect": false,
+      "rationale": "Exact abs(delta)-only open-interest growth, zero-exposure round trip, and distinct social-loss denominator effect."
+    },
+    {
+      "id": "MCB-010",
+      "canonicalClass": "execution/business-logic",
+      "classTags": [
+        "business-logic"
+      ],
+      "severity": "high",
+      "weight": 7,
+      "factor": 1,
+      "points": 7,
+      "outcome": "exact",
+      "primaryCandidate": "AFH-014",
+      "candidateSeverity": "medium",
+      "severityCorrect": false,
+      "rationale": "Exact arithmetic 2,000 versus size-weighted 2,800 execution price against a 2,200 limit and rejecting control."
+    },
+    {
+      "id": "MCB-011",
+      "canonicalClass": "settlement/oracle-time-semantics",
+      "classTags": [
+        "business-logic",
+        "cross-contract",
+        "integration"
+      ],
+      "severity": "high",
+      "weight": 7,
+      "factor": 1,
+      "points": 7,
+      "outcome": "exact",
+      "primaryCandidate": "AFH-006",
+      "candidateSeverity": "high",
+      "severityCorrect": true,
+      "rationale": "Exact post-cutoff latest-round selection with cutoff/update/record times, immutable later value, and no-update control."
+    },
+    {
+      "id": "MCB-012",
+      "canonicalClass": "settlement/funding-state-order",
+      "classTags": [
+        "business-logic",
+        "cross-contract"
+      ],
+      "severity": "high",
+      "weight": 7,
+      "factor": 1,
+      "points": 7,
+      "outcome": "exact",
+      "primaryCandidate": "AFH-009",
+      "candidateSeverity": "high",
+      "severityCorrect": true,
+      "rationale": "Exact realize-before-funding ordering tied to zeroed base and lost payment, with checkpoint-first control."
+    },
+    {
+      "id": "MCB-013",
+      "canonicalClass": "liquidation/state-machine",
+      "classTags": [
+        "business-logic"
+      ],
+      "severity": "high",
+      "weight": 8,
+      "factor": 1,
+      "points": 8,
+      "outcome": "exact",
+      "primaryCandidate": "AFH-018",
+      "candidateSeverity": "high",
+      "severityCorrect": true,
+      "rationale": "Exact no-fill timeout finalization with live residual, unchanged distressed position, and cleared freeze."
+    },
+    {
+      "id": "MCB-014",
+      "canonicalClass": "insurance/reserve-accounting",
+      "classTags": [
+        "business-logic"
+      ],
+      "severity": "medium",
+      "weight": 5,
+      "factor": 1,
+      "points": 5,
+      "outcome": "exact",
+      "primaryCandidate": "AFH-021",
+      "candidateSeverity": "medium",
+      "severityCorrect": true,
+      "rationale": "Exact 100/50/50 bond reconciliation showing deleted record and 50 phantom reserve, plus deficit-capacity control."
+    },
+    {
+      "id": "MCB-015",
+      "canonicalClass": "advanced-composition/critical-economic",
+      "classTags": [
+        "business-logic",
+        "composed",
+        "cross-contract"
+      ],
+      "severity": "critical",
+      "weight": 8,
+      "factor": 0.3,
+      "points": 2.4,
+      "outcome": "fragment_0.3",
+      "primaryCandidate": "AFH-012",
+      "candidateSeverity": "medium",
+      "severityCorrect": false,
+      "rationale": "Fragment only. AFH-012 proves missing membership uniqueness and duplicate valuation through close/reopen, but not repeated zero-size setup, withdrawal, normalization, or deficit. The nearby primitive is capped at 0.3 by the registered composition gate."
+    }
+  ],
+  "candidates": [
+    {
+      "id": "AFH-001",
+      "classification": "primary_matched",
+      "matchedTruthId": "MCB-001",
+      "matchFactor": 1,
+      "dedupCluster": "CL-AFH-001",
+      "submittedSeverity": "low",
+      "finalConsensusSeverity": "low",
+      "evidencePath": "blind-run/evidence/AFH-001.json",
+      "evidenceSha256": "1f16da35deba7275d5b38519db0919c79a8870cc738927020a0d9f0d7fad3129",
+      "validation": null
+    },
+    {
+      "id": "AFH-002",
+      "classification": "primary_matched",
+      "matchedTruthId": "MCB-003",
+      "matchFactor": 1,
+      "dedupCluster": "CL-AFH-002",
+      "submittedSeverity": "high",
+      "finalConsensusSeverity": "high",
+      "evidencePath": "blind-run/evidence/AFH-002.json",
+      "evidenceSha256": "8bc44d83e06b59568cb52020beeae7d4a8787c9c48e831af441e3a03af556317",
+      "validation": null
+    },
+    {
+      "id": "AFH-003",
+      "classification": "valid_unregistered",
+      "matchedTruthId": null,
+      "matchFactor": 0,
+      "dedupCluster": "CL-AFH-003",
+      "submittedSeverity": "high",
+      "finalConsensusSeverity": "high",
+      "evidencePath": "blind-run/evidence/AFH-003.json",
+      "evidenceSha256": "5a45f457f70bd536195def5d084c508ab322824284bf3825a2921ad67f354545",
+      "validation": {
+        "root": "Delayed vault claim omits ClearingHouse health/freeze policy.",
+        "distinctFromTruth": "Different from MCB-002 transfer ordering: it reproduces without callbacks after the account becomes unhealthy/frozen.",
+        "distinguishingRepair": "Revalidate ClearingHouse freeze and initial margin at delayed execution.",
+        "evidence": "A frozen unhealthy account transfers 900 collateral while the ClearingHouse withdrawal control reverts."
+      }
+    },
+    {
+      "id": "AFH-004",
+      "classification": "primary_matched",
+      "matchedTruthId": "MCB-002",
+      "matchFactor": 1,
+      "dedupCluster": "CL-AFH-004",
+      "submittedSeverity": "medium",
+      "finalConsensusSeverity": "medium",
+      "evidencePath": "blind-run/evidence/AFH-004.json",
+      "evidenceSha256": "a504d69d0043fcab5877a33a0b83db884fd45c92beba8c1f7d865e095d9fceed",
+      "validation": null
+    },
+    {
+      "id": "AFH-005",
+      "classification": "primary_matched",
+      "matchedTruthId": "MCB-004",
+      "matchFactor": 1,
+      "dedupCluster": "CL-AFH-005",
+      "submittedSeverity": "medium",
+      "finalConsensusSeverity": "medium",
+      "evidencePath": "blind-run/evidence/AFH-005.json",
+      "evidenceSha256": "4053c334d2ed62ff196a947f5ea1459ace6c080a770eb5e2d068746f7315541c",
+      "validation": null
+    },
+    {
+      "id": "AFH-006",
+      "classification": "primary_matched",
+      "matchedTruthId": "MCB-011",
+      "matchFactor": 1,
+      "dedupCluster": "CL-AFH-006",
+      "submittedSeverity": "high",
+      "finalConsensusSeverity": "high",
+      "evidencePath": "blind-run/evidence/AFH-006.json",
+      "evidenceSha256": "f499e14c9d7216f9f5e3b04073c0d82048b48d5ef790cc41f18fc20833517877",
+      "validation": null
+    },
+    {
+      "id": "AFH-007",
+      "classification": "primary_matched",
+      "matchedTruthId": "MCB-005",
+      "matchFactor": 1,
+      "dedupCluster": "CL-AFH-007",
+      "submittedSeverity": "high",
+      "finalConsensusSeverity": "high",
+      "evidencePath": "blind-run/evidence/AFH-007.json",
+      "evidenceSha256": "3b12d984da516748230dabdfcc8d30e7f10438f5a40f79edeb4a213921c157ba",
+      "validation": null
+    },
+    {
+      "id": "AFH-008",
+      "classification": "valid_unregistered",
+      "matchedTruthId": null,
+      "matchFactor": 0,
+      "dedupCluster": "CL-AFH-008",
+      "submittedSeverity": "low",
+      "finalConsensusSeverity": "low",
+      "evidencePath": "blind-run/evidence/AFH-008.json",
+      "evidenceSha256": "f704d61eabb46985a2ddbd16f30a8a5f36ac89e2c853009f21b48638e8bc02d5",
+      "validation": {
+        "root": "Positive sub-wad payments are discarded across public checkpoints with no carried remainder.",
+        "distinctFromTruth": "MCB-006 is a negative-product floor error. The two signed domains have reciprocal non-fixing controls.",
+        "distinguishingRepair": "Carry position remainder or round positive payer obligations up; signed floor alone does not fix it.",
+        "evidence": "Ten split checkpoints pay zero versus one wei unsplit, including under the MCB-006 signed-floor patch."
+      }
+    },
+    {
+      "id": "AFH-009",
+      "classification": "primary_matched",
+      "matchedTruthId": "MCB-012",
+      "matchFactor": 1,
+      "dedupCluster": "CL-AFH-009",
+      "submittedSeverity": "high",
+      "finalConsensusSeverity": "high",
+      "evidencePath": "blind-run/evidence/AFH-009.json",
+      "evidenceSha256": "b98b9ca49fd3261a2da645f0d636c13be2fbb1cc181b19f5425fa30b22942211",
+      "validation": null
+    },
+    {
+      "id": "AFH-010",
+      "classification": "primary_matched",
+      "matchedTruthId": "MCB-008",
+      "matchFactor": 1,
+      "dedupCluster": "CL-AFH-010",
+      "submittedSeverity": "medium",
+      "finalConsensusSeverity": "medium",
+      "evidencePath": "blind-run/evidence/AFH-010.json",
+      "evidenceSha256": "4da5c153cb5ead0704e32aba5bc26e20b2651e7dd6407dae7520fdc72b29127d",
+      "validation": null
+    },
+    {
+      "id": "AFH-011",
+      "classification": "primary_matched",
+      "matchedTruthId": "MCB-009",
+      "matchFactor": 1,
+      "dedupCluster": "CL-AFH-011",
+      "submittedSeverity": "high",
+      "finalConsensusSeverity": "medium",
+      "evidencePath": "blind-run/evidence/AFH-011.json",
+      "evidenceSha256": "e747ed3fe7ef328862fc14cff3edc9d195eae3b7dde6a5c9b5e34822c3de80c8",
+      "validation": null
+    },
+    {
+      "id": "AFH-012",
+      "classification": "primary_matched",
+      "matchedTruthId": "MCB-015",
+      "matchFactor": 0.3,
+      "dedupCluster": "CL-AFH-012",
+      "submittedSeverity": "medium",
+      "finalConsensusSeverity": "medium",
+      "evidencePath": "blind-run/evidence/AFH-012.json",
+      "evidenceSha256": "01ace5edac38a9b7c967138ae80760bddc7374f956a357b358c3bd29879ba961",
+      "validation": null
+    },
+    {
+      "id": "AFH-013",
+      "classification": "primary_matched",
+      "matchedTruthId": "MCB-007",
+      "matchFactor": 1,
+      "dedupCluster": "CL-AFH-013",
+      "submittedSeverity": "high",
+      "finalConsensusSeverity": "high",
+      "evidencePath": "blind-run/evidence/AFH-013.json",
+      "evidenceSha256": "5b4e945dfd8fb55c2c0a26418e6881f5cd93637053a4b8b0607f0afc8016ec66",
+      "validation": null
+    },
+    {
+      "id": "AFH-014",
+      "classification": "primary_matched",
+      "matchedTruthId": "MCB-010",
+      "matchFactor": 1,
+      "dedupCluster": "CL-AFH-014",
+      "submittedSeverity": "medium",
+      "finalConsensusSeverity": "medium",
+      "evidencePath": "blind-run/evidence/AFH-014.json",
+      "evidenceSha256": "316acb7990000dd99405c10bafc7519e4ab824d77ba3a6dd78036be76f633934",
+      "validation": null
+    },
+    {
+      "id": "AFH-015",
+      "classification": "valid_unregistered",
+      "matchedTruthId": null,
+      "matchFactor": 0,
+      "dedupCluster": "CL-AFH-015",
+      "submittedSeverity": "low",
+      "finalConsensusSeverity": "low",
+      "evidencePath": "blind-run/evidence/AFH-015.json",
+      "evidenceSha256": "75b0b067e9caaa2696076ab24be605c351f2a9bcc5a5b9b03c0144cb0c2b30d8",
+      "validation": {
+        "root": "The uint64 nonce word index is narrowed to uint8 after shifting.",
+        "distinctFromTruth": "No registered unit concerns nonce-domain aliasing; this is independent of trade price, position, or access roots.",
+        "distinguishingRepair": "Store the full nonce>>8 word index.",
+        "evidence": "Nonce 0 and 65,536 collide; adjacent nonce 1 remains independent."
+      }
+    },
+    {
+      "id": "AFH-016",
+      "classification": "valid_unregistered",
+      "matchedTruthId": null,
+      "matchFactor": 0,
+      "dedupCluster": "CL-AFH-016",
+      "submittedSeverity": "high",
+      "finalConsensusSeverity": "high",
+      "evidencePath": "blind-run/evidence/AFH-016.json",
+      "evidenceSha256": "95eaacb376a417e07bd8a1a9c89cfa9eb606699f7796b38236ecb82e6776791a",
+      "validation": {
+        "root": "Auction bidderAccount is never bound to bidder ownership/delegation.",
+        "distinctFromTruth": "Different authority and component from MCB-001 governance mutation and different root from MCB-013 residual finalization.",
+        "distinguishingRepair": "Require bidder authorization for bidderAccount at commit/reveal.",
+        "evidence": "An attacker forces +1 base into an unrelated account while the ordinary router authority control reverts."
+      }
+    },
+    {
+      "id": "AFH-017",
+      "classification": "valid_unregistered",
+      "matchedTruthId": null,
+      "matchFactor": 0,
+      "dedupCluster": "CL-AFH-017",
+      "submittedSeverity": "critical",
+      "finalConsensusSeverity": "high",
+      "evidencePath": "blind-run/evidence/AFH-017.json",
+      "evidenceSha256": "bc7bf8a92154a50f4070ca037309f4174cab0e95f46e85439b9da23809b7af43",
+      "validation": {
+        "root": "Zero/unrelated bonds and absent bidder post-fill health permit undercollateralized auction fills.",
+        "distinctFromTruth": "It composes with, but does not duplicate, MCB-013: bidder health/bond validation remains defective even if residual finalization is fixed.",
+        "distinguishingRepair": "Risk-proportional received bond plus atomic bidder initial-margin validation.",
+        "evidence": "Zero-capital fill ends at -81.8 wad bidder equity and 81.8 pending social loss; severity is High because attacker-profit closure was not shown."
+      }
+    },
+    {
+      "id": "AFH-018",
+      "classification": "primary_matched",
+      "matchedTruthId": "MCB-013",
+      "matchFactor": 1,
+      "dedupCluster": "CL-AFH-018",
+      "submittedSeverity": "high",
+      "finalConsensusSeverity": "high",
+      "evidencePath": "blind-run/evidence/AFH-018.json",
+      "evidenceSha256": "7b87f3bfdcfea7929ae6123e7f74ac4f744a211d830652cda1e6de017b61fbcc",
+      "validation": null
+    },
+    {
+      "id": "AFH-019",
+      "classification": "valid_unregistered",
+      "matchedTruthId": null,
+      "matchFactor": 0,
+      "dedupCluster": "CL-AFH-019",
+      "submittedSeverity": "high",
+      "finalConsensusSeverity": "high",
+      "evidencePath": "blind-run/evidence/AFH-019.json",
+      "evidenceSha256": "72ca08e62f5231e28ba558d35f37cd3ae8df15d3a6020753ae2127302a549f39",
+      "validation": {
+        "root": "Reveal omits finalized and expiry guards.",
+        "distinctFromTruth": "MCB-013 concerns allowing finalization with residual; AFH-019 mutates positions after any terminal finalization.",
+        "distinguishingRepair": "Reject finalized/expired reveals and invalidate commitments on finalization.",
+        "evidence": "A precommitted reveal changes base after finalization while a new post-finalization commit is rejected."
+      }
+    },
+    {
+      "id": "AFH-020",
+      "classification": "valid_unregistered",
+      "matchedTruthId": null,
+      "matchFactor": 0,
+      "dedupCluster": "CL-AFH-020",
+      "submittedSeverity": "high",
+      "finalConsensusSeverity": "high",
+      "evidencePath": "blind-run/evidence/AFH-020.json",
+      "evidenceSha256": "a27d63cc8757377ad17faff6920da886efd1fb9a0836b6711a82cae7e472f4e6",
+      "validation": {
+        "root": "One boolean conflates auction and settlement freeze reasons; lifecycles do not invalidate one another.",
+        "distinctFromTruth": "Different from MCB-012 funding order and MCB-013 residual handling: settlement completion permits a stale auction reveal to reopen a settled position.",
+        "distinguishingRepair": "Reason-counted locks plus mutual lifecycle exclusion/invalidation.",
+        "evidence": "Settlement clears freeze and a later reveal reopens base while the settled marker remains true."
+      }
+    },
+    {
+      "id": "AFH-021",
+      "classification": "primary_matched",
+      "matchedTruthId": "MCB-014",
+      "matchFactor": 1,
+      "dedupCluster": "CL-AFH-021",
+      "submittedSeverity": "medium",
+      "finalConsensusSeverity": "medium",
+      "evidencePath": "blind-run/evidence/AFH-021.json",
+      "evidenceSha256": "ce5b66baa369acc695f5fdc8b8ff19308d2699a16d961da7372cf7cbe2adf34d",
+      "validation": null
+    },
+    {
+      "id": "AFH-022",
+      "classification": "valid_unregistered",
+      "matchedTruthId": null,
+      "matchFactor": 0,
+      "dedupCluster": "CL-AFH-022",
+      "submittedSeverity": "high",
+      "finalConsensusSeverity": "high",
+      "evidencePath": "blind-run/evidence/AFH-022.json",
+      "evidenceSha256": "4d92130d6098be4dedbc7da51a5bd7e17d076070af736ba7f7e30130d66b4a73",
+      "validation": {
+        "root": "Insurance share NAV/redemption includes and can spend live third-party auction reserves.",
+        "distinctFromTruth": "MCB-014 is slash-release aggregate bookkeeping; AFH-022 drains an otherwise correctly recorded live reserve before release.",
+        "distinguishingRepair": "Price and redeem shares from unreserved liquid assets and cap spendable transfers.",
+        "evidence": "A shareholder redeems 2,000 against a 1,000 deposit plus 1,000 live bond, causing the bond terminal action to revert."
+      }
+    },
+    {
+      "id": "AFH-023",
+      "classification": "valid_unregistered",
+      "matchedTruthId": null,
+      "matchFactor": 0,
+      "dedupCluster": "CL-AFH-023",
+      "submittedSeverity": "medium",
+      "finalConsensusSeverity": "medium",
+      "evidencePath": "blind-run/evidence/AFH-023.json",
+      "evidenceSha256": "eaa55b3d0c0c3718afb47682b7d5450aa3bdfcf0061fe7131f4bbabb9296ba69",
+      "validation": {
+        "root": "Trade fee receivables increase insurance NAV without any token collection path.",
+        "distinctFromTruth": "Different flow from MCB-003 collateral deposit delta and MCB-014 bond reserve reconciliation.",
+        "distinguishingRepair": "Recognize fee NAV only after actual collection or exclude unrealizable receivables from liquid redemption.",
+        "evidence": "NAV rises by 120 while fund tokens do not move and full redemption fails; no-fee control redeems."
+      }
+    },
+    {
+      "id": "AFH-024",
+      "classification": "valid_unregistered",
+      "matchedTruthId": null,
+      "matchFactor": 0,
+      "dedupCluster": "CL-AFH-024",
+      "submittedSeverity": "high",
+      "finalConsensusSeverity": "high",
+      "evidencePath": "blind-run/evidence/AFH-024.json",
+      "evidenceSha256": "52b01737cb5de679b8864e2eb80c71fca44063e7db7855228d06ca78ee74f312",
+      "validation": {
+        "root": "Venue raw return is trusted without output balance delta or token-decimal normalization.",
+        "distinctFromTruth": "Although both are integration accounting, MCB-003 credits collateral deposits; this independent venue route has a different actor, asset, state sink, and repair.",
+        "distinguishingRepair": "Measure tokenOut receipt, normalize declared decimals, and compare the normalized amount with minimum output.",
+        "evidence": "Zero output receipt with a 24-decimal token credits 1e18 wad although even a received raw return would normalize to 1e12."
+      }
+    },
+    {
+      "id": "AFH-025",
+      "classification": "valid_unregistered",
+      "matchedTruthId": null,
+      "matchFactor": 0,
+      "dedupCluster": "CL-AFH-025",
+      "submittedSeverity": "high",
+      "finalConsensusSeverity": "high",
+      "evidencePath": "blind-run/evidence/AFH-025.json",
+      "evidenceSha256": "5f367748aab13bc25b2fd33acbb91a7e2bab068aa6bd495073b8724d07cf1f15",
+      "validation": {
+        "root": "Signed-order executionPrice remains uint256 while stored entry narrows to uint128 and fee math remains full width.",
+        "distinctFromTruth": "Different from MCB-008 cross-zero averaging: it affects a fresh signed sell and malicious matcher before any flip.",
+        "distinguishingRepair": "Bound executionPrice to uint128 before limit, fee, and trade consumers.",
+        "evidence": "2^128+2e18 stores a 2e18 basis but burns 408.338840305126156158 wad; in-range control burns two wei."
+      }
+    }
+  ],
+  "metrics": {
+    "truth": {
+      "exact": 13,
+      "factor06": 0,
+      "factor03": 1,
+      "missed": 1,
+      "creditedUnits": 14,
+      "denominator": 15,
+      "rawRecall": 0.9333333333333333,
+      "factorSum": 13.3,
+      "factorNormalizedRecall": 0.8866666666666667,
+      "weightedPoints": 89.4,
+      "weightedDenominator": 100,
+      "scorePercent": 89.4
+    },
+    "canonicalClassRollups": [
+      {
+        "tag": "access-control/cross-contract-risk",
+        "truthIds": [
+          "MCB-001"
+        ],
+        "exact": 1,
+        "factor06": 0,
+        "factor03": 0,
+        "missed": 0,
+        "rawRecallNumerator": 1,
+        "rawRecallDenominator": 1,
+        "rawRecall": 1,
+        "factorNormalizedRecall": 1,
+        "earnedPoints": 7,
+        "availablePoints": 7,
+        "weightedRecall": 1
+      },
+      {
+        "tag": "reentrancy/state-observation",
+        "truthIds": [
+          "MCB-002"
+        ],
+        "exact": 1,
+        "factor06": 0,
+        "factor03": 0,
+        "missed": 0,
+        "rawRecallNumerator": 1,
+        "rawRecallDenominator": 1,
+        "rawRecall": 1,
+        "factorNormalizedRecall": 1,
+        "earnedPoints": 5,
+        "availablePoints": 5,
+        "weightedRecall": 1
+      },
+      {
+        "tag": "external-token-semantics/accounting",
+        "truthIds": [
+          "MCB-003"
+        ],
+        "exact": 1,
+        "factor06": 0,
+        "factor03": 0,
+        "missed": 0,
+        "rawRecallNumerator": 1,
+        "rawRecallDenominator": 1,
+        "rawRecall": 1,
+        "factorNormalizedRecall": 1,
+        "earnedPoints": 7,
+        "availablePoints": 7,
+        "weightedRecall": 1
+      },
+      {
+        "tag": "oracle-integration/edge-case",
+        "truthIds": [
+          "MCB-004"
+        ],
+        "exact": 1,
+        "factor06": 0,
+        "factor03": 0,
+        "missed": 0,
+        "rawRecallNumerator": 1,
+        "rawRecallDenominator": 1,
+        "rawRecall": 1,
+        "factorNormalizedRecall": 1,
+        "earnedPoints": 5,
+        "availablePoints": 5,
+        "weightedRecall": 1
+      },
+      {
+        "tag": "funding/economic-math",
+        "truthIds": [
+          "MCB-005"
+        ],
+        "exact": 1,
+        "factor06": 0,
+        "factor03": 0,
+        "missed": 0,
+        "rawRecallNumerator": 1,
+        "rawRecallDenominator": 1,
+        "rawRecall": 1,
+        "factorNormalizedRecall": 1,
+        "earnedPoints": 7,
+        "availablePoints": 7,
+        "weightedRecall": 1
+      },
+      {
+        "tag": "signed-fixed-point/rounding",
+        "truthIds": [
+          "MCB-006"
+        ],
+        "exact": 0,
+        "factor06": 0,
+        "factor03": 0,
+        "missed": 1,
+        "rawRecallNumerator": 0,
+        "rawRecallDenominator": 1,
+        "rawRecall": 0,
+        "factorNormalizedRecall": 0,
+        "earnedPoints": 0,
+        "availablePoints": 5,
+        "weightedRecall": 0
+      },
+      {
+        "tag": "portfolio-margin/nonlinear-risk",
+        "truthIds": [
+          "MCB-007"
+        ],
+        "exact": 1,
+        "factor06": 0,
+        "factor03": 0,
+        "missed": 0,
+        "rawRecallNumerator": 1,
+        "rawRecallDenominator": 1,
+        "rawRecall": 1,
+        "factorNormalizedRecall": 1,
+        "earnedPoints": 7,
+        "availablePoints": 7,
+        "weightedRecall": 1
+      },
+      {
+        "tag": "position-accounting/business-logic",
+        "truthIds": [
+          "MCB-008"
+        ],
+        "exact": 1,
+        "factor06": 0,
+        "factor03": 0,
+        "missed": 0,
+        "rawRecallNumerator": 1,
+        "rawRecallDenominator": 1,
+        "rawRecall": 1,
+        "factorNormalizedRecall": 1,
+        "earnedPoints": 8,
+        "availablePoints": 8,
+        "weightedRecall": 1
+      },
+      {
+        "tag": "cross-contract/open-interest-accounting",
+        "truthIds": [
+          "MCB-009"
+        ],
+        "exact": 1,
+        "factor06": 0,
+        "factor03": 0,
+        "missed": 0,
+        "rawRecallNumerator": 1,
+        "rawRecallDenominator": 1,
+        "rawRecall": 1,
+        "factorNormalizedRecall": 1,
+        "earnedPoints": 7,
+        "availablePoints": 7,
+        "weightedRecall": 1
+      },
+      {
+        "tag": "execution/business-logic",
+        "truthIds": [
+          "MCB-010"
+        ],
+        "exact": 1,
+        "factor06": 0,
+        "factor03": 0,
+        "missed": 0,
+        "rawRecallNumerator": 1,
+        "rawRecallDenominator": 1,
+        "rawRecall": 1,
+        "factorNormalizedRecall": 1,
+        "earnedPoints": 7,
+        "availablePoints": 7,
+        "weightedRecall": 1
+      },
+      {
+        "tag": "settlement/oracle-time-semantics",
+        "truthIds": [
+          "MCB-011"
+        ],
+        "exact": 1,
+        "factor06": 0,
+        "factor03": 0,
+        "missed": 0,
+        "rawRecallNumerator": 1,
+        "rawRecallDenominator": 1,
+        "rawRecall": 1,
+        "factorNormalizedRecall": 1,
+        "earnedPoints": 7,
+        "availablePoints": 7,
+        "weightedRecall": 1
+      },
+      {
+        "tag": "settlement/funding-state-order",
+        "truthIds": [
+          "MCB-012"
+        ],
+        "exact": 1,
+        "factor06": 0,
+        "factor03": 0,
+        "missed": 0,
+        "rawRecallNumerator": 1,
+        "rawRecallDenominator": 1,
+        "rawRecall": 1,
+        "factorNormalizedRecall": 1,
+        "earnedPoints": 7,
+        "availablePoints": 7,
+        "weightedRecall": 1
+      },
+      {
+        "tag": "liquidation/state-machine",
+        "truthIds": [
+          "MCB-013"
+        ],
+        "exact": 1,
+        "factor06": 0,
+        "factor03": 0,
+        "missed": 0,
+        "rawRecallNumerator": 1,
+        "rawRecallDenominator": 1,
+        "rawRecall": 1,
+        "factorNormalizedRecall": 1,
+        "earnedPoints": 8,
+        "availablePoints": 8,
+        "weightedRecall": 1
+      },
+      {
+        "tag": "insurance/reserve-accounting",
+        "truthIds": [
+          "MCB-014"
+        ],
+        "exact": 1,
+        "factor06": 0,
+        "factor03": 0,
+        "missed": 0,
+        "rawRecallNumerator": 1,
+        "rawRecallDenominator": 1,
+        "rawRecall": 1,
+        "factorNormalizedRecall": 1,
+        "earnedPoints": 5,
+        "availablePoints": 5,
+        "weightedRecall": 1
+      },
+      {
+        "tag": "advanced-composition/critical-economic",
+        "truthIds": [
+          "MCB-015"
+        ],
+        "exact": 0,
+        "factor06": 0,
+        "factor03": 1,
+        "missed": 0,
+        "rawRecallNumerator": 1,
+        "rawRecallDenominator": 1,
+        "rawRecall": 1,
+        "factorNormalizedRecall": 0.3,
+        "earnedPoints": 2.4,
+        "availablePoints": 8,
+        "weightedRecall": 0.3
+      }
+    ],
+    "familyRollups": [
+      {
+        "tag": "business-logic",
+        "truthIds": [
+          "MCB-005",
+          "MCB-006",
+          "MCB-007",
+          "MCB-008",
+          "MCB-009",
+          "MCB-010",
+          "MCB-011",
+          "MCB-012",
+          "MCB-013",
+          "MCB-014",
+          "MCB-015"
+        ],
+        "exact": 9,
+        "factor06": 0,
+        "factor03": 1,
+        "missed": 1,
+        "rawRecallNumerator": 10,
+        "rawRecallDenominator": 11,
+        "rawRecall": 0.9090909090909091,
+        "factorNormalizedRecall": 0.8454545454545456,
+        "earnedPoints": 65.4,
+        "availablePoints": 76,
+        "weightedRecall": 0.8605263157894738
+      },
+      {
+        "tag": "composed",
+        "truthIds": [
+          "MCB-015"
+        ],
+        "exact": 0,
+        "factor06": 0,
+        "factor03": 1,
+        "missed": 0,
+        "rawRecallNumerator": 1,
+        "rawRecallDenominator": 1,
+        "rawRecall": 1,
+        "factorNormalizedRecall": 0.3,
+        "earnedPoints": 2.4,
+        "availablePoints": 8,
+        "weightedRecall": 0.3
+      },
+      {
+        "tag": "cross-contract",
+        "truthIds": [
+          "MCB-001",
+          "MCB-009",
+          "MCB-011",
+          "MCB-012",
+          "MCB-015"
+        ],
+        "exact": 4,
+        "factor06": 0,
+        "factor03": 1,
+        "missed": 0,
+        "rawRecallNumerator": 5,
+        "rawRecallDenominator": 5,
+        "rawRecall": 1,
+        "factorNormalizedRecall": 0.86,
+        "earnedPoints": 30.4,
+        "availablePoints": 36,
+        "weightedRecall": 0.8444444444444444
+      },
+      {
+        "tag": "integration",
+        "truthIds": [
+          "MCB-002",
+          "MCB-003",
+          "MCB-004",
+          "MCB-011"
+        ],
+        "exact": 4,
+        "factor06": 0,
+        "factor03": 0,
+        "missed": 0,
+        "rawRecallNumerator": 4,
+        "rawRecallDenominator": 4,
+        "rawRecall": 1,
+        "factorNormalizedRecall": 1,
+        "earnedPoints": 24,
+        "availablePoints": 24,
+        "weightedRecall": 1
+      },
+      {
+        "tag": "niche",
+        "truthIds": [
+          "MCB-004",
+          "MCB-006"
+        ],
+        "exact": 1,
+        "factor06": 0,
+        "factor03": 0,
+        "missed": 1,
+        "rawRecallNumerator": 1,
+        "rawRecallDenominator": 2,
+        "rawRecall": 0.5,
+        "factorNormalizedRecall": 0.5,
+        "earnedPoints": 5,
+        "availablePoints": 10,
+        "weightedRecall": 0.5
+      },
+      {
+        "tag": "access",
+        "truthIds": [
+          "MCB-001"
+        ],
+        "exact": 1,
+        "factor06": 0,
+        "factor03": 0,
+        "missed": 0,
+        "rawRecallNumerator": 1,
+        "rawRecallDenominator": 1,
+        "rawRecall": 1,
+        "factorNormalizedRecall": 1,
+        "earnedPoints": 7,
+        "availablePoints": 7,
+        "weightedRecall": 1
+      },
+      {
+        "tag": "reentrancy",
+        "truthIds": [
+          "MCB-002"
+        ],
+        "exact": 1,
+        "factor06": 0,
+        "factor03": 0,
+        "missed": 0,
+        "rawRecallNumerator": 1,
+        "rawRecallDenominator": 1,
+        "rawRecall": 1,
+        "factorNormalizedRecall": 1,
+        "earnedPoints": 5,
+        "availablePoints": 5,
+        "weightedRecall": 1
+      }
+    ],
+    "candidateClassification": {
+      "primary_matched": 14,
+      "supporting_or_duplicate": 0,
+      "valid_unregistered": 11,
+      "false_positive": 0,
+      "total": 25
+    },
+    "precision": {
+      "rawNumerator": 25,
+      "rawDenominator": 25,
+      "raw": 1,
+      "deduplicatedNumerator": 25,
+      "deduplicatedDenominator": 25,
+      "deduplicated": 1,
+      "distinctClusters": 25,
+      "validUnregisteredGeneratorMisses": 11,
+      "supportingOrDuplicate": 0,
+      "falsePositives": 0
+    },
+    "severityAccuracy": {
+      "definition": "canonical severity equals frozen blind-consensus final_severity for nonzero-credit registered primaries; MCB-006 miss excluded",
+      "correct": 9,
+      "denominator": 14,
+      "accuracy": 0.6428571428571429,
+      "disagreements": [
+        {
+          "truthId": "MCB-001",
+          "candidateId": "AFH-001",
+          "canonicalSeverity": "high",
+          "candidateSeverity": "low"
+        },
+        {
+          "truthId": "MCB-008",
+          "candidateId": "AFH-010",
+          "canonicalSeverity": "high",
+          "candidateSeverity": "medium"
+        },
+        {
+          "truthId": "MCB-009",
+          "candidateId": "AFH-011",
+          "canonicalSeverity": "high",
+          "candidateSeverity": "medium"
+        },
+        {
+          "truthId": "MCB-010",
+          "candidateId": "AFH-014",
+          "canonicalSeverity": "high",
+          "candidateSeverity": "medium"
+        },
+        {
+          "truthId": "MCB-015",
+          "candidateId": "AFH-012",
+          "canonicalSeverity": "critical",
+          "candidateSeverity": "medium"
+        }
+      ]
+    },
+    "criticalChain": {
+      "truthId": "MCB-015",
+      "candidateId": "AFH-012",
+      "outcome": "fragment_only_not_demonstrated",
+      "factor": 0.3,
+      "earnedPoints": 2.4,
+      "availablePoints": 8,
+      "compositionBonusEarned": false,
+      "omittedSteps": [
+        "repeated zero-size setup",
+        "withdrawal against amplified equity",
+        "price normalization",
+        "resulting position-backed deficit"
+      ]
+    }
+  },
+  "generatorTruthCompleteness": {
+    "status": "incomplete_registered_rubric",
+    "registeredTruthUnits": 15,
+    "distinctValidUnregisteredDefects": 11,
+    "observation": "Eleven executable, specification-supported, distinct defects fall outside the 15 registered units. They demonstrate discovery breadth and generator/rubric incompleteness, but earn no registered recall or weighted points."
+  },
+  "verification": {
+    "candidateFreshProcessesPassed": 25,
+    "candidateFreshProcessesTotal": 25,
+    "candidateEmbeddedControls": 25,
+    "validUnregisteredFreshProcesses": 11,
+    "discriminationPairsPassed": 2,
+    "discriminationPairsTotal": 2,
+    "rerunSummary": "scoring/consensus/rerun-summary.json"
+  },
+  "researchComparison": {
+    "stages": [
+      {
+        "stage": "original_blind_baseline",
+        "target": "Aster Credit",
+        "contamination": "uncontaminated blind",
+        "exact": 9,
+        "partialClaims": 2,
+        "missed": 4,
+        "truthUnits": 15,
+        "falsePositives": 0,
+        "uniquePrecisionNumerator": 10,
+        "uniquePrecisionDenominator": 11
+      },
+      {
+        "stage": "same_target_v2_regression",
+        "target": "Aster Credit",
+        "contamination": "revealed and memorization-contaminated; regression only",
+        "exact": 15,
+        "partialClaims": 0,
+        "missed": 0,
+        "truthUnits": 15,
+        "falsePositives": 0,
+        "uniquePrecisionNumerator": 15,
+        "uniquePrecisionDenominator": 15
+      },
+      {
+        "stage": "unseen_perps_blind_generalization",
+        "target": "Meridian Clearing",
+        "contamination": "entirely unseen blind target through submission/consensus; scored post-reveal",
+        "exact": 13,
+        "factor06": 0,
+        "factor03": 1,
+        "missed": 1,
+        "truthUnits": 15,
+        "falsePositives": 0,
+        "rawPrecisionNumerator": 25,
+        "rawPrecisionDenominator": 25,
+        "weightedScore": 89.4
+      }
+    ]
+  }
+}

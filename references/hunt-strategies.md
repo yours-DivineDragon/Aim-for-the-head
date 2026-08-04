@@ -3,6 +3,8 @@
 Use this reference to choose experiments without hard-coding a tool into the
 goal. The best next experiment is the one that most cheaply distinguishes
 plausible security hypotheses, not the one that produces the most output.
+Use [deep-hunt.md](deep-hunt.md) alongside this reference for business-flow,
+consumer, integration-semantic, arithmetic, interleaving, and composition work.
 
 ## Build the surface queue
 
@@ -16,6 +18,10 @@ During the bounded mapping pass, inventory:
 - canonicalization, encoding, integer, length, and type conversions;
 - build tags, feature flags, compatibility modes, and deployment defaults;
 - generated code, foreign-function boundaries, and dependency wrappers.
+- business flows, asset/liability ledgers, and state-machine transitions;
+- externally supplied balances, prices, rates, identities, and timestamps;
+- direct consumers of every attacker-mutable value and multiplicative joins;
+- temporary funding, batching, repetition, and atomic settlement paths.
 
 Rank three to seven surfaces. Use ordinal judgments rather than a fake precision
 score:
@@ -64,6 +70,8 @@ when its output can feed a contract gate.
    oracle and reachable configuration are credible.
 6. Falsify high-ranked candidates early; preserve rejected patterns to improve
    later searches.
+7. Trace every supported primitive through downstream consumers and run the
+   mandatory boundary, semantic, sequence, composition, and closure passes.
 
 Retain one unconstrained roaming pass. Pure checklist decomposition can miss
 interactions that no single subsystem owner sees.
@@ -94,6 +102,8 @@ caused each new false positive.
 4. Encode the narrowest executable or formal oracle.
 5. Minimize a counterexample while preserving attacker reachability.
 6. Re-run in a release-like build and from a clean state.
+7. Mutate cross-function and cross-component sequences, then assert the global
+   state after the outer operation, cleanup, or settlement completes.
 
 ### Differential sequence
 
@@ -147,6 +157,13 @@ For every dimension, list concrete items and one of `uninspected`, `inspected`,
 | `config-build` | default release with plugin enabled | Exact reproducible build and config |
 | `historical-family` | post-validation length change | Seed abstraction and variant query |
 | `falsification` | attacker cannot set path root | Negative experiment or source proof |
+| `business-invariant` | assets cover claims across operations | Flow model plus exact before/after ledger |
+| `consumer-propagation` | mutable rate reaches credit decision | Transitive consumer map plus strongest effect |
+| `boundary-arithmetic` | value movement near quotient boundary | Exact-integer model and zero/coarse-unit cases |
+| `external-semantics` | requested transfer equals received value | Interface matrix and measured semantic variants |
+| `sequence-interleaving` | callback before state commitment | Reachable action matrix and final unwind oracle |
+| `exploit-composition` | two primitives share an atomic path | Join graph plus combined or incompatible runs |
+| `economic-closure` | attacker profit and system shortfall | Funding, fee, repayment, cleanup, and loss ledger |
 
 Use coverage to find blind spots and choose the next hypothesis. Never use a
 coverage vector to claim the absence of vulnerabilities.
@@ -164,6 +181,8 @@ when any of these occurs:
 - coverage grows while the relevant invariant or dangerous effect remains
   unreachable;
 - the surface queue contains a higher-impact unresolved boundary.
+- a valid primitive has untested consumers or a compatible join that can change
+  profitability, authority, persistence, or severity.
 
 Useful pivots change at least one of surface, abstraction, configuration, oracle,
 or analysis family. Rewording the prompt is not a pivot.

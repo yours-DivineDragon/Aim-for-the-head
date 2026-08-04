@@ -1,0 +1,2379 @@
+{
+  "schema_version": 1,
+  "adjudication_type": "blind_consensus",
+  "target": {
+    "path": "benchmarks/perps-blind-generalization",
+    "revision": "158651792f770f5e827c1f0c363ea91f916cb1b8",
+    "manifest_aggregate_sha256": "bd7aacd7d51c679b4e40f83d6ca49d49b03b69490ad6751f50c81236e7ef5381"
+  },
+  "frozen_inputs": {
+    "hunterSubmissionSha256": "c5330151531671c7ed322a155abb7e5270b7e2d83ce4fa3df64a10a0790b29ef",
+    "reviewerAReviewSha256": "41bc03cc09b9ac715134a7ff580ba7a77ad92b86617aafb035feece548b15de2",
+    "reviewerBReviewSha256": "1dc57d5a89c4ab71b5e22d2885abcc30ea363c6cc4754d068e53fcfedf775607",
+    "targetManifestAggregateSha256": "bd7aacd7d51c679b4e40f83d6ca49d49b03b69490ad6751f50c81236e7ef5381"
+  },
+  "aggregate": {
+    "verdicts": {
+      "confirmed_exact": 22,
+      "confirmed_narrowed": 3,
+      "duplicate_of": 0,
+      "unsupported": 0,
+      "invalid": 0
+    },
+    "final_severity": {
+      "critical": 0,
+      "high": 14,
+      "medium": 8,
+      "low": 3
+    },
+    "total_candidates": 25,
+    "material_disagreement_candidates": 17,
+    "material_disagreement_fields": 26,
+    "resolutions_complete": 17,
+    "duplicate_groups": 0
+  },
+  "rerun_accounting": {
+    "candidateRunnerProcesses": 26,
+    "underlyingFreshCandidateTestProcesses": 27,
+    "adjudicationFreshProcesses": 10,
+    "totalFreshTargetTestProcesses": 37,
+    "disagreementCandidatesRerun": 17,
+    "agreementSampleCandidatesRerun": 6,
+    "additionalFullMatrixCandidatesRerun": 2
+  },
+  "agreement_sample": {
+    "method": "fixed stratified sample declared in run-consensus.mjs: one or more candidates across Low/Medium/High and authorization, withdrawal, funding, position-ledger, and portfolio-risk flows",
+    "ids": [
+      "AFH-001",
+      "AFH-003",
+      "AFH-007",
+      "AFH-008",
+      "AFH-010",
+      "AFH-013"
+    ]
+  },
+  "overlap_groups": [
+    {
+      "id": "OG-WITHDRAWAL",
+      "members": [
+        "AFH-003",
+        "AFH-004"
+      ],
+      "relationship": "same withdrawal route; independent health-gate and callback-order roots"
+    },
+    {
+      "id": "OG-FUNDING",
+      "members": [
+        "AFH-007",
+        "AFH-008",
+        "AFH-009"
+      ],
+      "relationship": "independent cap, rounding, and epoch-order roots"
+    },
+    {
+      "id": "OG-POSITION-LEDGER",
+      "members": [
+        "AFH-010",
+        "AFH-011",
+        "AFH-012"
+      ],
+      "relationship": "independent basis, aggregate OI/loss-routing, and membership roots"
+    },
+    {
+      "id": "OG-AUCTION-LIFECYCLE",
+      "members": [
+        "AFH-016",
+        "AFH-017",
+        "AFH-018",
+        "AFH-019",
+        "AFH-020"
+      ],
+      "relationship": "distinct authority and lifecycle roots; AFH-018 is a dependency for AFH-017/019 only"
+    },
+    {
+      "id": "OG-INSURANCE",
+      "members": [
+        "AFH-021",
+        "AFH-022",
+        "AFH-023",
+        "AFH-024"
+      ],
+      "relationship": "distinct reserve, asset-ownership, receivable, and venue-semantic roots"
+    }
+  ],
+  "duplicate_groups": [],
+  "dependency_edges": [
+    {
+      "from": "AFH-017",
+      "to": "AFH-018",
+      "type": "composition_dependency"
+    },
+    {
+      "from": "AFH-019",
+      "to": "AFH-018",
+      "type": "reachability_dependency"
+    }
+  ],
+  "field_comparison_matrix": [
+    {
+      "id": "AFH-001",
+      "hunter": {
+        "severity": "low",
+        "composition": {
+          "type": "standalone",
+          "dependencies": []
+        }
+      },
+      "reviewer_a": {
+        "classification": "confirmed_exact",
+        "severity": "low",
+        "overlap_group": "authorization-config",
+        "composition": {
+          "role": "standalone",
+          "members": []
+        }
+      },
+      "reviewer_b": {
+        "classification": "confirmed_exact",
+        "severity": "low",
+        "overlap_group": null,
+        "composition": "standalone; no executable value-escalation join found"
+      },
+      "material_disagreement_fields": [],
+      "final": {
+        "classification": "confirmed_exact",
+        "severity": "low",
+        "overlap_group": null
+      }
+    },
+    {
+      "id": "AFH-002",
+      "hunter": {
+        "severity": "high",
+        "composition": {
+          "type": "composed",
+          "dependencies": []
+        }
+      },
+      "reviewer_a": {
+        "classification": "confirmed_exact",
+        "severity": "high",
+        "overlap_group": "nominal-transfer-receipt",
+        "composition": {
+          "role": "multi-sink-root-cause",
+          "members": []
+        }
+      },
+      "reviewer_b": {
+        "classification": "confirmed_exact",
+        "severity": "high",
+        "overlap_group": null,
+        "composition": "one actual-receipt primitive with three direct accounting consumers; no duplicate candidate"
+      },
+      "material_disagreement_fields": [
+        "composition_accounting"
+      ],
+      "final": {
+        "classification": "confirmed_exact",
+        "severity": "high",
+        "overlap_group": null
+      }
+    },
+    {
+      "id": "AFH-003",
+      "hunter": {
+        "severity": "high",
+        "composition": {
+          "type": "standalone",
+          "dependencies": []
+        }
+      },
+      "reviewer_a": {
+        "classification": "confirmed_exact",
+        "severity": "high",
+        "overlap_group": "withdrawal-state-machine",
+        "composition": {
+          "role": "standalone; compatible",
+          "members": [
+            "AFH-004"
+          ]
+        }
+      },
+      "reviewer_b": {
+        "classification": "confirmed_exact",
+        "severity": "high",
+        "overlap_group": "OG-WITHDRAWAL",
+        "composition": "standalone; AFH-004 can amplify one request but is not required"
+      },
+      "material_disagreement_fields": [],
+      "final": {
+        "classification": "confirmed_exact",
+        "severity": "high",
+        "overlap_group": "OG-WITHDRAWAL"
+      }
+    },
+    {
+      "id": "AFH-004",
+      "hunter": {
+        "severity": "medium",
+        "composition": {
+          "type": "standalone",
+          "dependencies": [
+            "AFH-003"
+          ]
+        }
+      },
+      "reviewer_a": {
+        "classification": "confirmed_exact",
+        "severity": "medium",
+        "overlap_group": "withdrawal-state-machine",
+        "composition": {
+          "role": "compatible primitive",
+          "members": [
+            "AFH-003"
+          ]
+        }
+      },
+      "reviewer_b": {
+        "classification": "confirmed_exact",
+        "severity": "medium",
+        "overlap_group": "OG-WITHDRAWAL",
+        "composition": "standalone callback bug; amplifies AFH-003 but does not depend on it"
+      },
+      "material_disagreement_fields": [
+        "dependency_accounting"
+      ],
+      "final": {
+        "classification": "confirmed_exact",
+        "severity": "medium",
+        "overlap_group": "OG-WITHDRAWAL"
+      }
+    },
+    {
+      "id": "AFH-005",
+      "hunter": {
+        "severity": "medium",
+        "composition": {
+          "type": "standalone",
+          "dependencies": []
+        }
+      },
+      "reviewer_a": {
+        "classification": "confirmed_exact",
+        "severity": "medium",
+        "overlap_group": "oracle-semantics",
+        "composition": {
+          "role": "standalone",
+          "members": []
+        }
+      },
+      "reviewer_b": {
+        "classification": "confirmed_exact",
+        "severity": "medium",
+        "overlap_group": null,
+        "composition": "standalone integration-availability failure"
+      },
+      "material_disagreement_fields": [
+        "overlap_membership"
+      ],
+      "final": {
+        "classification": "confirmed_exact",
+        "severity": "medium",
+        "overlap_group": null
+      }
+    },
+    {
+      "id": "AFH-006",
+      "hunter": {
+        "severity": "high",
+        "composition": {
+          "type": "standalone",
+          "dependencies": []
+        }
+      },
+      "reviewer_a": {
+        "classification": "confirmed_exact",
+        "severity": "high",
+        "overlap_group": "oracle-semantics",
+        "composition": {
+          "role": "standalone",
+          "members": []
+        }
+      },
+      "reviewer_b": {
+        "classification": "confirmed_exact",
+        "severity": "high",
+        "overlap_group": null,
+        "composition": "standalone oracle-to-settlement consumer chain"
+      },
+      "material_disagreement_fields": [
+        "overlap_membership"
+      ],
+      "final": {
+        "classification": "confirmed_exact",
+        "severity": "high",
+        "overlap_group": null
+      }
+    },
+    {
+      "id": "AFH-007",
+      "hunter": {
+        "severity": "high",
+        "composition": {
+          "type": "standalone",
+          "dependencies": []
+        }
+      },
+      "reviewer_a": {
+        "classification": "confirmed_exact",
+        "severity": "high",
+        "overlap_group": "funding-accounting",
+        "composition": {
+          "role": "standalone",
+          "members": []
+        }
+      },
+      "reviewer_b": {
+        "classification": "confirmed_exact",
+        "severity": "high",
+        "overlap_group": "OG-FUNDING",
+        "composition": "standalone global-growth corruption with cash and health consumers"
+      },
+      "material_disagreement_fields": [],
+      "final": {
+        "classification": "confirmed_exact",
+        "severity": "high",
+        "overlap_group": "OG-FUNDING"
+      }
+    },
+    {
+      "id": "AFH-008",
+      "hunter": {
+        "severity": "low",
+        "composition": {
+          "type": "standalone",
+          "dependencies": []
+        }
+      },
+      "reviewer_a": {
+        "classification": "confirmed_exact",
+        "severity": "low",
+        "overlap_group": "funding-accounting",
+        "composition": {
+          "role": "standalone",
+          "members": []
+        }
+      },
+      "reviewer_b": {
+        "classification": "confirmed_exact",
+        "severity": "low",
+        "overlap_group": "OG-FUNDING",
+        "composition": "standalone rounding invariant; no material economic join established"
+      },
+      "material_disagreement_fields": [],
+      "final": {
+        "classification": "confirmed_exact",
+        "severity": "low",
+        "overlap_group": "OG-FUNDING"
+      }
+    },
+    {
+      "id": "AFH-009",
+      "hunter": {
+        "severity": "high",
+        "composition": {
+          "type": "standalone",
+          "dependencies": []
+        }
+      },
+      "reviewer_a": {
+        "classification": "confirmed_exact",
+        "severity": "high",
+        "overlap_group": "funding-accounting",
+        "composition": {
+          "role": "standalone",
+          "members": []
+        }
+      },
+      "reviewer_b": {
+        "classification": "confirmed_exact",
+        "severity": "high",
+        "overlap_group": "OG-FUNDING",
+        "composition": "standalone settlement-order bug"
+      },
+      "material_disagreement_fields": [],
+      "final": {
+        "classification": "confirmed_exact",
+        "severity": "high",
+        "overlap_group": "OG-FUNDING"
+      }
+    },
+    {
+      "id": "AFH-010",
+      "hunter": {
+        "severity": "medium",
+        "composition": {
+          "type": "standalone",
+          "dependencies": []
+        }
+      },
+      "reviewer_a": {
+        "classification": "confirmed_exact",
+        "severity": "medium",
+        "overlap_group": "position-accounting",
+        "composition": {
+          "role": "standalone",
+          "members": [
+            "AFH-012"
+          ]
+        }
+      },
+      "reviewer_b": {
+        "classification": "confirmed_exact",
+        "severity": "medium",
+        "overlap_group": "OG-POSITION-LEDGER",
+        "composition": "standalone position-basis bug"
+      },
+      "material_disagreement_fields": [],
+      "final": {
+        "classification": "confirmed_exact",
+        "severity": "medium",
+        "overlap_group": "OG-POSITION-LEDGER"
+      }
+    },
+    {
+      "id": "AFH-011",
+      "hunter": {
+        "severity": "high",
+        "composition": {
+          "type": "composed",
+          "dependencies": [
+            "AFH-017"
+          ]
+        }
+      },
+      "reviewer_a": {
+        "classification": "confirmed_narrowed",
+        "severity": "medium",
+        "overlap_group": "open-interest-loss-allocation",
+        "composition": {
+          "role": "composed accounting path",
+          "members": [
+            "AFH-017"
+          ]
+        }
+      },
+      "reviewer_b": {
+        "classification": "confirmed_narrowed",
+        "severity": "medium",
+        "overlap_group": "OG-POSITION-LEDGER",
+        "composition": "requires an uncovered deficit but not specifically AFH-017; consumer closure ends at the loss index"
+      },
+      "material_disagreement_fields": [
+        "severity",
+        "impact_scope",
+        "dependency_accounting"
+      ],
+      "final": {
+        "classification": "confirmed_narrowed",
+        "severity": "medium",
+        "overlap_group": "OG-POSITION-LEDGER"
+      }
+    },
+    {
+      "id": "AFH-012",
+      "hunter": {
+        "severity": "medium",
+        "composition": {
+          "type": "standalone",
+          "dependencies": []
+        }
+      },
+      "reviewer_a": {
+        "classification": "confirmed_exact",
+        "severity": "medium",
+        "overlap_group": "position-accounting",
+        "composition": {
+          "role": "standalone",
+          "members": [
+            "AFH-010"
+          ]
+        }
+      },
+      "reviewer_b": {
+        "classification": "confirmed_exact",
+        "severity": "medium",
+        "overlap_group": "OG-POSITION-LEDGER",
+        "composition": "standalone mutable-list/consumer bug"
+      },
+      "material_disagreement_fields": [],
+      "final": {
+        "classification": "confirmed_exact",
+        "severity": "medium",
+        "overlap_group": "OG-POSITION-LEDGER"
+      }
+    },
+    {
+      "id": "AFH-013",
+      "hunter": {
+        "severity": "high",
+        "composition": {
+          "type": "standalone",
+          "dependencies": []
+        }
+      },
+      "reviewer_a": {
+        "classification": "confirmed_exact",
+        "severity": "high",
+        "overlap_group": "portfolio-risk",
+        "composition": {
+          "role": "standalone",
+          "members": []
+        }
+      },
+      "reviewer_b": {
+        "classification": "confirmed_exact",
+        "severity": "high",
+        "overlap_group": null,
+        "composition": "standalone portfolio-risk undercharge"
+      },
+      "material_disagreement_fields": [],
+      "final": {
+        "classification": "confirmed_exact",
+        "severity": "high",
+        "overlap_group": null
+      }
+    },
+    {
+      "id": "AFH-014",
+      "hunter": {
+        "severity": "medium",
+        "composition": {
+          "type": "standalone",
+          "dependencies": []
+        }
+      },
+      "reviewer_a": {
+        "classification": "confirmed_exact",
+        "severity": "medium",
+        "overlap_group": "execution-protection",
+        "composition": {
+          "role": "standalone",
+          "members": []
+        }
+      },
+      "reviewer_b": {
+        "classification": "confirmed_exact",
+        "severity": "medium",
+        "overlap_group": null,
+        "composition": "standalone price-protection failure"
+      },
+      "material_disagreement_fields": [
+        "overlap_membership"
+      ],
+      "final": {
+        "classification": "confirmed_exact",
+        "severity": "medium",
+        "overlap_group": null
+      }
+    },
+    {
+      "id": "AFH-015",
+      "hunter": {
+        "severity": "low",
+        "composition": {
+          "type": "standalone",
+          "dependencies": []
+        }
+      },
+      "reviewer_a": {
+        "classification": "confirmed_exact",
+        "severity": "low",
+        "overlap_group": "execution-protection",
+        "composition": {
+          "role": "standalone",
+          "members": []
+        }
+      },
+      "reviewer_b": {
+        "classification": "confirmed_exact",
+        "severity": "low",
+        "overlap_group": null,
+        "composition": "standalone nonce-liveness bug"
+      },
+      "material_disagreement_fields": [
+        "overlap_membership"
+      ],
+      "final": {
+        "classification": "confirmed_exact",
+        "severity": "low",
+        "overlap_group": null
+      }
+    },
+    {
+      "id": "AFH-016",
+      "hunter": {
+        "severity": "high",
+        "composition": {
+          "type": "standalone",
+          "dependencies": []
+        }
+      },
+      "reviewer_a": {
+        "classification": "confirmed_exact",
+        "severity": "high",
+        "overlap_group": "auction-bidder-authority",
+        "composition": {
+          "role": "standalone",
+          "members": [
+            "AFH-017"
+          ]
+        }
+      },
+      "reviewer_b": {
+        "classification": "confirmed_exact",
+        "severity": "high",
+        "overlap_group": "OG-AUCTION-LIFECYCLE",
+        "composition": "standalone account-authority primitive; compatible with later liquidation/settlement consumers"
+      },
+      "material_disagreement_fields": [
+        "overlap_membership",
+        "composition_membership"
+      ],
+      "final": {
+        "classification": "confirmed_exact",
+        "severity": "high",
+        "overlap_group": "OG-AUCTION-LIFECYCLE"
+      }
+    },
+    {
+      "id": "AFH-017",
+      "hunter": {
+        "severity": "critical",
+        "composition": {
+          "type": "composed",
+          "dependencies": [
+            "AFH-018"
+          ]
+        }
+      },
+      "reviewer_a": {
+        "classification": "confirmed_narrowed",
+        "severity": "high",
+        "overlap_group": "auction-terminal-composition",
+        "composition": {
+          "role": "composition",
+          "members": [
+            "AFH-018"
+          ]
+        }
+      },
+      "reviewer_b": {
+        "classification": "confirmed_narrowed",
+        "severity": "high",
+        "overlap_group": "OG-AUCTION-LIFECYCLE",
+        "composition": "composed: missing bidder health/bond floor plus AFH-018 residual finalization; all steps joined in one reachable state"
+      },
+      "material_disagreement_fields": [
+        "classification",
+        "severity",
+        "critical_closure"
+      ],
+      "final": {
+        "classification": "confirmed_narrowed",
+        "severity": "high",
+        "overlap_group": "OG-AUCTION-LIFECYCLE"
+      }
+    },
+    {
+      "id": "AFH-018",
+      "hunter": {
+        "severity": "high",
+        "composition": {
+          "type": "standalone",
+          "dependencies": []
+        }
+      },
+      "reviewer_a": {
+        "classification": "confirmed_exact",
+        "severity": "high",
+        "overlap_group": "auction-terminal-composition",
+        "composition": {
+          "role": "base primitive",
+          "members": [
+            "AFH-017",
+            "AFH-019",
+            "AFH-020"
+          ]
+        }
+      },
+      "reviewer_b": {
+        "classification": "confirmed_exact",
+        "severity": "high",
+        "overlap_group": "OG-AUCTION-LIFECYCLE",
+        "composition": "standalone lifecycle-closure bug and required final primitive in AFH-017"
+      },
+      "material_disagreement_fields": [
+        "dependency_accounting"
+      ],
+      "final": {
+        "classification": "confirmed_exact",
+        "severity": "high",
+        "overlap_group": "OG-AUCTION-LIFECYCLE"
+      }
+    },
+    {
+      "id": "AFH-019",
+      "hunter": {
+        "severity": "high",
+        "composition": {
+          "type": "standalone",
+          "dependencies": [
+            "AFH-018"
+          ]
+        }
+      },
+      "reviewer_a": {
+        "classification": "confirmed_exact",
+        "severity": "high",
+        "overlap_group": "auction-terminal-composition",
+        "composition": {
+          "role": "dependent primitive",
+          "members": [
+            "AFH-018",
+            "AFH-020"
+          ]
+        }
+      },
+      "reviewer_b": {
+        "classification": "confirmed_exact",
+        "severity": "high",
+        "overlap_group": "OG-AUCTION-LIFECYCLE",
+        "composition": "standalone post-terminal mutation; related to but not required by AFH-020"
+      },
+      "material_disagreement_fields": [
+        "standalone_vs_dependency"
+      ],
+      "final": {
+        "classification": "confirmed_exact",
+        "severity": "high",
+        "overlap_group": "OG-AUCTION-LIFECYCLE"
+      }
+    },
+    {
+      "id": "AFH-020",
+      "hunter": {
+        "severity": "high",
+        "composition": {
+          "type": "composed",
+          "dependencies": [
+            "AFH-019"
+          ]
+        }
+      },
+      "reviewer_a": {
+        "classification": "confirmed_exact",
+        "severity": "high",
+        "overlap_group": "auction-terminal-composition",
+        "composition": {
+          "role": "composition",
+          "members": [
+            "AFH-019"
+          ]
+        }
+      },
+      "reviewer_b": {
+        "classification": "confirmed_exact",
+        "severity": "high",
+        "overlap_group": "OG-AUCTION-LIFECYCLE",
+        "composition": "cross-lifecycle composition; it does not require AFH-019's post-finalization state despite the submitted dependency label"
+      },
+      "material_disagreement_fields": [
+        "dependency_accounting"
+      ],
+      "final": {
+        "classification": "confirmed_exact",
+        "severity": "high",
+        "overlap_group": "OG-AUCTION-LIFECYCLE"
+      }
+    },
+    {
+      "id": "AFH-021",
+      "hunter": {
+        "severity": "medium",
+        "composition": {
+          "type": "standalone",
+          "dependencies": []
+        }
+      },
+      "reviewer_a": {
+        "classification": "confirmed_exact",
+        "severity": "medium",
+        "overlap_group": "insurance-reserves",
+        "composition": {
+          "role": "standalone",
+          "members": [
+            "AFH-022"
+          ]
+        }
+      },
+      "reviewer_b": {
+        "classification": "confirmed_narrowed",
+        "severity": "medium",
+        "overlap_group": "OG-INSURANCE",
+        "composition": "standalone slash-accounting bug; NAV-overstatement aspect overlaps impact shape, not root cause, with AFH-023"
+      },
+      "material_disagreement_fields": [
+        "classification",
+        "impact_scope",
+        "overlap_scope"
+      ],
+      "final": {
+        "classification": "confirmed_narrowed",
+        "severity": "medium",
+        "overlap_group": "OG-INSURANCE"
+      }
+    },
+    {
+      "id": "AFH-022",
+      "hunter": {
+        "severity": "high",
+        "composition": {
+          "type": "composed",
+          "dependencies": []
+        }
+      },
+      "reviewer_a": {
+        "classification": "confirmed_exact",
+        "severity": "high",
+        "overlap_group": "insurance-reserves",
+        "composition": {
+          "role": "share/bond composition",
+          "members": [
+            "AFH-021"
+          ]
+        }
+      },
+      "reviewer_b": {
+        "classification": "confirmed_exact",
+        "severity": "high",
+        "overlap_group": "OG-INSURANCE",
+        "composition": "direct reserved-asset ownership violation; no other candidate required"
+      },
+      "material_disagreement_fields": [
+        "composition_accounting"
+      ],
+      "final": {
+        "classification": "confirmed_exact",
+        "severity": "high",
+        "overlap_group": "OG-INSURANCE"
+      }
+    },
+    {
+      "id": "AFH-023",
+      "hunter": {
+        "severity": "medium",
+        "composition": {
+          "type": "standalone",
+          "dependencies": []
+        }
+      },
+      "reviewer_a": {
+        "classification": "confirmed_exact",
+        "severity": "medium",
+        "overlap_group": "phantom-insurance-value",
+        "composition": {
+          "role": "standalone",
+          "members": [
+            "AFH-024",
+            "AFH-025"
+          ]
+        }
+      },
+      "reviewer_b": {
+        "classification": "confirmed_exact",
+        "severity": "medium",
+        "overlap_group": "OG-INSURANCE",
+        "composition": "standalone unbacked-receivable/NAV bug"
+      },
+      "material_disagreement_fields": [
+        "overlap_scope",
+        "composition_accounting"
+      ],
+      "final": {
+        "classification": "confirmed_exact",
+        "severity": "medium",
+        "overlap_group": "OG-INSURANCE"
+      }
+    },
+    {
+      "id": "AFH-024",
+      "hunter": {
+        "severity": "high",
+        "composition": {
+          "type": "standalone",
+          "dependencies": []
+        }
+      },
+      "reviewer_a": {
+        "classification": "confirmed_exact",
+        "severity": "high",
+        "overlap_group": "phantom-insurance-value",
+        "composition": {
+          "role": "standalone",
+          "members": [
+            "AFH-023"
+          ]
+        }
+      },
+      "reviewer_b": {
+        "classification": "confirmed_exact",
+        "severity": "high",
+        "overlap_group": "OG-INSURANCE",
+        "composition": "standalone external-semantic failure with direct asset and NAV consumers"
+      },
+      "material_disagreement_fields": [
+        "reproduction_interpretation",
+        "overlap_scope"
+      ],
+      "final": {
+        "classification": "confirmed_exact",
+        "severity": "high",
+        "overlap_group": "OG-INSURANCE"
+      }
+    },
+    {
+      "id": "AFH-025",
+      "hunter": {
+        "severity": "high",
+        "composition": {
+          "type": "standalone",
+          "dependencies": []
+        }
+      },
+      "reviewer_a": {
+        "classification": "confirmed_exact",
+        "severity": "high",
+        "overlap_group": "execution-cast-boundary",
+        "composition": {
+          "role": "standalone; fee side-effect overlaps",
+          "members": [
+            "AFH-023"
+          ]
+        }
+      },
+      "reviewer_b": {
+        "classification": "confirmed_exact",
+        "severity": "high",
+        "overlap_group": null,
+        "composition": "standalone signed-order domain/narrowing mismatch"
+      },
+      "material_disagreement_fields": [
+        "composition_accounting"
+      ],
+      "final": {
+        "classification": "confirmed_exact",
+        "severity": "high",
+        "overlap_group": null
+      }
+    }
+  ],
+  "disagreement_resolution_matrix": [
+    {
+      "id": "AFH-002",
+      "fields": [
+        "composition_accounting"
+      ],
+      "resolution": "Confirmed exact as one balance-delta root across three sinks. C-002 reproduced nominal 1,000-wad credit/reserve for 900 native-unit receipts on margin, insurance-share, and bond paths; this is consolidation, not a composition bonus.",
+      "rerun_refs": [
+        "logs/rerun-AFH-002-attempt-1.log",
+        "logs/adjudication-C-002-attempt-1.log"
+      ]
+    },
+    {
+      "id": "AFH-004",
+      "fields": [
+        "dependency_accounting"
+      ],
+      "resolution": "Confirmed exact and standalone. C-004 doubled a healthy, controller-free request from 100 to 200 wad, proving AFH-003 is a compatible impact amplifier rather than a prerequisite.",
+      "rerun_refs": [
+        "logs/rerun-AFH-004-attempt-1.log",
+        "logs/adjudication-C-004-attempt-1.log"
+      ]
+    },
+    {
+      "id": "AFH-005",
+      "fields": [
+        "overlap_membership"
+      ],
+      "resolution": "Confirmed exact. The precision-underflow availability root is source- and fix-distinct from AFH-006 cutoff-round selection; a shared oracle component is not finding overlap.",
+      "rerun_refs": [
+        "logs/rerun-AFH-005-attempt-1.log",
+        "logs/adjudication-C-OVERLAP-attempt-1.log"
+      ]
+    },
+    {
+      "id": "AFH-006",
+      "fields": [
+        "overlap_membership"
+      ],
+      "resolution": "Confirmed exact. The immutable post-cutoff price/PnL path is source- and fix-distinct from AFH-005 normalization availability.",
+      "rerun_refs": [
+        "logs/rerun-AFH-006-attempt-1.log",
+        "logs/adjudication-C-OVERLAP-attempt-1.log"
+      ]
+    },
+    {
+      "id": "AFH-011",
+      "fields": [
+        "severity",
+        "impact_scope",
+        "dependency_accounting"
+      ],
+      "resolution": "Confirmed narrowed to Medium. Stale OI and divergent loss buckets reproduce, but C-011 proves reporting is manual and socialLossIndex has no collection consumer; AFH-017 is only one way to source a deficit, not a required candidate dependency.",
+      "rerun_refs": [
+        "logs/rerun-AFH-011-attempt-2.log",
+        "logs/adjudication-C-011-attempt-1.log"
+      ]
+    },
+    {
+      "id": "AFH-014",
+      "fields": [
+        "overlap_membership"
+      ],
+      "resolution": "Confirmed exact and distinct from AFH-015: weighted portfolio price protection and nonce bitmap domain truncation have different triggers, state, impact, and repairs.",
+      "rerun_refs": [
+        "logs/rerun-AFH-014-attempt-1.log",
+        "logs/adjudication-C-OVERLAP-attempt-1.log"
+      ]
+    },
+    {
+      "id": "AFH-015",
+      "fields": [
+        "overlap_membership"
+      ],
+      "resolution": "Confirmed exact and distinct from AFH-014; common router placement alone does not create overlap.",
+      "rerun_refs": [
+        "logs/rerun-AFH-015-attempt-1.log",
+        "logs/adjudication-C-OVERLAP-attempt-1.log"
+      ]
+    },
+    {
+      "id": "AFH-016",
+      "fields": [
+        "overlap_membership",
+        "composition_membership"
+      ],
+      "resolution": "Confirmed exact as a standalone bidder-account authority violation. It is grouped only for auction-flow accounting and is not a member of AFH-017.",
+      "rerun_refs": [
+        "logs/rerun-AFH-016-attempt-1.log",
+        "logs/adjudication-C-OVERLAP-attempt-1.log"
+      ]
+    },
+    {
+      "id": "AFH-017",
+      "fields": [
+        "classification",
+        "severity",
+        "critical_closure"
+      ],
+      "resolution": "Confirmed narrowed to High. C-017 joined the missing bond/health guard with AFH-018 and produced 81.8 wad pending loss plus live residual exposure, but attacker token profit and fund token delta were both zero and the bidder remained equally negative, so Critical closure failed.",
+      "rerun_refs": [
+        "logs/rerun-AFH-017-attempt-1.log",
+        "logs/adjudication-C-017-attempt-1.log"
+      ]
+    },
+    {
+      "id": "AFH-018",
+      "fields": [
+        "dependency_accounting"
+      ],
+      "resolution": "Confirmed exact as its own residual-finalization root. It is counted once and used as a reachability dependency by AFH-017 and AFH-019; it is not a member of AFH-020.",
+      "rerun_refs": [
+        "logs/rerun-AFH-018-attempt-1.log",
+        "logs/adjudication-C-019-attempt-1.log"
+      ]
+    },
+    {
+      "id": "AFH-019",
+      "fields": [
+        "standalone_vs_dependency"
+      ],
+      "resolution": "Confirmed exact as a distinct missing finalized/expiry guard, with AFH-018 recorded as a reachability dependency because a post-final reveal requires residual quantity after timeout finalization. That dependency does not duplicate the root.",
+      "rerun_refs": [
+        "logs/rerun-AFH-019-attempt-1.log",
+        "logs/adjudication-C-019-attempt-1.log"
+      ]
+    },
+    {
+      "id": "AFH-020",
+      "fields": [
+        "dependency_accounting"
+      ],
+      "resolution": "Confirmed exact without AFH-019. C-020 reopened a settled position while the auction finalized flag remained false throughout, isolating shared-freeze/stale-lifecycle authority rather than the post-final reveal guard.",
+      "rerun_refs": [
+        "logs/rerun-AFH-020-attempt-1.log",
+        "logs/adjudication-C-020-attempt-1.log"
+      ]
+    },
+    {
+      "id": "AFH-021",
+      "fields": [
+        "classification",
+        "impact_scope",
+        "overlap_scope"
+      ],
+      "resolution": "Confirmed narrowed to Medium. C-021 proves the phantom 50-wad reserve blocks deficit coverage, but redeem never consults auctionReserved; redemption failure comes from adding the same retained slash again to accruedProtocolValue. The submitted reservation-caused redemption scope is therefore too broad.",
+      "rerun_refs": [
+        "logs/rerun-AFH-021-attempt-1.log",
+        "logs/adjudication-C-021-attempt-1.log"
+      ]
+    },
+    {
+      "id": "AFH-022",
+      "fields": [
+        "composition_accounting"
+      ],
+      "resolution": "Confirmed exact and standalone. C-022 stole a live 100-wad bond after a 100-wad share deposit without any slash or AFH-021 state.",
+      "rerun_refs": [
+        "logs/rerun-AFH-022-attempt-1.log",
+        "logs/adjudication-C-022-attempt-1.log"
+      ]
+    },
+    {
+      "id": "AFH-023",
+      "fields": [
+        "overlap_scope",
+        "composition_accounting"
+      ],
+      "resolution": "Confirmed exact as an uncollectible-fee/NAV root. Its NAV impact shape resembles AFH-024 and AFH-021, but the writer, missing transfer, trigger, and repair are distinct; AFH-025 can feed the fee path but is not required.",
+      "rerun_refs": [
+        "logs/rerun-AFH-023-attempt-1.log",
+        "logs/adjudication-C-OVERLAP-attempt-1.log"
+      ]
+    },
+    {
+      "id": "AFH-024",
+      "fields": [
+        "reproduction_interpretation",
+        "overlap_scope"
+      ],
+      "resolution": "Confirmed exact. C-024 used an honest venue that transferred 1e18 native units of a 24-decimal token: only 1e12 wad arrived economically yet a 1e18-wad minimum passed. This independently closes the normalization root and remains distinct from AFH-023.",
+      "rerun_refs": [
+        "logs/rerun-AFH-024-attempt-1.log",
+        "logs/adjudication-C-024-attempt-1.log",
+        "logs/adjudication-C-OVERLAP-attempt-1.log"
+      ]
+    },
+    {
+      "id": "AFH-025",
+      "fields": [
+        "composition_accounting"
+      ],
+      "resolution": "Confirmed exact and standalone. The signed-order uint256/uint128 domain split directly burns signer cash and corrupts basis; its fee side effect may reach AFH-023 but neither finding depends on nor duplicates the other.",
+      "rerun_refs": [
+        "logs/rerun-AFH-025-attempt-1.log",
+        "logs/adjudication-C-OVERLAP-attempt-1.log"
+      ]
+    }
+  ],
+  "verdicts": [
+    {
+      "id": "AFH-001",
+      "classification": "confirmed_exact",
+      "duplicate_of": null,
+      "final_severity": "low",
+      "confidence": "high",
+      "root_cause": "MarketCatalog.setRiskTier lacks onlyGovernor while adjacent market mutators enforce governance.",
+      "impact_scope": "Persistent unauthorized risk-tier configuration mutation; no current value consumer was found.",
+      "adjudication_rationale": "Exact unauthorized configuration mutation, capped at Low because no target consumer reads riskTier.",
+      "overlap_group": null,
+      "accounting": {
+        "one_to_one_distinct": true,
+        "standalone_finding": true,
+        "composition_role": "standalone",
+        "dependencies": [],
+        "compatible_or_shared_effect_with": [],
+        "double_counting_rule": "AFH-001 is counted once at its own root cause; shared component, flow, or impact shape does not merge it with another candidate."
+      },
+      "evidence_hashes": {
+        "hunter_packet": {
+          "revision": "31ea4b7",
+          "path": "blind-run/evidence/AFH-001.json",
+          "sha256": "1f16da35deba7275d5b38519db0919c79a8870cc738927020a0d9f0d7fad3129"
+        },
+        "consensus_rerun": {
+          "path": "logs/rerun-AFH-001-attempt-1.log",
+          "sha256": "c98edd95df2194d07667443cbb5eacc208aadb66375f02198f4b80ab61ef4b55",
+          "attempts": [
+            {
+              "path": "logs/rerun-AFH-001-attempt-1.log",
+              "sha256": "c98edd95df2194d07667443cbb5eacc208aadb66375f02198f4b80ab61ef4b55",
+              "exit": 0
+            }
+          ]
+        },
+        "adjudication_controls": [],
+        "target_manifest_aggregate_sha256": "bd7aacd7d51c679b4e40f83d6ca49d49b03b69490ad6751f50c81236e7ef5381"
+      },
+      "rerun_refs": [
+        "logs/rerun-AFH-001-attempt-1.log"
+      ]
+    },
+    {
+      "id": "AFH-002",
+      "classification": "confirmed_exact",
+      "duplicate_of": null,
+      "final_severity": "high",
+      "confidence": "high",
+      "root_cause": "MarginVault deposits, insurance deposits, and auction bond reservations credit nominal input without measuring actual receipt.",
+      "impact_scope": "Unbacked margin and reserves create third-party shortfalls; the independently tested insurance-share variant shifted 50 native units from an incumbent shareholder.",
+      "adjudication_rationale": "Confirmed exact as one balance-delta root across three sinks. C-002 reproduced nominal 1,000-wad credit/reserve for 900 native-unit receipts on margin, insurance-share, and bond paths; this is consolidation, not a composition bonus.",
+      "overlap_group": null,
+      "accounting": {
+        "one_to_one_distinct": true,
+        "standalone_finding": true,
+        "composition_role": "multi_sink_single_root",
+        "dependencies": [],
+        "compatible_or_shared_effect_with": [],
+        "double_counting_rule": "AFH-002 is counted once at its own root cause; shared component, flow, or impact shape does not merge it with another candidate."
+      },
+      "evidence_hashes": {
+        "hunter_packet": {
+          "revision": "31ea4b7",
+          "path": "blind-run/evidence/AFH-002.json",
+          "sha256": "8bc44d83e06b59568cb52020beeae7d4a8787c9c48e831af441e3a03af556317"
+        },
+        "consensus_rerun": {
+          "path": "logs/rerun-AFH-002-attempt-1.log",
+          "sha256": "3f825767313732c1c75d4332b5ab56ab61ed3b6b9996ebba354df363317d41e1",
+          "attempts": [
+            {
+              "path": "logs/rerun-AFH-002-attempt-1.log",
+              "sha256": "3f825767313732c1c75d4332b5ab56ab61ed3b6b9996ebba354df363317d41e1",
+              "exit": 0
+            }
+          ]
+        },
+        "adjudication_controls": [
+          {
+            "controlId": "C-002",
+            "path": "logs/adjudication-C-002-attempt-1.log",
+            "sha256": "07046578febbbc88ec43375082ed2fba0dacbd186ed4e0a0aeb24696a1c0770d"
+          }
+        ],
+        "target_manifest_aggregate_sha256": "bd7aacd7d51c679b4e40f83d6ca49d49b03b69490ad6751f50c81236e7ef5381"
+      },
+      "rerun_refs": [
+        "logs/rerun-AFH-002-attempt-1.log",
+        "logs/adjudication-C-002-attempt-1.log"
+      ]
+    },
+    {
+      "id": "AFH-003",
+      "classification": "confirmed_exact",
+      "duplicate_of": null,
+      "final_severity": "high",
+      "confidence": "high",
+      "root_cause": "The permissionless delayed vault claim path never checks ClearingHouse health or frozen state.",
+      "impact_scope": "A frozen, below-maintenance account removed 900 collateral tokens needed for liquidation while the guarded ClearingHouse withdrawal reverted.",
+      "adjudication_rationale": "Exact delayed-withdrawal health/freeze bypass with a 900-token collateral delta; AFH-004 is compatible but unnecessary.",
+      "overlap_group": "OG-WITHDRAWAL",
+      "accounting": {
+        "one_to_one_distinct": true,
+        "standalone_finding": true,
+        "composition_role": "standalone",
+        "dependencies": [],
+        "compatible_or_shared_effect_with": [
+          "AFH-004"
+        ],
+        "double_counting_rule": "AFH-003 is counted once at its own root cause; shared component, flow, or impact shape does not merge it with another candidate."
+      },
+      "evidence_hashes": {
+        "hunter_packet": {
+          "revision": "31ea4b7",
+          "path": "blind-run/evidence/AFH-003.json",
+          "sha256": "5a45f457f70bd536195def5d084c508ab322824284bf3825a2921ad67f354545"
+        },
+        "consensus_rerun": {
+          "path": "logs/rerun-AFH-003-attempt-1.log",
+          "sha256": "cd8d4dd4d797f0e0f58338dc6896e0ad0e70fdaf86f83592169e0e1cdc065d5c",
+          "attempts": [
+            {
+              "path": "logs/rerun-AFH-003-attempt-1.log",
+              "sha256": "cd8d4dd4d797f0e0f58338dc6896e0ad0e70fdaf86f83592169e0e1cdc065d5c",
+              "exit": 0
+            }
+          ]
+        },
+        "adjudication_controls": [],
+        "target_manifest_aggregate_sha256": "bd7aacd7d51c679b4e40f83d6ca49d49b03b69490ad6751f50c81236e7ef5381"
+      },
+      "rerun_refs": [
+        "logs/rerun-AFH-003-attempt-1.log"
+      ]
+    },
+    {
+      "id": "AFH-004",
+      "classification": "confirmed_exact",
+      "duplicate_of": null,
+      "final_severity": "medium",
+      "confidence": "high",
+      "root_cause": "claimWithdrawal transfers before decrementing balance and deleting the single-use request.",
+      "impact_scope": "A callback-capable collateral reused one 100-wad request to transfer and debit 200 wad; the no-hook control transferred 100.",
+      "adjudication_rationale": "Confirmed exact and standalone. C-004 doubled a healthy, controller-free request from 100 to 200 wad, proving AFH-003 is a compatible impact amplifier rather than a prerequisite.",
+      "overlap_group": "OG-WITHDRAWAL",
+      "accounting": {
+        "one_to_one_distinct": true,
+        "standalone_finding": true,
+        "composition_role": "standalone",
+        "dependencies": [],
+        "compatible_or_shared_effect_with": [
+          "AFH-003"
+        ],
+        "double_counting_rule": "AFH-004 is counted once at its own root cause; shared component, flow, or impact shape does not merge it with another candidate."
+      },
+      "evidence_hashes": {
+        "hunter_packet": {
+          "revision": "31ea4b7",
+          "path": "blind-run/evidence/AFH-004.json",
+          "sha256": "a504d69d0043fcab5877a33a0b83db884fd45c92beba8c1f7d865e095d9fceed"
+        },
+        "consensus_rerun": {
+          "path": "logs/rerun-AFH-004-attempt-1.log",
+          "sha256": "8a2a44665ce04cb9f86c58bc259c030a6e7b078774414720d5c55dd2a02e4a89",
+          "attempts": [
+            {
+              "path": "logs/rerun-AFH-004-attempt-1.log",
+              "sha256": "8a2a44665ce04cb9f86c58bc259c030a6e7b078774414720d5c55dd2a02e4a89",
+              "exit": 0
+            }
+          ]
+        },
+        "adjudication_controls": [
+          {
+            "controlId": "C-004",
+            "path": "logs/adjudication-C-004-attempt-1.log",
+            "sha256": "2bb66e7675abbed3cb4737d1e04a5576180171062e4a75ddb1ed34450ad7bc99"
+          }
+        ],
+        "target_manifest_aggregate_sha256": "bd7aacd7d51c679b4e40f83d6ca49d49b03b69490ad6751f50c81236e7ef5381"
+      },
+      "rerun_refs": [
+        "logs/rerun-AFH-004-attempt-1.log",
+        "logs/adjudication-C-004-attempt-1.log"
+      ]
+    },
+    {
+      "id": "AFH-005",
+      "classification": "confirmed_exact",
+      "duplicate_of": null,
+      "final_severity": "medium",
+      "confidence": "high",
+      "root_cause": "Oracle normalization subtracts feed precision from 18 without rejecting or dividing for precision above 18.",
+      "impact_scope": "A configured 19-decimal feed makes every _read consumer revert, while an 18-decimal control returns exact wad.",
+      "adjudication_rationale": "Confirmed exact. The precision-underflow availability root is source- and fix-distinct from AFH-006 cutoff-round selection; a shared oracle component is not finding overlap.",
+      "overlap_group": null,
+      "accounting": {
+        "one_to_one_distinct": true,
+        "standalone_finding": true,
+        "composition_role": "standalone",
+        "dependencies": [],
+        "compatible_or_shared_effect_with": [],
+        "double_counting_rule": "AFH-005 is counted once at its own root cause; shared component, flow, or impact shape does not merge it with another candidate."
+      },
+      "evidence_hashes": {
+        "hunter_packet": {
+          "revision": "31ea4b7",
+          "path": "blind-run/evidence/AFH-005.json",
+          "sha256": "4053c334d2ed62ff196a947f5ea1459ace6c080a770eb5e2d068746f7315541c"
+        },
+        "consensus_rerun": {
+          "path": "logs/rerun-AFH-005-attempt-1.log",
+          "sha256": "d9b9ae94829c6791d39bcecd12c4c0ad1a8ff2e5d3e7be7ebd543f6017e7913c",
+          "attempts": [
+            {
+              "path": "logs/rerun-AFH-005-attempt-1.log",
+              "sha256": "d9b9ae94829c6791d39bcecd12c4c0ad1a8ff2e5d3e7be7ebd543f6017e7913c",
+              "exit": 0
+            }
+          ]
+        },
+        "adjudication_controls": [
+          {
+            "controlId": "C-OVERLAP",
+            "path": "logs/adjudication-C-OVERLAP-attempt-1.log",
+            "sha256": "e0cdbd5a02556439211fee55af2f8d415a4738f4843564421b547a8de2eae9cd"
+          }
+        ],
+        "target_manifest_aggregate_sha256": "bd7aacd7d51c679b4e40f83d6ca49d49b03b69490ad6751f50c81236e7ef5381"
+      },
+      "rerun_refs": [
+        "logs/rerun-AFH-005-attempt-1.log",
+        "logs/adjudication-C-OVERLAP-attempt-1.log"
+      ]
+    },
+    {
+      "id": "AFH-006",
+      "classification": "confirmed_exact",
+      "duplicate_of": null,
+      "final_severity": "high",
+      "confidence": "high",
+      "root_cause": "Permissionless price recording reads the latest round after cutoff rather than selecting or proving the cutoff round.",
+      "impact_scope": "A delayed call immutably recorded 3000 instead of 2100 and independently shifted realized dated-position PnL by 900 wad.",
+      "adjudication_rationale": "Confirmed exact. The immutable post-cutoff price/PnL path is source- and fix-distinct from AFH-005 normalization availability.",
+      "overlap_group": null,
+      "accounting": {
+        "one_to_one_distinct": true,
+        "standalone_finding": true,
+        "composition_role": "standalone",
+        "dependencies": [],
+        "compatible_or_shared_effect_with": [],
+        "double_counting_rule": "AFH-006 is counted once at its own root cause; shared component, flow, or impact shape does not merge it with another candidate."
+      },
+      "evidence_hashes": {
+        "hunter_packet": {
+          "revision": "31ea4b7",
+          "path": "blind-run/evidence/AFH-006.json",
+          "sha256": "f499e14c9d7216f9f5e3b04073c0d82048b48d5ef790cc41f18fc20833517877"
+        },
+        "consensus_rerun": {
+          "path": "logs/rerun-AFH-006-attempt-1.log",
+          "sha256": "b393155519d1abe07539a56af294404b1c4cad71a8ab8a99f79e45c1694eba8a",
+          "attempts": [
+            {
+              "path": "logs/rerun-AFH-006-attempt-1.log",
+              "sha256": "b393155519d1abe07539a56af294404b1c4cad71a8ab8a99f79e45c1694eba8a",
+              "exit": 0
+            }
+          ]
+        },
+        "adjudication_controls": [
+          {
+            "controlId": "C-OVERLAP",
+            "path": "logs/adjudication-C-OVERLAP-attempt-1.log",
+            "sha256": "e0cdbd5a02556439211fee55af2f8d415a4738f4843564421b547a8de2eae9cd"
+          }
+        ],
+        "target_manifest_aggregate_sha256": "bd7aacd7d51c679b4e40f83d6ca49d49b03b69490ad6751f50c81236e7ef5381"
+      },
+      "rerun_refs": [
+        "logs/rerun-AFH-006-attempt-1.log",
+        "logs/adjudication-C-OVERLAP-attempt-1.log"
+      ]
+    },
+    {
+      "id": "AFH-007",
+      "classification": "confirmed_exact",
+      "duplicate_of": null,
+      "final_severity": "high",
+      "confidence": "high",
+      "root_cause": "FundingEngine.accrue caps positive rates only and omits the symmetric negative lower bound.",
+      "impact_scope": "Valid 1000/2000 mark-index inputs produced a roughly 0.508-wad long credit versus a 0.000061-wad configured bound, and that excess reached account cash.",
+      "adjudication_rationale": "Exact asymmetric funding cap with direct cash and health consumers, supporting High.",
+      "overlap_group": "OG-FUNDING",
+      "accounting": {
+        "one_to_one_distinct": true,
+        "standalone_finding": true,
+        "composition_role": "standalone",
+        "dependencies": [],
+        "compatible_or_shared_effect_with": [],
+        "double_counting_rule": "AFH-007 is counted once at its own root cause; shared component, flow, or impact shape does not merge it with another candidate."
+      },
+      "evidence_hashes": {
+        "hunter_packet": {
+          "revision": "31ea4b7",
+          "path": "blind-run/evidence/AFH-007.json",
+          "sha256": "3b12d984da516748230dabdfcc8d30e7f10438f5a40f79edeb4a213921c157ba"
+        },
+        "consensus_rerun": {
+          "path": "logs/rerun-AFH-007-attempt-1.log",
+          "sha256": "e36219974a9a903f00d6ab4e945a1f7882f3b30caaf9f99a15e27a95f8c0aa33",
+          "attempts": [
+            {
+              "path": "logs/rerun-AFH-007-attempt-1.log",
+              "sha256": "e36219974a9a903f00d6ab4e945a1f7882f3b30caaf9f99a15e27a95f8c0aa33",
+              "exit": 0
+            }
+          ]
+        },
+        "adjudication_controls": [],
+        "target_manifest_aggregate_sha256": "bd7aacd7d51c679b4e40f83d6ca49d49b03b69490ad6751f50c81236e7ef5381"
+      },
+      "rerun_refs": [
+        "logs/rerun-AFH-007-attempt-1.log"
+      ]
+    },
+    {
+      "id": "AFH-008",
+      "classification": "confirmed_exact",
+      "duplicate_of": null,
+      "final_severity": "low",
+      "confidence": "high",
+      "root_cause": "Each funding checkpoint truncates signed payment toward zero and discards the fractional remainder when advancing growth.",
+      "impact_scope": "Ten split checkpoints charged zero while the identical unsplit growth charged one wei; no profitable amplification was demonstrated.",
+      "adjudication_rationale": "Exact checkpoint-splitting invariant violation, capped at Low because only one-wei drift and no profitable amplification were shown.",
+      "overlap_group": "OG-FUNDING",
+      "accounting": {
+        "one_to_one_distinct": true,
+        "standalone_finding": true,
+        "composition_role": "standalone",
+        "dependencies": [],
+        "compatible_or_shared_effect_with": [],
+        "double_counting_rule": "AFH-008 is counted once at its own root cause; shared component, flow, or impact shape does not merge it with another candidate."
+      },
+      "evidence_hashes": {
+        "hunter_packet": {
+          "revision": "31ea4b7",
+          "path": "blind-run/evidence/AFH-008.json",
+          "sha256": "f704d61eabb46985a2ddbd16f30a8a5f36ac89e2c853009f21b48638e8bc02d5"
+        },
+        "consensus_rerun": {
+          "path": "logs/rerun-AFH-008-attempt-1.log",
+          "sha256": "9f6a7677a3c62bec333ebbd625a69bb2c24c259654f954d9a825a8ce264a773d",
+          "attempts": [
+            {
+              "path": "logs/rerun-AFH-008-attempt-1.log",
+              "sha256": "9f6a7677a3c62bec333ebbd625a69bb2c24c259654f954d9a825a8ce264a773d",
+              "exit": 0
+            }
+          ]
+        },
+        "adjudication_controls": [],
+        "target_manifest_aggregate_sha256": "bd7aacd7d51c679b4e40f83d6ca49d49b03b69490ad6751f50c81236e7ef5381"
+      },
+      "rerun_refs": [
+        "logs/rerun-AFH-008-attempt-1.log"
+      ]
+    },
+    {
+      "id": "AFH-009",
+      "classification": "confirmed_exact",
+      "duplicate_of": null,
+      "final_severity": "high",
+      "confidence": "high",
+      "root_cause": "EpochSettlement realizes and zeroes base before the final funding checkpoint.",
+      "impact_scope": "The affected settlement omitted a 1.5-to-2 wad final funding debit; checkpoint-first controls included it in cash.",
+      "adjudication_rationale": "Exact pre-settlement funding-order failure with material account cash and deficit propagation.",
+      "overlap_group": "OG-FUNDING",
+      "accounting": {
+        "one_to_one_distinct": true,
+        "standalone_finding": true,
+        "composition_role": "standalone",
+        "dependencies": [],
+        "compatible_or_shared_effect_with": [],
+        "double_counting_rule": "AFH-009 is counted once at its own root cause; shared component, flow, or impact shape does not merge it with another candidate."
+      },
+      "evidence_hashes": {
+        "hunter_packet": {
+          "revision": "31ea4b7",
+          "path": "blind-run/evidence/AFH-009.json",
+          "sha256": "b98b9ca49fd3261a2da645f0d636c13be2fbb1cc181b19f5425fa30b22942211"
+        },
+        "consensus_rerun": {
+          "path": "logs/rerun-AFH-009-attempt-1.log",
+          "sha256": "9c17f14066ba724fa064b43e928c2a1dec5de88f25db76810dda0a01f17fc1b8",
+          "attempts": [
+            {
+              "path": "logs/rerun-AFH-009-attempt-1.log",
+              "sha256": "9c17f14066ba724fa064b43e928c2a1dec5de88f25db76810dda0a01f17fc1b8",
+              "exit": 0
+            }
+          ]
+        },
+        "adjudication_controls": [],
+        "target_manifest_aggregate_sha256": "bd7aacd7d51c679b4e40f83d6ca49d49b03b69490ad6751f50c81236e7ef5381"
+      },
+      "rerun_refs": [
+        "logs/rerun-AFH-009-attempt-1.log"
+      ]
+    },
+    {
+      "id": "AFH-010",
+      "classification": "confirmed_exact",
+      "duplicate_of": null,
+      "final_severity": "medium",
+      "confidence": "high",
+      "root_cause": "A sign-flipping trade stores the average of old and execution prices rather than assigning the execution price to the residual opposite position.",
+      "impact_scope": "A residual short stored 2500 instead of 2000 and the closed round trip understated loss by 500 wad before the same fee schedule.",
+      "adjudication_rationale": "Exact residual-basis error, retained at Medium without closed third-party extraction.",
+      "overlap_group": "OG-POSITION-LEDGER",
+      "accounting": {
+        "one_to_one_distinct": true,
+        "standalone_finding": true,
+        "composition_role": "standalone",
+        "dependencies": [],
+        "compatible_or_shared_effect_with": [],
+        "double_counting_rule": "AFH-010 is counted once at its own root cause; shared component, flow, or impact shape does not merge it with another candidate."
+      },
+      "evidence_hashes": {
+        "hunter_packet": {
+          "revision": "31ea4b7",
+          "path": "blind-run/evidence/AFH-010.json",
+          "sha256": "4da5c153cb5ead0704e32aba5bc26e20b2651e7dd6407dae7520fdc72b29127d"
+        },
+        "consensus_rerun": {
+          "path": "logs/rerun-AFH-010-attempt-1.log",
+          "sha256": "01635e8e24d204bc88f306687bcb1bdf7cd0121c0a06827dd01e9069fa643bee",
+          "attempts": [
+            {
+              "path": "logs/rerun-AFH-010-attempt-1.log",
+              "sha256": "01635e8e24d204bc88f306687bcb1bdf7cd0121c0a06827dd01e9069fa643bee",
+              "exit": 0
+            }
+          ]
+        },
+        "adjudication_controls": [],
+        "target_manifest_aggregate_sha256": "bd7aacd7d51c679b4e40f83d6ca49d49b03b69490ad6751f50c81236e7ef5381"
+      },
+      "rerun_refs": [
+        "logs/rerun-AFH-010-attempt-1.log"
+      ]
+    },
+    {
+      "id": "AFH-011",
+      "classification": "confirmed_narrowed",
+      "duplicate_of": null,
+      "final_severity": "medium",
+      "confidence": "high",
+      "root_cause": "ClearingHouse increments OI by abs(delta), never decrements it on close or settlement, and exposes a stale source that governance may manually report to InsuranceFund.",
+      "impact_scope": "The stale value routes uncovered loss to socialLossIndex rather than pendingSocialLoss, but OI does not propagate automatically and socialLossIndex has no position-level consumer in the target.",
+      "adjudication_rationale": "Confirmed narrowed to Medium. Stale OI and divergent loss buckets reproduce, but C-011 proves reporting is manual and socialLossIndex has no collection consumer; AFH-017 is only one way to source a deficit, not a required candidate dependency.",
+      "overlap_group": "OG-POSITION-LEDGER",
+      "accounting": {
+        "one_to_one_distinct": true,
+        "standalone_finding": true,
+        "composition_role": "standalone",
+        "dependencies": [],
+        "compatible_or_shared_effect_with": [],
+        "double_counting_rule": "AFH-011 is counted once at its own root cause; shared component, flow, or impact shape does not merge it with another candidate."
+      },
+      "evidence_hashes": {
+        "hunter_packet": {
+          "revision": "31ea4b7",
+          "path": "blind-run/evidence/AFH-011.json",
+          "sha256": "e747ed3fe7ef328862fc14cff3edc9d195eae3b7dde6a5c9b5e34822c3de80c8"
+        },
+        "consensus_rerun": {
+          "path": "logs/rerun-AFH-011-attempt-2.log",
+          "sha256": "c4bb5163a969ea92d8c5ad4c1a936aca7bb10b8a0f1f6051543cbc14ff49f088",
+          "attempts": [
+            {
+              "path": "logs/rerun-AFH-011-attempt-1.log",
+              "sha256": "e2d81b19a9530d9d60f79a112f8a47a25d03034e52e9b20b75f3239ae20b892f",
+              "exit": 1
+            },
+            {
+              "path": "logs/rerun-AFH-011-attempt-2.log",
+              "sha256": "c4bb5163a969ea92d8c5ad4c1a936aca7bb10b8a0f1f6051543cbc14ff49f088",
+              "exit": 0
+            }
+          ]
+        },
+        "adjudication_controls": [
+          {
+            "controlId": "C-011",
+            "path": "logs/adjudication-C-011-attempt-1.log",
+            "sha256": "2f19e5609a9449c2a700f90bf3a6f650ad982ca87dc39a1c93d2820f723aa1f4"
+          }
+        ],
+        "target_manifest_aggregate_sha256": "bd7aacd7d51c679b4e40f83d6ca49d49b03b69490ad6751f50c81236e7ef5381"
+      },
+      "rerun_refs": [
+        "logs/rerun-AFH-011-attempt-2.log",
+        "logs/adjudication-C-011-attempt-1.log"
+      ]
+    },
+    {
+      "id": "AFH-012",
+      "classification": "confirmed_exact",
+      "duplicate_of": null,
+      "final_severity": "medium",
+      "confidence": "high",
+      "root_cause": "Every zero-to-nonzero transition appends a market without a membership flag, removal, or deduplication.",
+      "impact_scope": "Close and reopen created two active entries and counted the same 1000-wad unrealized PnL twice in account equity, also duplicating risk legs.",
+      "adjudication_rationale": "Exact duplicate active-market membership with a reproduced equity consumer effect.",
+      "overlap_group": "OG-POSITION-LEDGER",
+      "accounting": {
+        "one_to_one_distinct": true,
+        "standalone_finding": true,
+        "composition_role": "standalone",
+        "dependencies": [],
+        "compatible_or_shared_effect_with": [],
+        "double_counting_rule": "AFH-012 is counted once at its own root cause; shared component, flow, or impact shape does not merge it with another candidate."
+      },
+      "evidence_hashes": {
+        "hunter_packet": {
+          "revision": "31ea4b7",
+          "path": "blind-run/evidence/AFH-012.json",
+          "sha256": "01ace5edac38a9b7c967138ae80760bddc7374f956a357b358c3bd29879ba961"
+        },
+        "consensus_rerun": {
+          "path": "logs/rerun-AFH-012-attempt-1.log",
+          "sha256": "72199316849e0322c7ea64a9096686805eed7d4cb94434e9f22af91b068a44b9",
+          "attempts": [
+            {
+              "path": "logs/rerun-AFH-012-attempt-1.log",
+              "sha256": "72199316849e0322c7ea64a9096686805eed7d4cb94434e9f22af91b068a44b9",
+              "exit": 0
+            }
+          ]
+        },
+        "adjudication_controls": [],
+        "target_manifest_aggregate_sha256": "bd7aacd7d51c679b4e40f83d6ca49d49b03b69490ad6751f50c81236e7ef5381"
+      },
+      "rerun_refs": [
+        "logs/rerun-AFH-012-attempt-1.log"
+      ]
+    },
+    {
+      "id": "AFH-013",
+      "classification": "confirmed_exact",
+      "duplicate_of": null,
+      "final_severity": "high",
+      "confidence": "high",
+      "root_cause": "PortfolioRisk subtracts whenever exposure is opposite or correlation is negative instead of multiplying both signs.",
+      "impact_scope": "Negative correlation plus opposite exposures produced 200 wad instead of 600 wad initial margin and independently admitted a 300-wad-equity account that should fail the 600-wad requirement.",
+      "adjudication_rationale": "Exact sign/correlation margin undercharge with a threefold requirement delta and live leverage admission.",
+      "overlap_group": null,
+      "accounting": {
+        "one_to_one_distinct": true,
+        "standalone_finding": true,
+        "composition_role": "standalone",
+        "dependencies": [],
+        "compatible_or_shared_effect_with": [],
+        "double_counting_rule": "AFH-013 is counted once at its own root cause; shared component, flow, or impact shape does not merge it with another candidate."
+      },
+      "evidence_hashes": {
+        "hunter_packet": {
+          "revision": "31ea4b7",
+          "path": "blind-run/evidence/AFH-013.json",
+          "sha256": "5b4e945dfd8fb55c2c0a26418e6881f5cd93637053a4b8b0607f0afc8016ec66"
+        },
+        "consensus_rerun": {
+          "path": "logs/rerun-AFH-013-attempt-1.log",
+          "sha256": "297c24191402bc262c7efc2c1271e8d34815de501d5ba6b50ecdad619cec7200",
+          "attempts": [
+            {
+              "path": "logs/rerun-AFH-013-attempt-1.log",
+              "sha256": "297c24191402bc262c7efc2c1271e8d34815de501d5ba6b50ecdad619cec7200",
+              "exit": 0
+            }
+          ]
+        },
+        "adjudication_controls": [],
+        "target_manifest_aggregate_sha256": "bd7aacd7d51c679b4e40f83d6ca49d49b03b69490ad6751f50c81236e7ef5381"
+      },
+      "rerun_refs": [
+        "logs/rerun-AFH-013-attempt-1.log"
+      ]
+    },
+    {
+      "id": "AFH-014",
+      "classification": "confirmed_exact",
+      "duplicate_of": null,
+      "final_severity": "medium",
+      "confidence": "high",
+      "root_cause": "executePortfolio averages raw prices by leg count and applies one side flag instead of absolute-base weighting and per-leg side semantics.",
+      "impact_scope": "A base-weighted buy price of 2800 passed a 2200 limit because the arithmetic mean was 2000.",
+      "adjudication_rationale": "Confirmed exact and distinct from AFH-015: weighted portfolio price protection and nonce bitmap domain truncation have different triggers, state, impact, and repairs.",
+      "overlap_group": null,
+      "accounting": {
+        "one_to_one_distinct": true,
+        "standalone_finding": true,
+        "composition_role": "standalone",
+        "dependencies": [],
+        "compatible_or_shared_effect_with": [],
+        "double_counting_rule": "AFH-014 is counted once at its own root cause; shared component, flow, or impact shape does not merge it with another candidate."
+      },
+      "evidence_hashes": {
+        "hunter_packet": {
+          "revision": "31ea4b7",
+          "path": "blind-run/evidence/AFH-014.json",
+          "sha256": "316acb7990000dd99405c10bafc7519e4ab824d77ba3a6dd78036be76f633934"
+        },
+        "consensus_rerun": {
+          "path": "logs/rerun-AFH-014-attempt-1.log",
+          "sha256": "5188c7686d276570dcd8458356457cb999dff8e25b917566da1329c22515851a",
+          "attempts": [
+            {
+              "path": "logs/rerun-AFH-014-attempt-1.log",
+              "sha256": "5188c7686d276570dcd8458356457cb999dff8e25b917566da1329c22515851a",
+              "exit": 0
+            }
+          ]
+        },
+        "adjudication_controls": [
+          {
+            "controlId": "C-OVERLAP",
+            "path": "logs/adjudication-C-OVERLAP-attempt-1.log",
+            "sha256": "e0cdbd5a02556439211fee55af2f8d415a4738f4843564421b547a8de2eae9cd"
+          }
+        ],
+        "target_manifest_aggregate_sha256": "bd7aacd7d51c679b4e40f83d6ca49d49b03b69490ad6751f50c81236e7ef5381"
+      },
+      "rerun_refs": [
+        "logs/rerun-AFH-014-attempt-1.log",
+        "logs/adjudication-C-OVERLAP-attempt-1.log"
+      ]
+    },
+    {
+      "id": "AFH-015",
+      "classification": "confirmed_exact",
+      "duplicate_of": null,
+      "final_severity": "low",
+      "confidence": "high",
+      "root_cause": "The nonce word index is narrowed to uint8, so storage distinguishes only the low 16 nonce bits.",
+      "impact_scope": "Nonce 0 and 65536 collided while nonce 1 set an independent bit, causing order cancellation/consumption denial but not replay.",
+      "adjudication_rationale": "Confirmed exact and distinct from AFH-014; common router placement alone does not create overlap.",
+      "overlap_group": null,
+      "accounting": {
+        "one_to_one_distinct": true,
+        "standalone_finding": true,
+        "composition_role": "standalone",
+        "dependencies": [],
+        "compatible_or_shared_effect_with": [],
+        "double_counting_rule": "AFH-015 is counted once at its own root cause; shared component, flow, or impact shape does not merge it with another candidate."
+      },
+      "evidence_hashes": {
+        "hunter_packet": {
+          "revision": "31ea4b7",
+          "path": "blind-run/evidence/AFH-015.json",
+          "sha256": "75b0b067e9caaa2696076ab24be605c351f2a9bcc5a5b9b03c0144cb0c2b30d8"
+        },
+        "consensus_rerun": {
+          "path": "logs/rerun-AFH-015-attempt-1.log",
+          "sha256": "76a85996489cf6a639a123b9a58bc07e20e7d73f96f1d3c1c69e9a677485a029",
+          "attempts": [
+            {
+              "path": "logs/rerun-AFH-015-attempt-1.log",
+              "sha256": "76a85996489cf6a639a123b9a58bc07e20e7d73f96f1d3c1c69e9a677485a029",
+              "exit": 0
+            }
+          ]
+        },
+        "adjudication_controls": [
+          {
+            "controlId": "C-OVERLAP",
+            "path": "logs/adjudication-C-OVERLAP-attempt-1.log",
+            "sha256": "e0cdbd5a02556439211fee55af2f8d415a4738f4843564421b547a8de2eae9cd"
+          }
+        ],
+        "target_manifest_aggregate_sha256": "bd7aacd7d51c679b4e40f83d6ca49d49b03b69490ad6751f50c81236e7ef5381"
+      },
+      "rerun_refs": [
+        "logs/rerun-AFH-015-attempt-1.log",
+        "logs/adjudication-C-OVERLAP-attempt-1.log"
+      ]
+    },
+    {
+      "id": "AFH-016",
+      "classification": "confirmed_exact",
+      "duplicate_of": null,
+      "final_severity": "high",
+      "confidence": "high",
+      "root_cause": "Liquidation commitments bind bidderAccount data but reveal never checks bidder ownership/delegation before privileged onAuctionFill mutation.",
+      "impact_scope": "An untrusted bidder forced +1 base and future market obligations into an unrelated victim account; the ordinary trade control rejected the same authority violation.",
+      "adjudication_rationale": "Confirmed exact as a standalone bidder-account authority violation. It is grouped only for auction-flow accounting and is not a member of AFH-017.",
+      "overlap_group": "OG-AUCTION-LIFECYCLE",
+      "accounting": {
+        "one_to_one_distinct": true,
+        "standalone_finding": true,
+        "composition_role": "standalone",
+        "dependencies": [],
+        "compatible_or_shared_effect_with": [
+          "AFH-017"
+        ],
+        "double_counting_rule": "AFH-016 is counted once at its own root cause; shared component, flow, or impact shape does not merge it with another candidate."
+      },
+      "evidence_hashes": {
+        "hunter_packet": {
+          "revision": "31ea4b7",
+          "path": "blind-run/evidence/AFH-016.json",
+          "sha256": "95eaacb376a417e07bd8a1a9c89cfa9eb606699f7796b38236ecb82e6776791a"
+        },
+        "consensus_rerun": {
+          "path": "logs/rerun-AFH-016-attempt-1.log",
+          "sha256": "82de6525ee6d1ddae28442d867123e62e85f5172b0eca1d2be9473494c1740c4",
+          "attempts": [
+            {
+              "path": "logs/rerun-AFH-016-attempt-1.log",
+              "sha256": "82de6525ee6d1ddae28442d867123e62e85f5172b0eca1d2be9473494c1740c4",
+              "exit": 0
+            }
+          ]
+        },
+        "adjudication_controls": [
+          {
+            "controlId": "C-OVERLAP",
+            "path": "logs/adjudication-C-OVERLAP-attempt-1.log",
+            "sha256": "e0cdbd5a02556439211fee55af2f8d415a4738f4843564421b547a8de2eae9cd"
+          }
+        ],
+        "target_manifest_aggregate_sha256": "bd7aacd7d51c679b4e40f83d6ca49d49b03b69490ad6751f50c81236e7ef5381"
+      },
+      "rerun_refs": [
+        "logs/rerun-AFH-016-attempt-1.log",
+        "logs/adjudication-C-OVERLAP-attempt-1.log"
+      ]
+    },
+    {
+      "id": "AFH-017",
+      "classification": "confirmed_narrowed",
+      "duplicate_of": null,
+      "final_severity": "high",
+      "confidence": "high",
+      "root_cause": "Zero/unrelated bond sizing and missing bidder post-fill health admit an undercollateralized position; a second timed-out auction composes AFH-018 to record uncovered loss while leaving exposure live.",
+      "impact_scope": "One zero-capital chain created 81.8-to-84 wad pending social loss and retained 1 base, but produced zero attacker token profit, zero fund token delta, and left the bidder account equally negative.",
+      "adjudication_rationale": "Confirmed narrowed to High. C-017 joined the missing bond/health guard with AFH-018 and produced 81.8 wad pending loss plus live residual exposure, but attacker token profit and fund token delta were both zero and the bidder remained equally negative, so Critical closure failed.",
+      "overlap_group": "OG-AUCTION-LIFECYCLE",
+      "accounting": {
+        "one_to_one_distinct": true,
+        "standalone_finding": true,
+        "composition_role": "composed_finding_with_distinct_missing_bidder_guard",
+        "dependencies": [
+          "AFH-018"
+        ],
+        "compatible_or_shared_effect_with": [],
+        "double_counting_rule": "The distinct AFH-017 root is counted once; dependency effects (AFH-018) are not recounted as additional manifestations."
+      },
+      "evidence_hashes": {
+        "hunter_packet": {
+          "revision": "31ea4b7",
+          "path": "blind-run/evidence/AFH-017.json",
+          "sha256": "bc7bf8a92154a50f4070ca037309f4174cab0e95f46e85439b9da23809b7af43"
+        },
+        "consensus_rerun": {
+          "path": "logs/rerun-AFH-017-attempt-1.log",
+          "sha256": "48daef4d291e70d5315f22eb1abb996c156c874b63668df2483a1beee0a9da12",
+          "attempts": [
+            {
+              "path": "logs/rerun-AFH-017-attempt-1.log",
+              "sha256": "48daef4d291e70d5315f22eb1abb996c156c874b63668df2483a1beee0a9da12",
+              "exit": 0
+            }
+          ]
+        },
+        "adjudication_controls": [
+          {
+            "controlId": "C-017",
+            "path": "logs/adjudication-C-017-attempt-1.log",
+            "sha256": "905028b5835238d1af699751a8a8f7c9e3bbd83c7747279960bf542e7179093e"
+          }
+        ],
+        "target_manifest_aggregate_sha256": "bd7aacd7d51c679b4e40f83d6ca49d49b03b69490ad6751f50c81236e7ef5381"
+      },
+      "rerun_refs": [
+        "logs/rerun-AFH-017-attempt-1.log",
+        "logs/adjudication-C-017-attempt-1.log"
+      ]
+    },
+    {
+      "id": "AFH-018",
+      "classification": "confirmed_exact",
+      "duplicate_of": null,
+      "final_severity": "high",
+      "confidence": "high",
+      "root_cause": "finalize treats duration expiry as sufficient even when remainingBase is nonzero and performs no backstop transfer before unfreezing and deficit resolution.",
+      "impact_scope": "A timed-out auction finalized with all 1 base still live and the account unfrozen; the full-fill control ended with zero residual and zero distressed base.",
+      "adjudication_rationale": "Confirmed exact as its own residual-finalization root. It is counted once and used as a reachability dependency by AFH-017 and AFH-019; it is not a member of AFH-020.",
+      "overlap_group": "OG-AUCTION-LIFECYCLE",
+      "accounting": {
+        "one_to_one_distinct": true,
+        "standalone_finding": true,
+        "composition_role": "standalone_base_primitive_and_dependency",
+        "dependencies": [],
+        "compatible_or_shared_effect_with": [
+          "AFH-017",
+          "AFH-019"
+        ],
+        "double_counting_rule": "AFH-018 is counted once at its own root cause; shared component, flow, or impact shape does not merge it with another candidate."
+      },
+      "evidence_hashes": {
+        "hunter_packet": {
+          "revision": "31ea4b7",
+          "path": "blind-run/evidence/AFH-018.json",
+          "sha256": "7b87f3bfdcfea7929ae6123e7f74ac4f744a211d830652cda1e6de017b61fbcc"
+        },
+        "consensus_rerun": {
+          "path": "logs/rerun-AFH-018-attempt-1.log",
+          "sha256": "8c85af38eafcebaee6e5ff474a6cbc412342c2b45f3c2d14728e38d1f82e48c9",
+          "attempts": [
+            {
+              "path": "logs/rerun-AFH-018-attempt-1.log",
+              "sha256": "8c85af38eafcebaee6e5ff474a6cbc412342c2b45f3c2d14728e38d1f82e48c9",
+              "exit": 0
+            }
+          ]
+        },
+        "adjudication_controls": [
+          {
+            "controlId": "C-019",
+            "path": "logs/adjudication-C-019-attempt-1.log",
+            "sha256": "d2fa8fa736b4fe04cfc1cc0caf68cd8e67db7c16e6622b1efcbe4f5ade9ac737"
+          }
+        ],
+        "target_manifest_aggregate_sha256": "bd7aacd7d51c679b4e40f83d6ca49d49b03b69490ad6751f50c81236e7ef5381"
+      },
+      "rerun_refs": [
+        "logs/rerun-AFH-018-attempt-1.log",
+        "logs/adjudication-C-019-attempt-1.log"
+      ]
+    },
+    {
+      "id": "AFH-019",
+      "classification": "confirmed_exact",
+      "duplicate_of": null,
+      "final_severity": "high",
+      "confidence": "high",
+      "root_cause": "reveal omits both finalized and expiry checks for pre-existing commitments.",
+      "impact_scope": "A late reveal changed positions after terminal deficit resolution and independently increased the distressed deficit by 16 wad without updating the already-recorded 700-wad pending loss.",
+      "adjudication_rationale": "Confirmed exact as a distinct missing finalized/expiry guard, with AFH-018 recorded as a reachability dependency because a post-final reveal requires residual quantity after timeout finalization. That dependency does not duplicate the root.",
+      "overlap_group": "OG-AUCTION-LIFECYCLE",
+      "accounting": {
+        "one_to_one_distinct": true,
+        "standalone_finding": false,
+        "composition_role": "standalone_distinct_root_with_reachability_dependency",
+        "dependencies": [
+          "AFH-018"
+        ],
+        "compatible_or_shared_effect_with": [],
+        "double_counting_rule": "The distinct AFH-019 root is counted once; dependency effects (AFH-018) are not recounted as additional manifestations."
+      },
+      "evidence_hashes": {
+        "hunter_packet": {
+          "revision": "31ea4b7",
+          "path": "blind-run/evidence/AFH-019.json",
+          "sha256": "72ca08e62f5231e28ba558d35f37cd3ae8df15d3a6020753ae2127302a549f39"
+        },
+        "consensus_rerun": {
+          "path": "logs/rerun-AFH-019-attempt-1.log",
+          "sha256": "948310882ed6124f21ea7cd34f6dc0f77c769e52873c35d93eedbb1f1e442717",
+          "attempts": [
+            {
+              "path": "logs/rerun-AFH-019-attempt-1.log",
+              "sha256": "948310882ed6124f21ea7cd34f6dc0f77c769e52873c35d93eedbb1f1e442717",
+              "exit": 0
+            }
+          ]
+        },
+        "adjudication_controls": [
+          {
+            "controlId": "C-019",
+            "path": "logs/adjudication-C-019-attempt-1.log",
+            "sha256": "d2fa8fa736b4fe04cfc1cc0caf68cd8e67db7c16e6622b1efcbe4f5ade9ac737"
+          }
+        ],
+        "target_manifest_aggregate_sha256": "bd7aacd7d51c679b4e40f83d6ca49d49b03b69490ad6751f50c81236e7ef5381"
+      },
+      "rerun_refs": [
+        "logs/rerun-AFH-019-attempt-1.log",
+        "logs/adjudication-C-019-attempt-1.log"
+      ]
+    },
+    {
+      "id": "AFH-020",
+      "classification": "confirmed_exact",
+      "duplicate_of": null,
+      "final_severity": "high",
+      "confidence": "high",
+      "root_cause": "One boolean represents independent auction and epoch freeze reasons, and neither lifecycle invalidates the other's queued transition.",
+      "impact_scope": "Epoch settlement cleared an active auction freeze and marked the account settled; a still-live reveal then reopened it at -1 base while the permanent settled marker remained true.",
+      "adjudication_rationale": "Confirmed exact without AFH-019. C-020 reopened a settled position while the auction finalized flag remained false throughout, isolating shared-freeze/stale-lifecycle authority rather than the post-final reveal guard.",
+      "overlap_group": "OG-AUCTION-LIFECYCLE",
+      "accounting": {
+        "one_to_one_distinct": true,
+        "standalone_finding": true,
+        "composition_role": "cross_lifecycle_composition_without_candidate_dependency",
+        "dependencies": [],
+        "compatible_or_shared_effect_with": [],
+        "double_counting_rule": "AFH-020 is counted once at its own root cause; shared component, flow, or impact shape does not merge it with another candidate."
+      },
+      "evidence_hashes": {
+        "hunter_packet": {
+          "revision": "31ea4b7",
+          "path": "blind-run/evidence/AFH-020.json",
+          "sha256": "a27d63cc8757377ad17faff6920da886efd1fb9a0836b6711a82cae7e472f4e6"
+        },
+        "consensus_rerun": {
+          "path": "logs/rerun-AFH-020-attempt-1.log",
+          "sha256": "f24a098c879b621e0797e9cf14e8a5c7eb052d32401932de52aae8c3e1b3e12d",
+          "attempts": [
+            {
+              "path": "logs/rerun-AFH-020-attempt-1.log",
+              "sha256": "f24a098c879b621e0797e9cf14e8a5c7eb052d32401932de52aae8c3e1b3e12d",
+              "exit": 0
+            }
+          ]
+        },
+        "adjudication_controls": [
+          {
+            "controlId": "C-020",
+            "path": "logs/adjudication-C-020-attempt-1.log",
+            "sha256": "1e366a943935a0f90720e6085c3db550ee4b03ccf43a6b4b7b1f186b0f7fa34f"
+          }
+        ],
+        "target_manifest_aggregate_sha256": "bd7aacd7d51c679b4e40f83d6ca49d49b03b69490ad6751f50c81236e7ef5381"
+      },
+      "rerun_refs": [
+        "logs/rerun-AFH-020-attempt-1.log",
+        "logs/adjudication-C-020-attempt-1.log"
+      ]
+    },
+    {
+      "id": "AFH-021",
+      "classification": "confirmed_narrowed",
+      "duplicate_of": null,
+      "final_severity": "medium",
+      "confidence": "high",
+      "root_cause": "releaseAuctionBond subtracts only returned value from auctionReserved; additionally, the retained slashed tokens are added again to accruedProtocolValue.",
+      "impact_scope": "A 50% slash of a 100-wad bond leaves 50 wad phantom-reserved and blocks deficit coverage; the separate retained-slash double count inflates NAV and can make redemption overpromise, but auctionReserved itself is not consulted by redeem.",
+      "adjudication_rationale": "Confirmed narrowed to Medium. C-021 proves the phantom 50-wad reserve blocks deficit coverage, but redeem never consults auctionReserved; redemption failure comes from adding the same retained slash again to accruedProtocolValue. The submitted reservation-caused redemption scope is therefore too broad.",
+      "overlap_group": "OG-INSURANCE",
+      "accounting": {
+        "one_to_one_distinct": true,
+        "standalone_finding": true,
+        "composition_role": "standalone",
+        "dependencies": [],
+        "compatible_or_shared_effect_with": [],
+        "double_counting_rule": "AFH-021 is counted once at its own root cause; shared component, flow, or impact shape does not merge it with another candidate."
+      },
+      "evidence_hashes": {
+        "hunter_packet": {
+          "revision": "31ea4b7",
+          "path": "blind-run/evidence/AFH-021.json",
+          "sha256": "ce5b66baa369acc695f5fdc8b8ff19308d2699a16d961da7372cf7cbe2adf34d"
+        },
+        "consensus_rerun": {
+          "path": "logs/rerun-AFH-021-attempt-1.log",
+          "sha256": "a8d5fe31b318e18c18708f588a5e050654d5438133823b93a1c31b21df26c803",
+          "attempts": [
+            {
+              "path": "logs/rerun-AFH-021-attempt-1.log",
+              "sha256": "a8d5fe31b318e18c18708f588a5e050654d5438133823b93a1c31b21df26c803",
+              "exit": 0
+            }
+          ]
+        },
+        "adjudication_controls": [
+          {
+            "controlId": "C-021",
+            "path": "logs/adjudication-C-021-attempt-1.log",
+            "sha256": "1a2f365b1ecc35f06d6acf27ebacd5ff3e744d8312513f53bedc205a7f51f96f"
+          }
+        ],
+        "target_manifest_aggregate_sha256": "bd7aacd7d51c679b4e40f83d6ca49d49b03b69490ad6751f50c81236e7ef5381"
+      },
+      "rerun_refs": [
+        "logs/rerun-AFH-021-attempt-1.log",
+        "logs/adjudication-C-021-attempt-1.log"
+      ]
+    },
+    {
+      "id": "AFH-022",
+      "classification": "confirmed_exact",
+      "duplicate_of": null,
+      "final_severity": "high",
+      "confidence": "high",
+      "root_cause": "Insurance totalAssets and redeem include auction-reserved token balances without subtracting or capping against live bond claims.",
+      "impact_scope": "A shareholder deposited 1000 and redeemed 2000 after a third party bonded 1000, draining all collateral and causing the bond terminal action to revert.",
+      "adjudication_rationale": "Confirmed exact and standalone. C-022 stole a live 100-wad bond after a 100-wad share deposit without any slash or AFH-021 state.",
+      "overlap_group": "OG-INSURANCE",
+      "accounting": {
+        "one_to_one_distinct": true,
+        "standalone_finding": true,
+        "composition_role": "standalone_direct_reserved_asset_violation",
+        "dependencies": [],
+        "compatible_or_shared_effect_with": [],
+        "double_counting_rule": "AFH-022 is counted once at its own root cause; shared component, flow, or impact shape does not merge it with another candidate."
+      },
+      "evidence_hashes": {
+        "hunter_packet": {
+          "revision": "31ea4b7",
+          "path": "blind-run/evidence/AFH-022.json",
+          "sha256": "4d92130d6098be4dedbc7da51a5bd7e17d076070af736ba7f7e30130d66b4a73"
+        },
+        "consensus_rerun": {
+          "path": "logs/rerun-AFH-022-attempt-1.log",
+          "sha256": "049868a541dfc297bc37c6182a2510c4492ac8f5998b7564951bfe06b938d5c4",
+          "attempts": [
+            {
+              "path": "logs/rerun-AFH-022-attempt-1.log",
+              "sha256": "049868a541dfc297bc37c6182a2510c4492ac8f5998b7564951bfe06b938d5c4",
+              "exit": 0
+            }
+          ]
+        },
+        "adjudication_controls": [
+          {
+            "controlId": "C-022",
+            "path": "logs/adjudication-C-022-attempt-1.log",
+            "sha256": "bf9b2c75ca58108ee046221e1ef4c9e933909c908b55338067af2429015be4c4"
+          }
+        ],
+        "target_manifest_aggregate_sha256": "bd7aacd7d51c679b4e40f83d6ca49d49b03b69490ad6751f50c81236e7ef5381"
+      },
+      "rerun_refs": [
+        "logs/rerun-AFH-022-attempt-1.log",
+        "logs/adjudication-C-022-attempt-1.log"
+      ]
+    },
+    {
+      "id": "AFH-023",
+      "classification": "confirmed_exact",
+      "duplicate_of": null,
+      "final_severity": "medium",
+      "confidence": "high",
+      "root_cause": "Trading debits account cash and calls absorbPenalty, but the fund books accruedProtocolValue without any collateral transfer or collection path.",
+      "impact_scope": "A 120-wad trade fee raised promised NAV from 1000 to 1120 with zero token receipt and made full share redemption revert.",
+      "adjudication_rationale": "Confirmed exact as an uncollectible-fee/NAV root. Its NAV impact shape resembles AFH-024 and AFH-021, but the writer, missing transfer, trigger, and repair are distinct; AFH-025 can feed the fee path but is not required.",
+      "overlap_group": "OG-INSURANCE",
+      "accounting": {
+        "one_to_one_distinct": true,
+        "standalone_finding": true,
+        "composition_role": "standalone",
+        "dependencies": [],
+        "compatible_or_shared_effect_with": [
+          "AFH-025"
+        ],
+        "double_counting_rule": "AFH-023 is counted once at its own root cause; shared component, flow, or impact shape does not merge it with another candidate."
+      },
+      "evidence_hashes": {
+        "hunter_packet": {
+          "revision": "31ea4b7",
+          "path": "blind-run/evidence/AFH-023.json",
+          "sha256": "eaa55b3d0c0c3718afb47682b7d5450aa3bdfcf0061fe7131f4bbabb9296ba69"
+        },
+        "consensus_rerun": {
+          "path": "logs/rerun-AFH-023-attempt-1.log",
+          "sha256": "412ffd6c6e1228442fbb15ea4a74556c4e40ea1643beeb718e2214825cd62c2c",
+          "attempts": [
+            {
+              "path": "logs/rerun-AFH-023-attempt-1.log",
+              "sha256": "412ffd6c6e1228442fbb15ea4a74556c4e40ea1643beeb718e2214825cd62c2c",
+              "exit": 0
+            }
+          ]
+        },
+        "adjudication_controls": [
+          {
+            "controlId": "C-OVERLAP",
+            "path": "logs/adjudication-C-OVERLAP-attempt-1.log",
+            "sha256": "e0cdbd5a02556439211fee55af2f8d415a4738f4843564421b547a8de2eae9cd"
+          }
+        ],
+        "target_manifest_aggregate_sha256": "bd7aacd7d51c679b4e40f83d6ca49d49b03b69490ad6751f50c81236e7ef5381"
+      },
+      "rerun_refs": [
+        "logs/rerun-AFH-023-attempt-1.log",
+        "logs/adjudication-C-OVERLAP-attempt-1.log"
+      ]
+    },
+    {
+      "id": "AFH-024",
+      "classification": "confirmed_exact",
+      "duplicate_of": null,
+      "final_severity": "high",
+      "confidence": "high",
+      "root_cause": "rebalance trusts a raw venue return as received wad, neither measuring output-token receipt nor normalizing by output decimals before minimum and NAV accounting.",
+      "impact_scope": "The venue took 100 input tokens, delivered zero output, returned 1e18, passed the raw minimum, and minted 1e18 phantom NAV; a hypothetical received 24-decimal return would normalize to only 1e12 wad.",
+      "adjudication_rationale": "Confirmed exact. C-024 used an honest venue that transferred 1e18 native units of a 24-decimal token: only 1e12 wad arrived economically yet a 1e18-wad minimum passed. This independently closes the normalization root and remains distinct from AFH-023.",
+      "overlap_group": "OG-INSURANCE",
+      "accounting": {
+        "one_to_one_distinct": true,
+        "standalone_finding": true,
+        "composition_role": "standalone",
+        "dependencies": [],
+        "compatible_or_shared_effect_with": [],
+        "double_counting_rule": "AFH-024 is counted once at its own root cause; shared component, flow, or impact shape does not merge it with another candidate."
+      },
+      "evidence_hashes": {
+        "hunter_packet": {
+          "revision": "31ea4b7",
+          "path": "blind-run/evidence/AFH-024.json",
+          "sha256": "52b01737cb5de679b8864e2eb80c71fca44063e7db7855228d06ca78ee74f312"
+        },
+        "consensus_rerun": {
+          "path": "logs/rerun-AFH-024-attempt-1.log",
+          "sha256": "0d76d2dad6ee65c8003e3e4e539174ba7e52fbb86e34da1e495229e4ece65851",
+          "attempts": [
+            {
+              "path": "logs/rerun-AFH-024-attempt-1.log",
+              "sha256": "0d76d2dad6ee65c8003e3e4e539174ba7e52fbb86e34da1e495229e4ece65851",
+              "exit": 0
+            }
+          ]
+        },
+        "adjudication_controls": [
+          {
+            "controlId": "C-024",
+            "path": "logs/adjudication-C-024-attempt-1.log",
+            "sha256": "20e3037e2229185f84f20eddf199a57732608ee6525d3c45ee60a94a3619fff7"
+          },
+          {
+            "controlId": "C-OVERLAP",
+            "path": "logs/adjudication-C-OVERLAP-attempt-1.log",
+            "sha256": "e0cdbd5a02556439211fee55af2f8d415a4738f4843564421b547a8de2eae9cd"
+          }
+        ],
+        "target_manifest_aggregate_sha256": "bd7aacd7d51c679b4e40f83d6ca49d49b03b69490ad6751f50c81236e7ef5381"
+      },
+      "rerun_refs": [
+        "logs/rerun-AFH-024-attempt-1.log",
+        "logs/adjudication-C-024-attempt-1.log",
+        "logs/adjudication-C-OVERLAP-attempt-1.log"
+      ]
+    },
+    {
+      "id": "AFH-025",
+      "classification": "confirmed_exact",
+      "duplicate_of": null,
+      "final_severity": "high",
+      "confidence": "high",
+      "root_cause": "matchOrder accepts an unbounded uint256 executionPrice for sells; ClearingHouse narrows basis to uint128 while fee calculation consumes the full value.",
+      "impact_scope": "An allowlisted matcher used 2^128 plus 2e18, stored a 2e18 basis, and debited 408.338840305126156158 wad cash; the in-range 2e18 control debited two wei.",
+      "adjudication_rationale": "Confirmed exact and standalone. The signed-order uint256/uint128 domain split directly burns signer cash and corrupts basis; its fee side effect may reach AFH-023 but neither finding depends on nor duplicates the other.",
+      "overlap_group": null,
+      "accounting": {
+        "one_to_one_distinct": true,
+        "standalone_finding": true,
+        "composition_role": "standalone",
+        "dependencies": [],
+        "compatible_or_shared_effect_with": [
+          "AFH-023"
+        ],
+        "double_counting_rule": "AFH-025 is counted once at its own root cause; shared component, flow, or impact shape does not merge it with another candidate."
+      },
+      "evidence_hashes": {
+        "hunter_packet": {
+          "revision": "31ea4b7",
+          "path": "blind-run/evidence/AFH-025.json",
+          "sha256": "5f367748aab13bc25b2fd33acbb91a7e2bab068aa6bd495073b8724d07cf1f15"
+        },
+        "consensus_rerun": {
+          "path": "logs/rerun-AFH-025-attempt-1.log",
+          "sha256": "f0fd9e0f7b57d93307416c6ec37e39dd05d0a5778b39cbb966c21da27f4abe58",
+          "attempts": [
+            {
+              "path": "logs/rerun-AFH-025-attempt-1.log",
+              "sha256": "f0fd9e0f7b57d93307416c6ec37e39dd05d0a5778b39cbb966c21da27f4abe58",
+              "exit": 0
+            }
+          ]
+        },
+        "adjudication_controls": [
+          {
+            "controlId": "C-OVERLAP",
+            "path": "logs/adjudication-C-OVERLAP-attempt-1.log",
+            "sha256": "e0cdbd5a02556439211fee55af2f8d415a4738f4843564421b547a8de2eae9cd"
+          }
+        ],
+        "target_manifest_aggregate_sha256": "bd7aacd7d51c679b4e40f83d6ca49d49b03b69490ad6751f50c81236e7ef5381"
+      },
+      "rerun_refs": [
+        "logs/rerun-AFH-025-attempt-1.log",
+        "logs/adjudication-C-OVERLAP-attempt-1.log"
+      ]
+    }
+  ]
+}

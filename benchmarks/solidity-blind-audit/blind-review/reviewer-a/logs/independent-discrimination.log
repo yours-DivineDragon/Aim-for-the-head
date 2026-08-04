@@ -1,0 +1,23 @@
+This version of µWS is not compatible with your Node.js build:
+
+Error: Cannot find module '../binaries/uws_linux_x64_137.node'
+Require stack:
+- /tmp/aim-blind-review-a-2818814.IKxDfJ/target/node_modules/ganache/node_modules/@trufflesuite/uws-js-unofficial/src/uws.js
+- /tmp/aim-blind-review-a-2818814.IKxDfJ/target/node_modules/ganache/dist/node/core.js
+Falling back to a NodeJS implementation; performance may be degraded.
+
+
+{"check":"C-001-depth","borrowLimit":"750000000000000000000","frames":"8","debt":"6000000000000000000000","stableReceived":"6000000000000000000000"}
+✔ C-001 discriminant: stale-debt callback can repeat beyond two frames (4187.211403ms)
+{"check":"C-005-execute","preSeizureExecuteRejected":true,"postSeizureExecuteSucceeded":true,"attackerToken":"10000000000000000000"}
+✔ C-005 discriminant: reinitialization also grants the arbitrary-call vault role (221.416246ms)
+{"check":"C-006-static-solvency","collateralValue":"1000000000000000000000","debt":"949000000000000000000","immediateShortfall":"0","priceDropToInsolvencyBps":"510"}
+✔ C-006 discriminant: parameter bypass raises risk but remains nominally collateralized at the static price (640.982953ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 5790.754123

@@ -1,0 +1,1075 @@
+{
+  "schema": "post-reveal-consensus-results",
+  "schema_version": "1.0.0",
+  "benchmark": "aster-credit-solidity-blind-audit",
+  "adjudication_file": "output/match-adjudication.json",
+  "source_paths": [
+    "inputs/canonical/ground-truth.json",
+    "inputs/canonical/grading-schema.json",
+    "inputs/canonical/preregistered-scoring.json",
+    "inputs/canonical/candidates.json",
+    "inputs/canonical/blind-consensus.json",
+    "inputs/canonical/resource-metrics.json",
+    "inputs/canonical/validation-map.json",
+    "inputs/scorer-a/match-adjudication-a.json",
+    "inputs/scorer-a/results-a.json",
+    "inputs/scorer-b/match-adjudication-b.json",
+    "inputs/scorer-b/results-b.json"
+  ],
+  "raw_components": {
+    "severity_weights": {
+      "low": 1,
+      "medium": 2,
+      "high": 4,
+      "critical": 8
+    },
+    "severity_rank_map": {
+      "low": 0,
+      "medium": 1,
+      "high": 2,
+      "critical": 3
+    },
+    "positive_truth_units": 15,
+    "truth_units_by_severity": {
+      "critical": 2,
+      "high": 10,
+      "medium": 3,
+      "low": 0
+    },
+    "truth_severity_weight_total": 62,
+    "raw_claims": 11,
+    "unique_candidate_clusters": 11,
+    "valid_unique_candidate_clusters": 11,
+    "candidate_clusters_by_consensus_severity": {
+      "critical": 2,
+      "high": 5,
+      "medium": 3,
+      "low": 1
+    },
+    "candidate_severity_weight_total": 43,
+    "exact_matches": 9,
+    "partial_matches": 2,
+    "misses": 4,
+    "match_credit_sum": 10,
+    "severity_weighted_match_credit_sum": 41,
+    "novel_valid_clusters": 0,
+    "false_positive_clusters": 0,
+    "duplicate_claims": 0,
+    "duplicate_clusters": 0,
+    "precommitted_public_negative_controls": 0,
+    "controls_with_unsupported_allegations": 0,
+    "unsupported_low_or_medium_false_positive_claims": 0,
+    "unsupported_high_or_critical_false_positive_claims": 0,
+    "unsupported_patched_control_claims": 0
+  },
+  "metrics": {
+    "exact_recall": {
+      "formula": "exact_matches / positive_truth_units",
+      "raw_components": {
+        "exact_matches": 9,
+        "positive_truth_units": 15
+      },
+      "exact_fraction": "9/15 = 3/5",
+      "decimal": 0.6
+    },
+    "credit_recall": {
+      "formula": "sum(match_credit) / positive_truth_units",
+      "raw_components": {
+        "exact_credit": 9,
+        "partial_credit": "2 * 1/2 = 1",
+        "miss_credit": 0,
+        "match_credit_sum": 10,
+        "positive_truth_units": 15
+      },
+      "exact_fraction": "10/15 = 2/3",
+      "decimal": 0.666666666667
+    },
+    "severity_weighted_recall": {
+      "formula": "sum(canonical_severity_weight * match_credit) / sum(truth_severity_weight)",
+      "raw_components": {
+        "critical": {
+          "truth_weight": 16,
+          "credited_weight": 8
+        },
+        "high": {
+          "truth_weight": 40,
+          "credited_weight": 30
+        },
+        "medium": {
+          "truth_weight": 6,
+          "credited_weight": 3
+        },
+        "low": {
+          "truth_weight": 0,
+          "credited_weight": 0
+        },
+        "weighted_credit_sum": 41,
+        "truth_weight_denominator": 62
+      },
+      "exact_fraction": "41/62",
+      "decimal": 0.661290322581
+    },
+    "unique_precision": {
+      "formula": "(exact_matches + 0.5 * partial_matches + novel_valid) / unique_candidate_clusters",
+      "raw_components": {
+        "exact_matches": 9,
+        "half_partial_matches": 1,
+        "novel_valid": 0,
+        "precision_credit": 10,
+        "unique_candidate_clusters": 11
+      },
+      "exact_fraction": "10/11",
+      "decimal": 0.909090909091
+    },
+    "raw_precision": {
+      "formula": "(exact_matches + 0.5 * partial_matches + novel_valid) / raw_claims",
+      "raw_components": {
+        "precision_credit": 10,
+        "raw_claims": 11
+      },
+      "exact_fraction": "10/11",
+      "decimal": 0.909090909091
+    },
+    "duplicate_rate": {
+      "formula": "(raw_claims - unique_candidate_clusters) / raw_claims",
+      "raw_components": {
+        "raw_claims": 11,
+        "unique_candidate_clusters": 11,
+        "duplicate_claims": 0
+      },
+      "exact_fraction": "0/11 = 0",
+      "decimal": 0
+    },
+    "claim_false_positive_rate": {
+      "formula": "false_positive_clusters / unique_candidate_clusters",
+      "raw_components": {
+        "false_positive_clusters": 0,
+        "unique_candidate_clusters": 11
+      },
+      "exact_fraction": "0/11 = 0",
+      "decimal": 0
+    },
+    "control_specificity": {
+      "formula": "1 - controls_with_unsupported_allegations / intact_negative_controls",
+      "raw_components": {
+        "controls_with_unsupported_allegations": 0,
+        "intact_negative_controls": 0
+      },
+      "exact_fraction": null,
+      "decimal": null,
+      "status": "null_zero_denominator",
+      "reason": "No separate public negative-control units were precommitted. The 15 validation-map controls are patched comparators for the positive exploit units and are excluded."
+    },
+    "weighted_precision": {
+      "formula": null,
+      "exact_fraction": null,
+      "decimal": null,
+      "status": "null_preregistration_omission",
+      "reason": "The preregistration references weighted_precision in weighted_f1 but never defines weighted_precision or its weight basis."
+    },
+    "weighted_f1": {
+      "preregistered_formula": "2 * weighted_precision * weighted_recall / (weighted_precision + weighted_recall)",
+      "raw_components": {
+        "weighted_precision": null,
+        "weighted_recall": "41/62"
+      },
+      "exact_fraction": null,
+      "decimal": null,
+      "status": "null_missing_operand",
+      "reason": "The preregistered formula cannot be evaluated because weighted_precision is undefined."
+    },
+    "non_preregistered_sensitivities": {
+      "headline_metrics": false,
+      "unique_credit_precision_as_weighted_precision": {
+        "assumption": "Reuse the preregistered credit-weighted unique precision as the missing weighted-precision operand.",
+        "weighted_precision": {
+          "exact_fraction": "10/11",
+          "decimal": 0.909090909091
+        },
+        "weighted_f1": {
+          "formula": "2 * (10/11) * (41/62) / ((10/11) + (41/62))",
+          "exact_fraction": "820/1071",
+          "decimal": 0.765639589169
+        }
+      },
+      "candidate_severity_weighted_precision": {
+        "assumption": "Weight each valid candidate cluster by its frozen consensus severity and multiply partial credit by 1/2.",
+        "raw_components": {
+          "exact_candidate_weight_credit": 34,
+          "partial_candidate_weight_credit": "9/2",
+          "novel_valid_candidate_weight_credit": 0,
+          "weighted_precision_numerator": "77/2",
+          "candidate_weight_denominator": 43
+        },
+        "weighted_precision": {
+          "exact_fraction": "(77/2)/43 = 77/86",
+          "decimal": 0.895348837209
+        },
+        "weighted_f1": {
+          "formula": "2 * (77/86) * (41/62) / ((77/86) + (41/62))",
+          "exact_fraction": "3157/4150",
+          "decimal": 0.760722891566
+        }
+      }
+    },
+    "severity_calibration": {
+      "formula": "1 - weighted_absolute_rank_error / (3 * total_valid_finding_weight)",
+      "operationalization": "For each matched valid candidate, weight absolute candidate-versus-canonical rank error by canonical severity weight. Canonical severity is the calibration target; misses have no candidate estimate and are excluded.",
+      "raw_components": {
+        "valid_matched_findings": 11,
+        "aligned": 7,
+        "overcalls": 1,
+        "undercalls": 3,
+        "total_valid_finding_weight": 44,
+        "weighted_absolute_rank_error": 14,
+        "error_terms": [
+          {
+            "candidate_id": "C-001",
+            "truth_id": "F-04",
+            "relation": "overcall",
+            "absolute_rank_error": 1,
+            "canonical_weight": 4,
+            "weighted_error": 4
+          },
+          {
+            "candidate_id": "C-006",
+            "truth_id": "F-05",
+            "relation": "undercall",
+            "absolute_rank_error": 1,
+            "canonical_weight": 4,
+            "weighted_error": 4
+          },
+          {
+            "candidate_id": "C-010",
+            "truth_id": "F-08",
+            "relation": "undercall",
+            "absolute_rank_error": 1,
+            "canonical_weight": 4,
+            "weighted_error": 4
+          },
+          {
+            "candidate_id": "C-011",
+            "truth_id": "F-03",
+            "relation": "undercall",
+            "absolute_rank_error": 1,
+            "canonical_weight": 2,
+            "weighted_error": 2
+          }
+        ]
+      },
+      "exact_fraction": "1 - 14/(3*44) = 59/66",
+      "decimal": 0.893939393939,
+      "reported_severity_weight_sensitivity": {
+        "assumption": "Use frozen candidate severity weights instead of canonical weights.",
+        "total_valid_finding_weight": 43,
+        "weighted_absolute_rank_error": 13,
+        "exact_fraction": "1 - 13/(3*43) = 116/129",
+        "decimal": 0.899224806202
+      }
+    }
+  },
+  "secondary_104_point_rubric": {
+    "maximum": 104,
+    "finding_points_before_false_positive_deductions": 66,
+    "false_positive_deductions": 0,
+    "unrounded_score": 66,
+    "rounding_rule": "Round only the final score to the nearest 0.5 point.",
+    "final_score": 66,
+    "exact_fraction_of_maximum": "66/104 = 33/52",
+    "decimal_fraction_of_maximum": 0.634615384615,
+    "per_truth": [
+      {
+        "truth_id": "F-01",
+        "match": "miss",
+        "pre_cap_points": 0,
+        "cap": null,
+        "awarded": 0,
+        "maximum": 12
+      },
+      {
+        "truth_id": "F-02",
+        "match": "exact",
+        "pre_cap_points": 7,
+        "cap": null,
+        "awarded": 7,
+        "maximum": 7
+      },
+      {
+        "truth_id": "F-03",
+        "match": "partial",
+        "pre_cap_points": 2,
+        "cap": 3,
+        "cap_binding": false,
+        "awarded": 2,
+        "maximum": 4
+      },
+      {
+        "truth_id": "F-04",
+        "match": "partial",
+        "pre_cap_points": 5,
+        "cap": 5.6,
+        "cap_binding": false,
+        "awarded": 5,
+        "maximum": 7
+      },
+      {
+        "truth_id": "F-05",
+        "match": "exact",
+        "pre_cap_points": 7,
+        "cap": 5,
+        "cap_binding": true,
+        "awarded": 5,
+        "maximum": 7
+      },
+      {
+        "truth_id": "F-06",
+        "match": "miss",
+        "pre_cap_points": 0,
+        "cap": null,
+        "awarded": 0,
+        "maximum": 4
+      },
+      {
+        "truth_id": "F-07",
+        "match": "miss",
+        "pre_cap_points": 0,
+        "cap": null,
+        "awarded": 0,
+        "maximum": 7
+      },
+      {
+        "truth_id": "F-08",
+        "match": "exact",
+        "pre_cap_points": 7,
+        "cap": 5,
+        "cap_binding": true,
+        "awarded": 5,
+        "maximum": 7
+      },
+      {
+        "truth_id": "F-09",
+        "match": "exact",
+        "pre_cap_points": 7,
+        "cap": null,
+        "awarded": 7,
+        "maximum": 7
+      },
+      {
+        "truth_id": "F-10",
+        "match": "exact",
+        "pre_cap_points": 10,
+        "cap": null,
+        "awarded": 10,
+        "maximum": 10
+      },
+      {
+        "truth_id": "F-11",
+        "match": "exact",
+        "pre_cap_points": 4,
+        "cap": null,
+        "awarded": 4,
+        "maximum": 4
+      },
+      {
+        "truth_id": "F-12",
+        "match": "exact",
+        "pre_cap_points": 7,
+        "cap": null,
+        "awarded": 7,
+        "maximum": 7
+      },
+      {
+        "truth_id": "F-13",
+        "match": "exact",
+        "pre_cap_points": 7,
+        "cap": null,
+        "awarded": 7,
+        "maximum": 7
+      },
+      {
+        "truth_id": "F-14",
+        "match": "miss",
+        "pre_cap_points": 0,
+        "cap": null,
+        "awarded": 0,
+        "maximum": 7
+      },
+      {
+        "truth_id": "F-15",
+        "match": "exact",
+        "pre_cap_points": 7,
+        "cap": null,
+        "awarded": 7,
+        "maximum": 7
+      }
+    ],
+    "false_positive_deduction_components": {
+      "unsupported_low_or_medium": {
+        "count": 0,
+        "points_each": 2,
+        "deduction": 0
+      },
+      "unsupported_high_or_critical": {
+        "count": 0,
+        "points_each": 4,
+        "deduction": 0
+      },
+      "claimed_patched_negative_control_exploitable": {
+        "count": 0,
+        "points_each": 5,
+        "deduction": 0
+      }
+    }
+  },
+  "severity_breakdown": {
+    "by_canonical_truth_severity": [
+      {
+        "severity": "critical",
+        "truth_units": 2,
+        "exact": 1,
+        "partial": 0,
+        "miss": 1,
+        "credit_sum": 1,
+        "exact_recall": {
+          "exact_fraction": "1/2",
+          "decimal": 0.5
+        },
+        "credit_recall": {
+          "exact_fraction": "1/2",
+          "decimal": 0.5
+        },
+        "weighted_credit": {
+          "numerator": 8,
+          "denominator": 16,
+          "exact_fraction": "1/2",
+          "decimal": 0.5
+        },
+        "rubric_points": {
+          "awarded": 10,
+          "maximum": 22,
+          "exact_fraction": "5/11",
+          "decimal": 0.454545454545
+        }
+      },
+      {
+        "severity": "high",
+        "truth_units": 10,
+        "exact": 7,
+        "partial": 1,
+        "miss": 2,
+        "credit_sum": "15/2",
+        "exact_recall": {
+          "exact_fraction": "7/10",
+          "decimal": 0.7
+        },
+        "credit_recall": {
+          "exact_fraction": "(15/2)/10 = 3/4",
+          "decimal": 0.75
+        },
+        "weighted_credit": {
+          "numerator": 30,
+          "denominator": 40,
+          "exact_fraction": "3/4",
+          "decimal": 0.75
+        },
+        "rubric_points": {
+          "awarded": 50,
+          "maximum": 70,
+          "exact_fraction": "5/7",
+          "decimal": 0.714285714286
+        }
+      },
+      {
+        "severity": "medium",
+        "truth_units": 3,
+        "exact": 1,
+        "partial": 1,
+        "miss": 1,
+        "credit_sum": "3/2",
+        "exact_recall": {
+          "exact_fraction": "1/3",
+          "decimal": 0.333333333333
+        },
+        "credit_recall": {
+          "exact_fraction": "(3/2)/3 = 1/2",
+          "decimal": 0.5
+        },
+        "weighted_credit": {
+          "numerator": 3,
+          "denominator": 6,
+          "exact_fraction": "1/2",
+          "decimal": 0.5
+        },
+        "rubric_points": {
+          "awarded": 6,
+          "maximum": 12,
+          "exact_fraction": "1/2",
+          "decimal": 0.5
+        }
+      },
+      {
+        "severity": "low",
+        "truth_units": 0,
+        "exact": 0,
+        "partial": 0,
+        "miss": 0,
+        "credit_sum": 0,
+        "exact_recall": null,
+        "credit_recall": null,
+        "weighted_credit": null,
+        "rubric_points": null,
+        "reason": "No committed Low-severity truth units."
+      }
+    ],
+    "by_candidate_consensus_severity": [
+      {
+        "severity": "critical",
+        "candidate_clusters": 2,
+        "exact": 1,
+        "partial": 1,
+        "novel_valid": 0,
+        "false_positive": 0,
+        "precision_credit": "3/2",
+        "precision_fraction": "(3/2)/2 = 3/4",
+        "decimal": 0.75
+      },
+      {
+        "severity": "high",
+        "candidate_clusters": 5,
+        "exact": 5,
+        "partial": 0,
+        "novel_valid": 0,
+        "false_positive": 0,
+        "precision_credit": 5,
+        "precision_fraction": "5/5 = 1",
+        "decimal": 1
+      },
+      {
+        "severity": "medium",
+        "candidate_clusters": 3,
+        "exact": 3,
+        "partial": 0,
+        "novel_valid": 0,
+        "false_positive": 0,
+        "precision_credit": 3,
+        "precision_fraction": "3/3 = 1",
+        "decimal": 1
+      },
+      {
+        "severity": "low",
+        "candidate_clusters": 1,
+        "exact": 0,
+        "partial": 1,
+        "novel_valid": 0,
+        "false_positive": 0,
+        "precision_credit": "1/2",
+        "precision_fraction": "1/2",
+        "decimal": 0.5
+      }
+    ]
+  },
+  "class_breakdown": [
+    {
+      "class": "multi-contract oracle/accounting exploit chain",
+      "truth_id": "F-01",
+      "candidate_id": null,
+      "match": "miss",
+      "credit": 0,
+      "points_awarded": 0,
+      "points_maximum": 12,
+      "primary_requested_family": "advanced composed exploit"
+    },
+    {
+      "class": "oracle manipulation",
+      "truth_id": "F-02",
+      "candidate_id": "C-008",
+      "match": "exact",
+      "credit": 1,
+      "points_awarded": 7,
+      "points_maximum": 7,
+      "primary_requested_family": "external protocol/integration issues"
+    },
+    {
+      "class": "ERC-4626 integration accounting",
+      "truth_id": "F-03",
+      "candidate_id": "C-011",
+      "match": "partial",
+      "credit": 0.5,
+      "points_awarded": 2,
+      "points_maximum": 4,
+      "primary_requested_family": "cross-contract bugs"
+    },
+    {
+      "class": "cross-function cross-contract reentrancy",
+      "truth_id": "F-04",
+      "candidate_id": "C-001",
+      "match": "partial",
+      "credit": 0.5,
+      "points_awarded": 5,
+      "points_maximum": 7,
+      "primary_requested_family": "reentrancy"
+    },
+    {
+      "class": "access control / incorrect boolean logic",
+      "truth_id": "F-05",
+      "candidate_id": "C-006",
+      "match": "exact",
+      "credit": 1,
+      "points_awarded": 5,
+      "points_maximum": 7,
+      "primary_requested_family": "access control"
+    },
+    {
+      "class": "ERC-4626 rounding direction",
+      "truth_id": "F-06",
+      "candidate_id": null,
+      "match": "miss",
+      "credit": 0,
+      "points_awarded": 0,
+      "points_maximum": 4,
+      "primary_requested_family": "niche mistakes"
+    },
+    {
+      "class": "fee-on-transfer accounting",
+      "truth_id": "F-07",
+      "candidate_id": null,
+      "match": "miss",
+      "credit": 0,
+      "points_awarded": 0,
+      "points_maximum": 7,
+      "primary_requested_family": "external protocol/integration issues"
+    },
+    {
+      "class": "signature domain replay",
+      "truth_id": "F-08",
+      "candidate_id": "C-010",
+      "match": "exact",
+      "credit": 1,
+      "points_awarded": 5,
+      "points_maximum": 7,
+      "primary_requested_family": "extras"
+    },
+    {
+      "class": "signature parameter substitution",
+      "truth_id": "F-09",
+      "candidate_id": "C-003",
+      "match": "exact",
+      "credit": 1,
+      "points_awarded": 7,
+      "points_maximum": 7,
+      "primary_requested_family": "extras"
+    },
+    {
+      "class": "cross-domain authentication / cross-contract invariant",
+      "truth_id": "F-10",
+      "candidate_id": "C-002",
+      "match": "exact",
+      "credit": 1,
+      "points_awarded": 10,
+      "points_maximum": 10,
+      "primary_requested_family": "cross-contract bugs"
+    },
+    {
+      "class": "cross-chain replay namespace / denial of service",
+      "truth_id": "F-11",
+      "candidate_id": "C-007",
+      "match": "exact",
+      "credit": 1,
+      "points_awarded": 4,
+      "points_maximum": 4,
+      "primary_requested_family": "niche mistakes"
+    },
+    {
+      "class": "initialization / configuration takeover",
+      "truth_id": "F-12",
+      "candidate_id": "C-005",
+      "match": "exact",
+      "credit": 1,
+      "points_awarded": 7,
+      "points_maximum": 7,
+      "primary_requested_family": "access control"
+    },
+    {
+      "class": "stale oracle data",
+      "truth_id": "F-13",
+      "candidate_id": "C-009",
+      "match": "exact",
+      "credit": 1,
+      "points_awarded": 7,
+      "points_maximum": 7,
+      "primary_requested_family": "external protocol/integration issues"
+    },
+    {
+      "class": "fee-on-transfer debt accounting",
+      "truth_id": "F-14",
+      "candidate_id": null,
+      "match": "miss",
+      "credit": 0,
+      "points_awarded": 0,
+      "points_maximum": 7,
+      "primary_requested_family": "external protocol/integration issues"
+    },
+    {
+      "class": "ECDSA malleability / replay accounting",
+      "truth_id": "F-15",
+      "candidate_id": "C-004",
+      "match": "exact",
+      "credit": 1,
+      "points_awarded": 7,
+      "points_maximum": 7,
+      "primary_requested_family": "niche mistakes"
+    }
+  ],
+  "coverage_matrix": {
+    "allocation_method": "Primary, non-overlapping allocation. Each of the 15 committed truth IDs appears in exactly one requested-family row. Semantic secondary overlap is not added to any count.",
+    "families": [
+      {
+        "family": "access control",
+        "committed_truth_ids": [
+          "F-05",
+          "F-12"
+        ],
+        "outcomes": [
+          "F-05 exact via C-006",
+          "F-12 exact via C-005"
+        ],
+        "counts": {
+          "exact": 2,
+          "partial": 0,
+          "miss": 0,
+          "total": 2
+        },
+        "credit_recall": {
+          "exact_fraction": "2/2 = 1",
+          "decimal": 1
+        },
+        "rubric_points": {
+          "awarded": 12,
+          "maximum": 14,
+          "exact_fraction": "6/7",
+          "decimal": 0.857142857143
+        }
+      },
+      {
+        "family": "reentrancy",
+        "committed_truth_ids": [
+          "F-04"
+        ],
+        "outcomes": [
+          "F-04 partial via C-001"
+        ],
+        "counts": {
+          "exact": 0,
+          "partial": 1,
+          "miss": 0,
+          "total": 1
+        },
+        "credit_recall": {
+          "exact_fraction": "1/2",
+          "decimal": 0.5
+        },
+        "rubric_points": {
+          "awarded": 5,
+          "maximum": 7,
+          "exact_fraction": "5/7",
+          "decimal": 0.714285714286
+        }
+      },
+      {
+        "family": "niche mistakes",
+        "committed_truth_ids": [
+          "F-06",
+          "F-11",
+          "F-15"
+        ],
+        "outcomes": [
+          "F-06 miss",
+          "F-11 exact via C-007",
+          "F-15 exact via C-004"
+        ],
+        "counts": {
+          "exact": 2,
+          "partial": 0,
+          "miss": 1,
+          "total": 3
+        },
+        "credit_recall": {
+          "exact_fraction": "2/3",
+          "decimal": 0.666666666667
+        },
+        "rubric_points": {
+          "awarded": 11,
+          "maximum": 15,
+          "exact_fraction": "11/15",
+          "decimal": 0.733333333333
+        }
+      },
+      {
+        "family": "advanced composed exploit",
+        "committed_truth_ids": [
+          "F-01"
+        ],
+        "outcomes": [
+          "F-01 miss"
+        ],
+        "counts": {
+          "exact": 0,
+          "partial": 0,
+          "miss": 1,
+          "total": 1
+        },
+        "credit_recall": {
+          "exact_fraction": "0/1 = 0",
+          "decimal": 0
+        },
+        "rubric_points": {
+          "awarded": 0,
+          "maximum": 12,
+          "exact_fraction": "0/12 = 0",
+          "decimal": 0
+        }
+      },
+      {
+        "family": "cross-contract bugs",
+        "committed_truth_ids": [
+          "F-03",
+          "F-10"
+        ],
+        "outcomes": [
+          "F-03 partial via C-011",
+          "F-10 exact via C-002"
+        ],
+        "counts": {
+          "exact": 1,
+          "partial": 1,
+          "miss": 0,
+          "total": 2
+        },
+        "credit_recall": {
+          "exact_fraction": "(3/2)/2 = 3/4",
+          "decimal": 0.75
+        },
+        "rubric_points": {
+          "awarded": 12,
+          "maximum": 14,
+          "exact_fraction": "6/7",
+          "decimal": 0.857142857143
+        }
+      },
+      {
+        "family": "external protocol/integration issues",
+        "committed_truth_ids": [
+          "F-02",
+          "F-07",
+          "F-13",
+          "F-14"
+        ],
+        "outcomes": [
+          "F-02 exact via C-008",
+          "F-07 miss",
+          "F-13 exact via C-009",
+          "F-14 miss"
+        ],
+        "counts": {
+          "exact": 2,
+          "partial": 0,
+          "miss": 2,
+          "total": 4
+        },
+        "credit_recall": {
+          "exact_fraction": "2/4 = 1/2",
+          "decimal": 0.5
+        },
+        "rubric_points": {
+          "awarded": 14,
+          "maximum": 28,
+          "exact_fraction": "1/2",
+          "decimal": 0.5
+        }
+      },
+      {
+        "family": "extras",
+        "committed_truth_ids": [
+          "F-08",
+          "F-09"
+        ],
+        "outcomes": [
+          "F-08 exact via C-010",
+          "F-09 exact via C-003"
+        ],
+        "counts": {
+          "exact": 2,
+          "partial": 0,
+          "miss": 0,
+          "total": 2
+        },
+        "credit_recall": {
+          "exact_fraction": "2/2 = 1",
+          "decimal": 1
+        },
+        "rubric_points": {
+          "awarded": 12,
+          "maximum": 14,
+          "exact_fraction": "6/7",
+          "decimal": 0.857142857143
+        }
+      }
+    ],
+    "de_duplicated_totals": {
+      "truth_ids": 15,
+      "exact": 9,
+      "partial": 2,
+      "miss": 4,
+      "match_credit": 10,
+      "rubric_points_awarded": 66,
+      "rubric_points_maximum": 104
+    },
+    "secondary_overlap_not_counted": [
+      "F-03 is also an ERC-4626 integration primitive and an F-01 chain link.",
+      "F-10 also contains an authentication failure and external bridge semantics.",
+      "F-02 also crosses ReservePool, ReserveOracle, and LendingMarket.",
+      "F-11 and F-15 are placed under niche mistakes to keep the matrix exhaustive and non-overlapping."
+    ]
+  },
+  "claim_lists": {
+    "exact": [
+      "F-02:C-008",
+      "F-05:C-006",
+      "F-08:C-010",
+      "F-09:C-003",
+      "F-10:C-002",
+      "F-11:C-007",
+      "F-12:C-005",
+      "F-13:C-009",
+      "F-15:C-004"
+    ],
+    "partial": [
+      "F-03:C-011",
+      "F-04:C-001"
+    ],
+    "missed": [
+      "F-01",
+      "F-06",
+      "F-07",
+      "F-14"
+    ],
+    "novel_valid": [],
+    "false_positive": [],
+    "duplicates": []
+  },
+  "resource_efficiency": {
+    "run_count": 1,
+    "utc_start": "2026-08-04T12:47:32.768Z",
+    "utc_end": "2026-08-04T13:32:25.000Z",
+    "elapsed_seconds": 2692.232,
+    "elapsed_exact_fraction_seconds": "336529/125",
+    "elapsed_human": "44m 52.232s",
+    "wall_clock_budget_seconds": 10800,
+    "budget_exhausted": false,
+    "budget_utilization": {
+      "exact_fraction": "336529/1350000",
+      "decimal": 0.249280740741
+    },
+    "budget_remaining_seconds": {
+      "exact_fraction": "1013471/125",
+      "decimal": 8107.768
+    },
+    "validated_candidates_per_hour": {
+      "exact_fraction": "4950000/336529",
+      "decimal": 14.708984961177
+    },
+    "exact_matches_per_hour": {
+      "exact_fraction": "4050000/336529",
+      "decimal": 12.034624059145
+    },
+    "match_credit_per_hour": {
+      "exact_fraction": "4500000/336529",
+      "decimal": 13.371804510161
+    },
+    "rubric_points_per_hour": {
+      "exact_fraction": "29700000/336529",
+      "decimal": 88.253909767063
+    },
+    "mean_elapsed_seconds_per_validated_candidate": {
+      "exact_fraction": "336529/1375",
+      "decimal": 244.748363636364
+    },
+    "completed_test_case_pass_rate": {
+      "exact_fraction": "74/76 = 37/38",
+      "decimal": 0.973684210526
+    },
+    "local_counts": {
+      "aim_experiment_events": 12,
+      "validated_candidates": 11,
+      "rejected_candidate_families": 7,
+      "confirmed_compile_invocations": 37,
+      "completed_test_processes": 36,
+      "completed_test_cases": 76,
+      "passed_test_cases": 74,
+      "failed_test_cases": 2,
+      "failed_test_case_context": "Two preserved harness-only first attempts: C-002 over-specific revert-text assertion and C-006 reused estimate calldata; corrected target-independent harnesses passed twice and in final validation.",
+      "interrupted_aggregate_validation_processes": 1,
+      "source_files_read": 14,
+      "solidity_lines_read": 709,
+      "evidence_files_hashed": 68
+    },
+    "failed_test_case_context": "Two preserved harness-only first attempts: an over-specific revert-text assertion and reused estimate calldata. Corrected target-independent harnesses passed twice and in final validation.",
+    "unavailable_telemetry": {
+      "service_side_tool_invocations": null,
+      "service_side_model_input_tokens": null,
+      "service_side_model_output_tokens": null,
+      "service_side_compute_or_cost": null,
+      "time_to_first_valid_candidate": null,
+      "per_candidate_elapsed_time": null,
+      "reason": "Not supplied; no values were estimated."
+    }
+  },
+  "protocol_deviations": [
+    {
+      "kind": "preregistration_omission",
+      "field": "weighted_precision and weighted_f1",
+      "effect": "Official values are null. Numeric alternatives are isolated as non-preregistered sensitivities."
+    },
+    {
+      "kind": "severity_calibration_operationalization",
+      "field": "weight and population basis",
+      "effect": "Canonical-weighted matched-finding calibration is primary; candidate-weighted calibration is disclosed as sensitivity because the preregistration does not specify the basis."
+    },
+    {
+      "kind": "zero_denominator",
+      "field": "control_specificity",
+      "effect": "Null because no distinct public negative-control units were precommitted. Patched exploit controls were not reclassified."
+    },
+    {
+      "kind": "input_layout_normalization",
+      "field": "scorer input-hash manifests",
+      "effect": "Both scorer manifests were generated for a flat inputs/ layout. All 65 entries verify after the mechanical inputs/ to inputs/canonical/ prefix mapping in this package."
+    },
+    {
+      "kind": "input_identifier_note",
+      "field": "commit identifiers",
+      "effect": "metadata.json base_commit differs from candidates.json target_commit, but both scorer packages and the candidate consensus bind to the exact matching source-manifest digest."
+    }
+  ],
+  "limitations": [
+    "C-008 reaches the same F-02 root cause and profitable lending-impact oracle at about 3.994 rather than the canonical fixture's greater-than-100 price; exact credit follows the committed rubric's mechanism-and-impact wording.",
+    "C-011 proves F-03's donation/inflation primitive but not the posted-collateral consumer path. Its first-share availability consequence is not double-counted as novel-valid.",
+    "C-001 proves exploitable stale-debt callback reentrancy through nested borrow, not the committed borrow-to-withdrawCollateral edge.",
+    "The blind-consensus JSON embeds the four-encoding C-004 boundary conclusion; the separately referenced consensus rerun logs are not present in this frozen input tree. The available two-encoding candidate reproduction already satisfies F-15.",
+    "Service-side tool, token, compute, cost, time-to-first-valid, and per-candidate timing telemetry are unavailable.",
+    "Family labels are an explicit primary partition for coverage reporting, not additional scoring units."
+  ],
+  "arithmetic_attestation": {
+    "exact_plus_partial_plus_miss_equals_truth_units": true,
+    "candidate_dispositions_sum_to_raw_claims": true,
+    "truth_weight_sum_recomputed": 62,
+    "match_credit_sum_recomputed": 10,
+    "weighted_match_credit_sum_recomputed": 41,
+    "rubric_maximum_sum_recomputed": 104,
+    "rubric_awarded_sum_recomputed": 66,
+    "family_matrix_is_exhaustive_and_non_overlapping": true,
+    "one_to_one_mapping_verified": true,
+    "F-01_chain_rule_verified": true,
+    "control_specificity_null_verified": true
+  }
+}

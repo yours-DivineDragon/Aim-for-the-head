@@ -1,0 +1,22 @@
+{
+  "valid": true,
+  "checks": {
+    "jsonParse": true,
+    "schemaAndEvidence": true,
+    "manifestVerify": true,
+    "publicSealVerify": true,
+    "ordinarySuite": true,
+    "aimTerminal": true,
+    "gitScope": true,
+    "hashInventory": true
+  },
+  "candidateCount": 25,
+  "rejectedCount": 6,
+  "severity": {
+    "critical": 1,
+    "high": 14,
+    "medium": 7,
+    "low": 3
+  },
+  "errors": []
+}

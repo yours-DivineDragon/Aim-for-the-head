@@ -1,0 +1,296 @@
+## retained exact regression C-008
+command: bash run/evidence/C-008/reproduce.sh
+started_at: 2026-08-04T16:50:11.482Z
+ended_at: 2026-08-04T16:50:16.862Z
+duration_ms: 5380
+exit_code: 0
+
+### stdout
+This version of µWS is not compatible with your Node.js build:
+
+Error: Cannot find module '../binaries/uws_linux_x64_137.node'
+Require stack:
+- /workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/solidity-blind-audit/node_modules/ganache/node_modules/@trufflesuite/uws-js-unofficial/src/uws.js
+- /workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/solidity-blind-audit/node_modules/ganache/dist/node/core.js
+Falling back to a NodeJS implementation; performance may be degraded.
+
+
+{"oracle":"C-008-positive","startingStable":"10000000000000000000000","acquiredAsset":"4992488733099649474211","manipulatedPrice":"3993999999999999999","safeLimitAtOneDollar":"3744366549824737105658","debtAfter":"14954999999999999996254","finalLiquidStable":"14954999999999999996254"}
+✔ positive: fallback to manipulable pool spot creates profitable undercollateralized borrowing (3586.933941ms)
+{"oracle":"C-008-negative","primaryPrice":"1000000000000000000","safeLimit":"3744366549824737105658","excessBorrowRejected":true,"debtAfter":"0"}
+✔ negative: a positive primary feed ignores the same pool manipulation and blocks excess borrowing (1008.891572ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 5329.355048
+
+### stderr
+(empty)
+
+## retained exact regression C-006
+command: bash run/evidence/C-006/reproduce.sh
+started_at: 2026-08-04T16:50:16.862Z
+ended_at: 2026-08-04T16:50:21.257Z
+duration_ms: 4395
+exit_code: 0
+
+### stdout
+This version of µWS is not compatible with your Node.js build:
+
+Error: Cannot find module '../binaries/uws_linux_x64_137.node'
+Require stack:
+- /workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/solidity-blind-audit/node_modules/ganache/node_modules/@trufflesuite/uws-js-unofficial/src/uws.js
+- /workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/solidity-blind-audit/node_modules/ganache/dist/node/core.js
+Falling back to a NodeJS implementation; performance may be degraded.
+
+
+{"oracle":"C-006-positive","callerIsGuardian":false,"initialFactor":"7500","factorAfter":"9500","initialLimit":"750000000000000000000","debtAfter":"949000000000000000000","attackerStable":"949000000000000000000"}
+✔ positive: ordinary borrower raises global collateral factor and extracts above configured limit (3084.986118ms)
+{"oracle":"C-006-negative","unauthorizedDecreaseRejected":true,"factorAfter":"7500"}
+✔ negative: the same ordinary caller is rejected when lowering the parameter (462.034501ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4302.258263
+
+### stderr
+
+
+## retained exact regression C-010
+command: bash run/evidence/C-010/reproduce.sh
+started_at: 2026-08-04T16:50:21.257Z
+ended_at: 2026-08-04T16:50:25.302Z
+duration_ms: 4045
+exit_code: 0
+
+### stdout
+This version of µWS is not compatible with your Node.js build:
+
+Error: Cannot find module '../binaries/uws_linux_x64_137.node'
+Require stack:
+- /workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/solidity-blind-audit/node_modules/ganache/node_modules/@trufflesuite/uws-js-unofficial/src/uws.js
+- /workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/solidity-blind-audit/node_modules/ganache/dist/node/core.js
+Falling back to a NodeJS implementation; performance may be degraded.
+
+
+{"oracle":"C-010-positive","authorizedAmount":"25000000000000000000","received":"50000000000000000000","routerA":"0x5b1869D9A4C187F2EAa108f3062412ecf0526b24","routerB":"0xCfEB869F69431e42cdB54A4F4f105C19C080A601","nonceA":"1","nonceB":"1"}
+✔ positive: one signature replays across two router instances with independent nonce stores (2955.59407ms)
+{"oracle":"C-010-negative","domainBoundReplayRejected":true,"authorizedAmount":"25000000000000000000","received":"25000000000000000000","nonceB":"0"}
+✔ negative comparator: binding router and chain rejects replay on a second instance (317.379517ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4001.060296
+
+### stderr
+
+
+## retained exact regression C-003
+command: bash run/evidence/C-003/reproduce.sh
+started_at: 2026-08-04T16:50:25.302Z
+ended_at: 2026-08-04T16:50:29.110Z
+duration_ms: 3808
+exit_code: 0
+
+### stdout
+This version of µWS is not compatible with your Node.js build:
+
+Error: Cannot find module '../binaries/uws_linux_x64_137.node'
+Require stack:
+- /workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/solidity-blind-audit/node_modules/ganache/node_modules/@trufflesuite/uws-js-unofficial/src/uws.js
+- /workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/solidity-blind-audit/node_modules/ganache/dist/node/core.js
+Falling back to a NodeJS implementation; performance may be degraded.
+
+
+{"oracle":"C-003-positive","intendedRecipient":"0x22d491Bde2303f2f43325b2108D26f1eAbA1e32b","actualRecipient":"0xE11BA2b4D45Eaed5996Cd0823791E0C93114882d","intendedBalance":"0","attackerBalance":"25000000000000000000","nonceAfter":"1"}
+✔ positive: relayer redirects a valid transfer signature because recipient is not signed (2828.729836ms)
+{"oracle":"C-003-negative","encodedAmountChangeRejected":true,"attackerBalance":"0","nonceAfter":"0"}
+✔ negative: changing an encoded amount invalidates the same kind of signature (212.184836ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3763.646805
+
+### stderr
+
+
+## retained exact regression C-002
+command: bash run/evidence/C-002/reproduce.sh
+started_at: 2026-08-04T16:50:29.110Z
+ended_at: 2026-08-04T16:50:33.742Z
+duration_ms: 4632
+exit_code: 0
+
+### stdout
+This version of µWS is not compatible with your Node.js build:
+
+Error: Cannot find module '../binaries/uws_linux_x64_137.node'
+Require stack:
+- /workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/solidity-blind-audit/node_modules/ganache/node_modules/@trufflesuite/uws-js-unofficial/src/uws.js
+- /workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/solidity-blind-audit/node_modules/ganache/dist/node/core.js
+Falling back to a NodeJS implementation; performance may be degraded.
+
+
+{"oracle":"C-002-positive","configuredRemote":"0x22d491Bde2303f2f43325b2108D26f1eAbA1e32b","actualRemote":"0xE11BA2b4D45Eaed5996Cd0823791E0C93114882d","bridgeCollateral":"1000000000000000000000","attackerStable":"750000000000000000000"}
+✔ positive: authentic messenger relay from an unconfigured remote application creates spendable collateral (3336.931332ms)
+{"oracle":"C-002-negative","wrongSenderRejected":true,"correctSenderCredited":"1000000000000000000000"}
+✔ negative comparator: binding messenger source sender to configured gateway rejects the same message (513.097363ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4587.959576
+
+### stderr
+
+
+## retained exact regression C-007
+command: bash run/evidence/C-007/reproduce.sh
+started_at: 2026-08-04T16:50:33.742Z
+ended_at: 2026-08-04T16:50:38.351Z
+duration_ms: 4609
+exit_code: 0
+
+### stdout
+This version of µWS is not compatible with your Node.js build:
+
+Error: Cannot find module '../binaries/uws_linux_x64_137.node'
+Require stack:
+- /workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/solidity-blind-audit/node_modules/ganache/node_modules/@trufflesuite/uws-js-unofficial/src/uws.js
+- /workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/solidity-blind-audit/node_modules/ganache/dist/node/core.js
+Falling back to a NodeJS implementation; performance may be degraded.
+
+
+{"oracle":"C-007-positive","sharedNonce":"7","chain10Credit":"1000000000000000000","chain20Credit":"0","secondValidMessageRejected":true}
+✔ positive: a valid nonce on one configured source chain blocks the same nonce on another (3266.574418ms)
+{"oracle":"C-007-negative","chainScopedNonce":"7","chain10Credit":"1000000000000000000","chain20Credit":"2000000000000000000"}
+✔ negative comparator: chain-scoped replay keys accept both valid messages (538.423639ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4558.878892
+
+### stderr
+
+
+## retained exact regression C-005
+command: bash run/evidence/C-005/reproduce.sh
+started_at: 2026-08-04T16:50:38.351Z
+ended_at: 2026-08-04T16:50:42.167Z
+duration_ms: 3816
+exit_code: 0
+
+### stdout
+This version of µWS is not compatible with your Node.js build:
+
+Error: Cannot find module '../binaries/uws_linux_x64_137.node'
+Require stack:
+- /workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/solidity-blind-audit/node_modules/ganache/node_modules/@trufflesuite/uws-js-unofficial/src/uws.js
+- /workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/solidity-blind-audit/node_modules/ganache/dist/node/core.js
+Falling back to a NodeJS implementation; performance may be degraded.
+
+
+{"oracle":"C-005-positive","originalVault":"0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1","originalOperator":"0xFFcf8FDEE72ac11b5c542428B35EEF5769C409f0","newVault":"0x22d491Bde2303f2f43325b2108D26f1eAbA1e32b","newOperator":"0x22d491Bde2303f2f43325b2108D26f1eAbA1e32b","attackerToken":"10000000000000000000"}
+✔ positive: arbitrary caller reinitializes roles and sweeps module funds (2816.126994ms)
+{"oracle":"C-005-negative","directSweepRejected":true,"moduleToken":"10000000000000000000","attackerToken":"0"}
+✔ negative: without reinitialization the same untrusted caller cannot sweep (205.182043ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3771.970304
+
+### stderr
+
+
+## retained exact regression C-009
+command: bash run/evidence/C-009/reproduce.sh
+started_at: 2026-08-04T16:50:42.167Z
+ended_at: 2026-08-04T16:50:47.633Z
+duration_ms: 5466
+exit_code: 0
+
+### stdout
+This version of µWS is not compatible with your Node.js build:
+
+Error: Cannot find module '../binaries/uws_linux_x64_137.node'
+Require stack:
+- /workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/solidity-blind-audit/node_modules/ganache/node_modules/@trufflesuite/uws-js-unofficial/src/uws.js
+- /workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/solidity-blind-audit/node_modules/ganache/dist/node/core.js
+Falling back to a NodeJS implementation; performance may be degraded.
+
+
+{"oracle":"C-009-positive","feedAgeSeconds":"31536001","staleFeedPrice":"2000000000000000000","poolPrice":"1000000000000000000","poolBasedLimit":"750000000000000000000","debtAfter":"1500000000000000000000"}
+✔ positive: year-old positive feed answer remains authoritative and enables excess debt (3722.817905ms)
+{"oracle":"C-009-negative","boundedPrice":"1000000000000000000","excessBorrowRejected":true,"debtAfter":"0"}
+✔ negative comparator: an explicit freshness bound falls back to pool price and rejects the same debt (1005.252481ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 5416.512281
+
+### stderr
+
+
+## retained exact regression C-004
+command: bash run/evidence/C-004/reproduce.sh
+started_at: 2026-08-04T16:50:47.633Z
+ended_at: 2026-08-04T16:50:51.544Z
+duration_ms: 3911
+exit_code: 0
+
+### stdout
+This version of µWS is not compatible with your Node.js build:
+
+Error: Cannot find module '../binaries/uws_linux_x64_137.node'
+Require stack:
+- /workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/solidity-blind-audit/node_modules/ganache/node_modules/@trufflesuite/uws-js-unofficial/src/uws.js
+- /workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/solidity-blind-audit/node_modules/ganache/dist/node/core.js
+Falling back to a NodeJS implementation; performance may be degraded.
+
+
+{"oracle":"C-004-positive","samePayload":"0x308852bcf892f3adc93f060e3c77f19d160d5d88b57ea008f22c3929eed261af","canonicalId":"0x1b8517d422e635d690d60256387336a0ecd223b15516cd588de3e060dc8350ef","alternateId":"0x19b3f8e5bc61be99e6da0470e7d549ac5038a2dfd1a06b45d88482b8c80d8545","authorizedAmount":"20000000000000000000","paid":"40000000000000000000"}
+✔ positive: high-s alternate encoding bypasses signature-byte replay tracking (2836.997637ms)
+{"oracle":"C-004-negative","identicalReplayRejected":true,"authorizedAmount":"20000000000000000000","paid":"20000000000000000000"}
+✔ negative: byte-identical replay is rejected and pays only once (288.892246ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3862.781862
+
+### stderr
+(empty)

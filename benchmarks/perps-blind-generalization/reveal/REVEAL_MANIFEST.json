@@ -1,0 +1,50 @@
+{
+  "schema": 1,
+  "hashAlgorithm": "SHA-256",
+  "coverage": "Every regular file below reveal/ except this manifest, with absence of unlisted files enforced by verify-reveal.mjs",
+  "canonicalization": "UTF-8 lines: <sha256><two spaces><bytes><two spaces><path><LF>, sorted by path",
+  "fileCount": 8,
+  "aggregateSha256": "dc808f47d8fc293a7f811d4f3b24622ad27387d9d7b95d5b2d692ee06430b03c",
+  "entries": [
+    {
+      "path": "REVEAL_ATTESTATION.json",
+      "bytes": 4158,
+      "sha256": "62e0c6e6f5ac4d7ae1239c6fca12f3acdd77f16db611af918723c8af206b41dd"
+    },
+    {
+      "path": "REVEAL_ATTESTATION.md",
+      "bytes": 2890,
+      "sha256": "5214d954e47bfbae8a6ff1500d835c8ffdef230fbb0543f4123e752a434c2800"
+    },
+    {
+      "path": "VALIDATION_RESULTS.json",
+      "bytes": 983,
+      "sha256": "e8e1c88e6a02120eb7f075ec26a7b760c0ffe1c88da97bc8e03dd814f063697a"
+    },
+    {
+      "path": "canonical/canary.txt",
+      "bytes": 64,
+      "sha256": "a400b6d46d9944fc3f54e59de62f21ce2b5e0e10d598918206e140a50eea62da"
+    },
+    {
+      "path": "canonical/harness/PrivateHarnesses.sol",
+      "bytes": 4220,
+      "sha256": "35f1d287250344373322a1e1fb33b3e085f60c28088ce4def7c273bc0ebbc590"
+    },
+    {
+      "path": "canonical/hidden/run-private.mjs",
+      "bytes": 22262,
+      "sha256": "ab8c1a038f3c412e9f093432ec25ab7f5c55e1f241e6c62c63e12c874cf3975a"
+    },
+    {
+      "path": "canonical/truth/units.json",
+      "bytes": 13512,
+      "sha256": "466a202dca5237b2bd07a01ebd4717b92b779064563c5d49494860127d2702a4"
+    },
+    {
+      "path": "verify-reveal.mjs",
+      "bytes": 7086,
+      "sha256": "a08af66d73113e26462f39c8d61eee0970085ad5b910ab046bd5574e6b352740"
+    }
+  ]
+}

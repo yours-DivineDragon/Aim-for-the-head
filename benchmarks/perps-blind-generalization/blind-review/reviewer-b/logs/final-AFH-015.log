@@ -1,0 +1,10 @@
+{
+  "label": "final-AFH-015",
+  "startedUtc": "2026-08-04T20:12:53.021Z",
+  "finishedUtc": "2026-08-04T20:12:54.691Z",
+  "cwd": "/workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/perps-blind-generalization",
+  "command": "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node --test --test-concurrency=1 --test-name-pattern=H-015 blind-run/poc/core-accounting.test.mjs",
+  "exitCode": 0,
+  "stdout": "This version of µWS is not compatible with your Node.js build:\n\nError: Cannot find module '../binaries/uws_linux_x64_137.node'\nRequire stack:\n- /workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/perps-blind-generalization/node_modules/ganache/node_modules/@trufflesuite/uws-js-unofficial/src/uws.js\n- /workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/perps-blind-generalization/node_modules/ganache/dist/node/core.js\nFalling back to a NodeJS implementation; performance may be degraded.\n\n\n{\"hunterId\":\"H-015\",\"nonce0Bitmap\":\"1\",\"nonce65536Bitmap\":\"1\",\"afterNonce1Control\":\"3\"}\n✔ H-015 nonce zero and nonce 2^16 collide although a nearby nonce remains independent (1136.206999ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 1626.189136\n",
+  "stderr": ""
+}

@@ -1,0 +1,6 @@
+$ /opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node scoring/consensus/check-final-score.mjs --prehash
+cwd=/workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/perps-blind-generalization
+exit=0
+
+{"finalScoreCheck":"pass","assertions":"truth=15,candidates=25,points=89.4,precision=25/25,severity=9/14,scope=consensus-only"}
+

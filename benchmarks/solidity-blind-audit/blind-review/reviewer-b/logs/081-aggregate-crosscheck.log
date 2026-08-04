@@ -1,0 +1,14 @@
+{
+  "status_counts": {
+    "reproduced": 11
+  },
+  "severity_counts": {
+    "critical": 2,
+    "high": 6,
+    "low": 1,
+    "medium": 2
+  },
+  "scope_counts": {
+    "in_scope": 11
+  }
+}

@@ -1,0 +1,58 @@
+$ npm run check
+cwd=/workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/perps-blind-generalization
+exit=0
+
+
+> meridian-clearing-blind-benchmark@1.0.0 check
+> npm run compile && npm test
+
+
+> meridian-clearing-blind-benchmark@1.0.0 compile
+> node scripts/compile.mjs
+
+Compiled 15 Solidity sources with 0.8.30+commit.73712a01.Emscripten.clang; wrote 25 artifacts.
+
+> meridian-clearing-blind-benchmark@1.0.0 test
+> node --test --test-concurrency=1 test/**/*.test.mjs
+
+This version of µWS is not compatible with your Node.js build:
+
+Error: Cannot find module '../binaries/uws_linux_x64_137.node'
+Require stack:
+- /workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/perps-blind-generalization/node_modules/ganache/node_modules/@trufflesuite/uws-js-unofficial/src/uws.js
+- /workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/perps-blind-generalization/node_modules/ganache/dist/node/core.js
+Falling back to a NodeJS implementation; performance may be degraded.
+
+
+✔ governance configures markets, feeds, and funding parameters (883.828493ms)
+✔ a trader deposits collateral and opens a margined position (1004.384553ms)
+✔ portfolio execution enforces the declared aggregate limit (777.078737ms)
+✔ withdrawal requests respect their execution delay (711.090626ms)
+✔ insurance shares track deposits and proportional redemptions (761.48619ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4643.382047
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+npm notice
+npm notice New minor version of npm available! 11.9.0 -> 11.19.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.19.0
+npm notice To update run: npm install -g npm@11.19.0
+npm notice
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+npm notice
+npm notice New minor version of npm available! 11.9.0 -> 11.19.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.19.0
+npm notice To update run: npm install -g npm@11.19.0
+npm notice
+npm notice
+npm notice New minor version of npm available! 11.9.0 -> 11.19.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.19.0
+npm notice To update run: npm install -g npm@11.19.0
+npm notice

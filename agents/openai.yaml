@@ -1,0 +1,4 @@
+interface:
+  display_name: "Aim for the Head"
+  short_description: "Run persistent evidence-driven security hunts"
+  default_prompt: "Use $aim-for-the-head to turn this repository and threat model into one verifiable security-hunting goal."

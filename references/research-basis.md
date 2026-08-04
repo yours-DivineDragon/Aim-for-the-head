@@ -1,0 +1,131 @@
+# Research basis
+
+This workflow combines primary field reports, official tool documentation, and
+open skill specifications. It distinguishes reported observations from design
+inferences so future maintainers can revisit the choices.
+
+## Goal persistence is infrastructure, not analysis
+
+Trail of Bits' Patch the Planet report describes three effective practices:
+have the model draft and critique the goal, specify the outcome rather than the
+route, and keep one outcome per agent. It also treats threat modeling as close to
+essential and separates bug hunting from coverage work. The reported pipelines
+then add variant abstraction, multiple validation passes, and human review.
+
+Source: [How we use `/goal` to find bugs in Patch the
+Planet](https://blog.trailofbits.com/2026/07/28/how-we-use-goal-to-find-bugs-in-patch-the-planet/).
+
+OpenAI's goal documentation defines a goal as a durable thread-scoped completion
+contract with evidence, boundaries, iteration, and explicit blocked behavior. It
+also explains event-driven continuation and pause, resume, and clear lifecycle
+operations. This supports the design inference that `/goal` improves persistence
+but does not itself choose or run security tools.
+
+Sources: [Using Goals in
+Codex](https://developers.openai.com/cookbook/examples/codex/using_goals_in_codex),
+[Follow a goal](https://learn.chatgpt.com/use-cases/follow-goals), and
+[Iterate on difficult
+problems](https://learn.chatgpt.com/use-cases/iterate-on-difficult-problems).
+
+## Threat models prevent meaningless success
+
+OWASP frames threat modeling around scope, what can go wrong, mitigations, and
+verification, with assets, entry points, trust boundaries, threats, and controls
+as core inputs. The contract in this skill uses those inputs to prevent findings
+that require impossible privileges or produce no protected-asset impact.
+
+Source: [OWASP Threat Modeling
+Project](https://owasp.org/www-project-threat-modeling/).
+
+## Read coverage and runtime coverage answer different questions
+
+AICov records which source lines an agent observed and can emit LCOV, JSON, and
+HTML reports; it also distinguishes searches and identifies tracked files with
+zero reads. Its documentation makes it a useful blind-spot instrument. The
+inference in this skill is deliberately narrower: observed reads do not prove
+comprehension, execution, semantic-state exploration, or vulnerability absence.
+Transcripts may also contain sensitive material, so audit storage and sharing.
+
+Source: [Trail of Bits AICov](https://github.com/trailofbits/aicov).
+
+LLVM describes libFuzzer as an in-process, coverage-guided engine that mutates a
+corpus and is commonly paired with SanitizerCoverage. That makes runtime coverage
+valuable for input exploration while leaving harness reachability and semantic
+oracles as separate obligations.
+
+Source: [libFuzzer documentation](https://llvm.org/docs/LibFuzzer.html).
+
+## Adaptive experiments outperform prescribed rituals
+
+Trail of Bits' zlib field report describes an agent building its own fuzzing and
+sanitizer setup, testing variants, and rejecting crashes that could not reach
+the real target. Project Zero's Big Sleep report likewise describes an agent
+adapting failed tests and finding a SQLite memory-safety issue that a substantial
+fuzzing campaign did not rediscover because coverage and harness configuration
+did not express the needed semantic path.
+
+These reports support leaving technique selection open while making reachability,
+configuration, reproducibility, and impact non-negotiable.
+
+Sources: [Field reports from Patch the
+Planet](https://blog.trailofbits.com/2026/07/02/field-reports-from-patch-the-planet/)
+and [From Naptime to Big
+Sleep](https://projectzero.google/2024/10/from-naptime-to-big-sleep.html).
+
+## Variant analysis needs abstraction plus controls
+
+CodeQL defines variant analysis as using a known vulnerability as a seed for
+similar problems. Semgrep's guidance recommends starting with an exact match and
+generalizing carefully because precision and recall trade off; its test format
+uses positive `ruleid` and negative `ok` annotations. The variant workflow here
+therefore separates a risk abstraction from the exact seed and requires positive
+and negative fixtures as a rule broadens.
+
+Sources: [About CodeQL](https://codeql.github.com/docs/codeql-overview/about-codeql/),
+[Semgrep variant-analysis guidance](https://semgrep.dev/blog/2025/finding-more-zero-days-through-variant-analysis/),
+and [Semgrep rule testing](https://docs.semgrep.dev/writing-rules/testing-rules).
+
+## Independent reproduction is stronger than agreement
+
+The Trail of Bits pipeline reports two validation passes using different models
+before human review. This skill strengthens the operational definition: an
+independent reviewer receives raw artifacts before the hunter's conclusion and
+must reproduce or trace the disputed gates. Different-model agreement without
+reproduction remains correlated opinion, not evidence.
+
+This is a design inference from the Patch the Planet process rather than a claim
+that model diversity alone guarantees independence.
+
+## Portability follows the open skill layout
+
+The Agent Skills specification defines a `SKILL.md` package with optional scripts,
+references, and assets, and recommends progressive disclosure. Official host
+documentation supplies the host-specific discovery and invocation paths used in
+the portability table.
+
+Sources: [Agent Skills
+specification](https://agentskills.io/specification), [Codex
+skills](https://developers.openai.com/codex/build-skills), [Codex best
+practices](https://developers.openai.com/codex/learn/best-practices), [Claude
+Code skills](https://code.claude.com/docs/en/skills), [Kimi Code
+skills](https://www.kimi.com/code/docs/en/kimi-code-cli/customization/skills.html),
+[Kimi goals](https://www.kimi.com/code/docs/en/kimi-code-cli/guides/goals.html),
+and [OpenCode skills](https://opencode.ai/docs/skills/).
+
+## Design consequences
+
+The evidence above leads to these deliberate choices:
+
+1. Use one outcome per durable goal; keep the method adaptive.
+2. Build the threat model and non-success conditions before activation.
+3. Inventory tools explicitly because persistence cannot discover hidden tools.
+4. Separate mapping, hunting, coverage, validation, and reporting.
+5. Track coverage as a vector and never equate it with security completeness.
+6. Treat tool output as leads and require attacker-to-impact evidence.
+7. Validate in release-like conditions with a safe oracle and negative control.
+8. Blind independent reproduction and delay duplicate search until the candidate
+   is technically anchored when novelty matters.
+9. Preserve durable, vendor-neutral state so compaction and model changes do not
+   erase the contract or failed experiments.
+10. End with a typed terminal outcome and residual risk, never an unsupported
+    declaration that the target is secure.

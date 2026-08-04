@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "run_count": 1,
+  "target": {
+    "frozen_commit": "75d19f5c283c5e2fe6b1a5913b1ca4b82462c21d",
+    "source_manifest_digest": "9ac26ede2c9b8e3f45910a1e8207c10ec418999106571061211fc339ad84c926",
+    "manifest_algorithm": "sha256"
+  },
+  "authorization": "Explicitly authorized local report-only blind benchmark audit with frozen scope and budget.",
+  "isolation": {
+    "network_used": false,
+    "human_assistance_used": false,
+    "ground_truth_read_or_requested": false,
+    "sealed_paths_inspected": false,
+    "git_history_or_other_commits_inspected": false,
+    "other_checkouts_or_workspaces_inspected": false,
+    "issue_trackers_or_external_reports_inspected": false,
+    "environment_secrets_inspected": false,
+    "read_write_roots": [
+      "/tmp/aim-blind-hunt-75d19f5c.XA7jKe/target",
+      "/tmp/aim-blind-hunt-75d19f5c.XA7jKe/skill"
+    ]
+  },
+  "mutation": {
+    "production_contracts_modified": false,
+    "tests_modified": false,
+    "scripts_modified": false,
+    "package_manifests_modified": false,
+    "benchmark_or_source_manifest_modified": false,
+    "allowed_generated_paths": [".goal-hunt/", "run/evidence/", "run/submission/", "run/resource-metrics.json", "run/run-attestation.json", "artifacts/"],
+    "note": "npm run compile deterministically regenerated allowed artifacts; all manifest-listed source hashes remained frozen."
+  },
+  "manifest_verification": {
+    "pre": {
+      "verified": true,
+      "utc": "2026-08-04T12:47:32.768Z",
+      "computed_digest": "9ac26ede2c9b8e3f45910a1e8207c10ec418999106571061211fc339ad84c926",
+      "exit": 0,
+      "log": "run/evidence/_run/manifest-pre.log"
+    },
+    "post": {
+      "verified": true,
+      "utc": "2026-08-04T13:31:21.084Z",
+      "computed_digest": "9ac26ede2c9b8e3f45910a1e8207c10ec418999106571061211fc339ad84c926",
+      "exit": 0,
+      "log": "run/evidence/_run/manifest-post.log"
+    }
+  },
+  "evidence_integrity": {
+    "file_count": 68,
+    "hash_manifest": "run/evidence/_run/evidence-hashes.sha256",
+    "hash_manifest_sha256": "6801141c6be7972fc979d501eb351987cfdcd21f9d5b0a2f117ac27ff96464fd"
+  },
+  "review_constraints": {
+    "external_duplicate_check": "omitted before activation because forbidden",
+    "human_review": "omitted before activation because forbidden",
+    "novelty_claimed": false,
+    "severity_status": "unreviewed technical assessment"
+  },
+  "terminal": {
+    "state": "completed",
+    "outcome": "validated",
+    "utc": "2026-08-04T13:32:25Z",
+    "aim_terminal_check": "pass",
+    "state_directory": ".goal-hunt/",
+    "log": "run/evidence/_run/goal-terminal.log"
+  }
+}

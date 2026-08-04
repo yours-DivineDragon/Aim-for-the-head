@@ -1,0 +1,532 @@
+{
+  "records": [
+    {
+      "dimension": "source-read",
+      "evidence": [
+        "run/evidence/_run/SURFACE_CENSUS.md"
+      ],
+      "item": "contracts/AsterVault.sol",
+      "note": "Complete numbered read and entry-point/guard/sink inventory",
+      "schema_version": 1,
+      "sequence": 1,
+      "status": "inspected",
+      "timestamp": "2026-08-04T12:56:27Z"
+    },
+    {
+      "dimension": "source-read",
+      "evidence": [
+        "run/evidence/_run/SURFACE_CENSUS.md"
+      ],
+      "item": "contracts/BridgeGateway.sol",
+      "note": "Complete numbered read and entry-point/guard/sink inventory",
+      "schema_version": 1,
+      "sequence": 2,
+      "status": "inspected",
+      "timestamp": "2026-08-04T12:56:27Z"
+    },
+    {
+      "dimension": "source-read",
+      "evidence": [
+        "run/evidence/_run/SURFACE_CENSUS.md"
+      ],
+      "item": "contracts/LendingMarket.sol",
+      "note": "Complete numbered read and entry-point/guard/sink inventory",
+      "schema_version": 1,
+      "sequence": 3,
+      "status": "inspected",
+      "timestamp": "2026-08-04T12:56:27Z"
+    },
+    {
+      "dimension": "source-read",
+      "evidence": [
+        "run/evidence/_run/SURFACE_CENSUS.md"
+      ],
+      "item": "contracts/PermitRouter.sol",
+      "note": "Complete numbered read and entry-point/guard/sink inventory",
+      "schema_version": 1,
+      "sequence": 4,
+      "status": "inspected",
+      "timestamp": "2026-08-04T12:56:27Z"
+    },
+    {
+      "dimension": "source-read",
+      "evidence": [
+        "run/evidence/_run/SURFACE_CENSUS.md"
+      ],
+      "item": "contracts/ReserveOracle.sol",
+      "note": "Complete numbered read and entry-point/guard/sink inventory",
+      "schema_version": 1,
+      "sequence": 5,
+      "status": "inspected",
+      "timestamp": "2026-08-04T12:56:27Z"
+    },
+    {
+      "dimension": "source-read",
+      "evidence": [
+        "run/evidence/_run/SURFACE_CENSUS.md"
+      ],
+      "item": "contracts/ReservePool.sol",
+      "note": "Complete numbered read and entry-point/guard/sink inventory",
+      "schema_version": 1,
+      "sequence": 6,
+      "status": "inspected",
+      "timestamp": "2026-08-04T12:56:27Z"
+    },
+    {
+      "dimension": "source-read",
+      "evidence": [
+        "run/evidence/_run/SURFACE_CENSUS.md"
+      ],
+      "item": "contracts/RewardsDistributor.sol",
+      "note": "Complete numbered read and entry-point/guard/sink inventory",
+      "schema_version": 1,
+      "sequence": 7,
+      "status": "inspected",
+      "timestamp": "2026-08-04T12:56:27Z"
+    },
+    {
+      "dimension": "source-read",
+      "evidence": [
+        "run/evidence/_run/SURFACE_CENSUS.md"
+      ],
+      "item": "contracts/StrategyModule.sol",
+      "note": "Complete numbered read and entry-point/guard/sink inventory",
+      "schema_version": 1,
+      "sequence": 8,
+      "status": "inspected",
+      "timestamp": "2026-08-04T12:56:27Z"
+    },
+    {
+      "dimension": "source-read",
+      "evidence": [
+        "run/evidence/_run/SURFACE_CENSUS.md"
+      ],
+      "item": "contracts/interfaces/ProtocolInterfaces.sol",
+      "note": "Complete numbered read and entry-point/guard/sink inventory",
+      "schema_version": 1,
+      "sequence": 9,
+      "status": "inspected",
+      "timestamp": "2026-08-04T12:56:27Z"
+    },
+    {
+      "dimension": "source-read",
+      "evidence": [
+        "run/evidence/_run/SURFACE_CENSUS.md"
+      ],
+      "item": "contracts/lib/SignatureCodec.sol",
+      "note": "Complete numbered read and entry-point/guard/sink inventory",
+      "schema_version": 1,
+      "sequence": 10,
+      "status": "inspected",
+      "timestamp": "2026-08-04T12:56:27Z"
+    },
+    {
+      "dimension": "source-read",
+      "evidence": [
+        "run/evidence/_run/SURFACE_CENSUS.md"
+      ],
+      "item": "contracts/lib/TokenMath.sol",
+      "note": "Complete numbered read and entry-point/guard/sink inventory",
+      "schema_version": 1,
+      "sequence": 11,
+      "status": "inspected",
+      "timestamp": "2026-08-04T12:56:27Z"
+    },
+    {
+      "dimension": "source-read",
+      "evidence": [
+        "run/evidence/_run/SURFACE_CENSUS.md"
+      ],
+      "item": "contracts/mocks/MockFeed.sol",
+      "note": "Complete numbered read and entry-point/guard/sink inventory",
+      "schema_version": 1,
+      "sequence": 12,
+      "status": "inspected",
+      "timestamp": "2026-08-04T12:56:27Z"
+    },
+    {
+      "dimension": "source-read",
+      "evidence": [
+        "run/evidence/_run/SURFACE_CENSUS.md"
+      ],
+      "item": "contracts/mocks/MockMessaging.sol",
+      "note": "Complete numbered read and entry-point/guard/sink inventory",
+      "schema_version": 1,
+      "sequence": 13,
+      "status": "inspected",
+      "timestamp": "2026-08-04T12:56:27Z"
+    },
+    {
+      "dimension": "source-read",
+      "evidence": [
+        "run/evidence/_run/SURFACE_CENSUS.md"
+      ],
+      "item": "contracts/mocks/MockTokens.sol",
+      "note": "Complete numbered read and entry-point/guard/sink inventory",
+      "schema_version": 1,
+      "sequence": 14,
+      "status": "inspected",
+      "timestamp": "2026-08-04T12:56:27Z"
+    },
+    {
+      "dimension": "historical-family",
+      "evidence": [],
+      "item": "External history and duplicate-family comparison",
+      "note": "Forbidden by frozen blind benchmark isolation; mechanism families assessed only from current source",
+      "schema_version": 1,
+      "sequence": 15,
+      "status": "blocked",
+      "timestamp": "2026-08-04T12:56:27Z"
+    },
+    {
+      "dimension": "config-build",
+      "evidence": [
+        "run/evidence/_run/baseline-check.log"
+      ],
+      "item": "solc 0.8.30 optimizer-200 EVM Paris / Ganache Shanghai chain 31337",
+      "note": "npm run check exit 0; 21 contracts compiled and six tests passed",
+      "schema_version": 1,
+      "sequence": 16,
+      "status": "tested",
+      "timestamp": "2026-08-04T12:56:58Z"
+    },
+    {
+      "dimension": "runtime-corpus",
+      "evidence": [
+        "run/evidence/_run/baseline-check.log"
+      ],
+      "item": "Ordinary integrated functional suite",
+      "note": "All documented happy paths executed; not treated as vulnerability absence",
+      "schema_version": 1,
+      "sequence": 17,
+      "status": "tested",
+      "timestamp": "2026-08-04T12:56:58Z"
+    },
+    {
+      "dimension": "attack-surface",
+      "evidence": [
+        "run/evidence/C-001/REPORT.md"
+      ],
+      "item": "Lending health, risk configuration, and receiver callback",
+      "note": "C-001 and C-006 positive/negative packets",
+      "schema_version": 1,
+      "sequence": 18,
+      "status": "tested",
+      "timestamp": "2026-08-04T13:27:39Z"
+    },
+    {
+      "dimension": "attack-surface",
+      "evidence": [
+        "run/evidence/C-002/REPORT.md"
+      ],
+      "item": "Bridge authentication and replay domain",
+      "note": "C-002 and C-007 positive/comparator packets",
+      "schema_version": 1,
+      "sequence": 19,
+      "status": "tested",
+      "timestamp": "2026-08-04T13:27:39Z"
+    },
+    {
+      "dimension": "attack-surface",
+      "evidence": [
+        "run/evidence/C-003/REPORT.md"
+      ],
+      "item": "Permit and reward signature intent/replay",
+      "note": "C-003, C-004, and C-010",
+      "schema_version": 1,
+      "sequence": 20,
+      "status": "tested",
+      "timestamp": "2026-08-04T13:27:39Z"
+    },
+    {
+      "dimension": "attack-surface",
+      "evidence": [
+        "run/evidence/C-005/REPORT.md"
+      ],
+      "item": "Strategy authority lifecycle",
+      "note": "Post-initialization takeover and direct-sweep negative",
+      "schema_version": 1,
+      "sequence": 21,
+      "status": "tested",
+      "timestamp": "2026-08-04T13:27:39Z"
+    },
+    {
+      "dimension": "attack-surface",
+      "evidence": [
+        "run/evidence/C-011/REPORT.md"
+      ],
+      "item": "Vault share accounting and first-deposit state",
+      "note": "Donation availability proof plus rejected rounding trace",
+      "schema_version": 1,
+      "sequence": 22,
+      "status": "tested",
+      "timestamp": "2026-08-04T13:27:39Z"
+    },
+    {
+      "dimension": "attack-surface",
+      "evidence": [
+        "run/evidence/C-008/REPORT.md"
+      ],
+      "item": "Reserve pool and oracle integrity",
+      "note": "Fallback manipulation and stale-primary packets plus boundary dispositions",
+      "schema_version": 1,
+      "sequence": 23,
+      "status": "tested",
+      "timestamp": "2026-08-04T13:27:39Z"
+    },
+    {
+      "dimension": "attack-surface",
+      "evidence": [
+        "run/evidence/_run/validation-sweep-part2.log"
+      ],
+      "item": "Roaming cross-contract and economic interactions",
+      "note": "All candidates rerun; consolidated/rejected interactions recorded",
+      "schema_version": 1,
+      "sequence": 24,
+      "status": "tested",
+      "timestamp": "2026-08-04T13:27:39Z"
+    },
+    {
+      "dimension": "trust-boundary",
+      "evidence": [
+        "run/evidence/C-001/discovery.log"
+      ],
+      "item": "Untrusted borrower to callback, health check, debt, and stable transfer",
+      "note": "Nested value/state flow and no-callback control",
+      "schema_version": 1,
+      "sequence": 25,
+      "status": "tested",
+      "timestamp": "2026-08-04T13:27:39Z"
+    },
+    {
+      "dimension": "trust-boundary",
+      "evidence": [
+        "run/evidence/C-002/discovery.log"
+      ],
+      "item": "Remote application through honest messenger to bridge credit",
+      "note": "Sender and chain/replay variants",
+      "schema_version": 1,
+      "sequence": 26,
+      "status": "tested",
+      "timestamp": "2026-08-04T13:27:39Z"
+    },
+    {
+      "dimension": "trust-boundary",
+      "evidence": [
+        "run/evidence/C-004/discovery.log"
+      ],
+      "item": "Off-chain signatures to transfer and reward effects",
+      "note": "Intent fields, verifier domain, malleability, and byte replay",
+      "schema_version": 1,
+      "sequence": 27,
+      "status": "tested",
+      "timestamp": "2026-08-04T13:27:39Z"
+    },
+    {
+      "dimension": "trust-boundary",
+      "evidence": [
+        "run/evidence/C-005/discovery.log"
+      ],
+      "item": "Initialization to strategy privileged effects",
+      "note": "Established roles overwritten by ordinary caller",
+      "schema_version": 1,
+      "sequence": 28,
+      "status": "tested",
+      "timestamp": "2026-08-04T13:27:39Z"
+    },
+    {
+      "dimension": "trust-boundary",
+      "evidence": [
+        "run/evidence/C-008/discovery.log"
+      ],
+      "item": "Pool/feed values to oracle and lending solvency",
+      "note": "Fallback manipulation and stale positive paths",
+      "schema_version": 1,
+      "sequence": 29,
+      "status": "tested",
+      "timestamp": "2026-08-04T13:27:39Z"
+    },
+    {
+      "dimension": "trust-boundary",
+      "evidence": [
+        "run/evidence/C-011/discovery.log"
+      ],
+      "item": "Underlying balance to vault share issuance/availability",
+      "note": "Direct owned-token donation and no-donation control",
+      "schema_version": 1,
+      "sequence": 30,
+      "status": "tested",
+      "timestamp": "2026-08-04T13:27:39Z"
+    },
+    {
+      "dimension": "state-invariant",
+      "evidence": [
+        "run/evidence/C-001/reproduction.log"
+      ],
+      "item": "Debt never exceeds finalized borrow limit through callbacks",
+      "note": "Counterexample and safe no-callback case",
+      "schema_version": 1,
+      "sequence": 31,
+      "status": "tested",
+      "timestamp": "2026-08-04T13:27:39Z"
+    },
+    {
+      "dimension": "state-invariant",
+      "evidence": [
+        "run/evidence/C-002/reproduction.log"
+      ],
+      "item": "Bridge credit authenticates sender and replay domain",
+      "note": "C-002 sender and C-007 chain-scoped nonce evidence",
+      "schema_version": 1,
+      "sequence": 32,
+      "status": "tested",
+      "timestamp": "2026-08-04T13:27:40Z"
+    },
+    {
+      "dimension": "state-invariant",
+      "evidence": [
+        "run/evidence/C-003/reproduction.log"
+      ],
+      "item": "Signed action binds exact intent/domain and executes once",
+      "note": "C-003/C-004/C-010 paired packets",
+      "schema_version": 1,
+      "sequence": 33,
+      "status": "tested",
+      "timestamp": "2026-08-04T13:27:40Z"
+    },
+    {
+      "dimension": "state-invariant",
+      "evidence": [
+        "run/evidence/C-005/reproduction.log"
+      ],
+      "item": "Strategy authority is one-time and trusted",
+      "note": "Counterexample and direct-role negative",
+      "schema_version": 1,
+      "sequence": 34,
+      "status": "tested",
+      "timestamp": "2026-08-04T13:27:40Z"
+    },
+    {
+      "dimension": "state-invariant",
+      "evidence": [
+        "run/evidence/C-006/reproduction.log"
+      ],
+      "item": "Risk parameters require guardian authority",
+      "note": "Increase succeeds while decrease rejects",
+      "schema_version": 1,
+      "sequence": 35,
+      "status": "tested",
+      "timestamp": "2026-08-04T13:27:40Z"
+    },
+    {
+      "dimension": "state-invariant",
+      "evidence": [
+        "run/evidence/C-008/reproduction.log"
+      ],
+      "item": "Oracle-supported debt remains correctly valued",
+      "note": "Fallback and freshness counterexamples/controls",
+      "schema_version": 1,
+      "sequence": 36,
+      "status": "tested",
+      "timestamp": "2026-08-04T13:27:40Z"
+    },
+    {
+      "dimension": "state-invariant",
+      "evidence": [
+        "run/evidence/C-011/reproduction.log"
+      ],
+      "item": "Vault deposits remain permissionlessly available",
+      "note": "Recoverable donation denial and normal-deposit control",
+      "schema_version": 1,
+      "sequence": 37,
+      "status": "tested",
+      "timestamp": "2026-08-04T13:27:40Z"
+    },
+    {
+      "dimension": "runtime-corpus",
+      "evidence": [
+        "run/evidence/_run/validation-sweep-part2.log"
+      ],
+      "item": "Eleven candidate positive/negative packets",
+      "note": "Each packet has two prior clean-process logs and final validation evidence",
+      "schema_version": 1,
+      "sequence": 38,
+      "status": "tested",
+      "timestamp": "2026-08-04T13:27:40Z"
+    },
+    {
+      "dimension": "config-build",
+      "evidence": [
+        "run/evidence/_run/validation-sweep-part2.log"
+      ],
+      "item": "Final candidate package sweep under optimized compiler",
+      "note": "C-001 through C-008 part1 exits 0; C-009 through C-011 bounded part2 exit 0",
+      "schema_version": 1,
+      "sequence": 39,
+      "status": "tested",
+      "timestamp": "2026-08-04T13:27:40Z"
+    },
+    {
+      "dimension": "falsification",
+      "evidence": [
+        "run/evidence/_run/REJECTED_LEADS.md"
+      ],
+      "item": "Attacker capability and privilege assumptions",
+      "note": "Trusted tokens/roles/mock controls removed from claims",
+      "schema_version": 1,
+      "sequence": 40,
+      "status": "tested",
+      "timestamp": "2026-08-04T13:27:40Z"
+    },
+    {
+      "dimension": "falsification",
+      "evidence": [
+        "run/evidence/C-001/reproduction.log"
+      ],
+      "item": "Reachability and state-order controls",
+      "note": "No-callback, configured-sender, chain-scoped, and role controls",
+      "schema_version": 1,
+      "sequence": 41,
+      "status": "tested",
+      "timestamp": "2026-08-04T13:27:40Z"
+    },
+    {
+      "dimension": "falsification",
+      "evidence": [
+        "run/evidence/C-004/reproduction.log"
+      ],
+      "item": "Signature intent and replay controls",
+      "note": "Encoded-field, identical-byte, and domain-bound controls",
+      "schema_version": 1,
+      "sequence": 42,
+      "status": "tested",
+      "timestamp": "2026-08-04T13:27:40Z"
+    },
+    {
+      "dimension": "falsification",
+      "evidence": [
+        "run/evidence/C-008/reproduction.log"
+      ],
+      "item": "Oracle condition and economic controls",
+      "note": "Positive primary and freshness-bound comparisons plus net-value accounting",
+      "schema_version": 1,
+      "sequence": 43,
+      "status": "tested",
+      "timestamp": "2026-08-04T13:27:40Z"
+    },
+    {
+      "dimension": "falsification",
+      "evidence": [
+        "run/evidence/C-011/reproduction.log"
+      ],
+      "item": "Vault donation and rounding economics",
+      "note": "Donation/no-donation pair; dust-only rounding lead rejected",
+      "schema_version": 1,
+      "sequence": 44,
+      "status": "tested",
+      "timestamp": "2026-08-04T13:27:40Z"
+    }
+  ],
+  "schema_version": 1,
+  "updated_at": "2026-08-04T13:27:40Z"
+}

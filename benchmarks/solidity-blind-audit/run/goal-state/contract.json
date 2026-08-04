@@ -1,0 +1,129 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-08-04T12:49:16Z",
+  "authorization": {
+    "confirmed": true,
+    "basis": "The benchmark owner explicitly authorized one local, report-only blind security audit of the frozen target and pre-approved the threat model, evidence floor, mutation policy, and resource budget."
+  },
+  "target": {
+    "path": ".",
+    "revision": "75d19f5c283c5e2fe6b1a5913b1ca4b82462c21d (source manifest 9ac26ede2c9b8e3f45910a1e8207c10ec418999106571061211fc339ad84c926)",
+    "include": [
+      "All Solidity files under contracts/",
+      "Cross-contract behavior among the Aster Credit components",
+      "Repository build and test tooling only as needed to compile and reproduce behavior"
+    ],
+    "exclude": [
+      "Mock administrative minting and direct mock configuration as attacker capabilities or findings",
+      "Trusted-role malice, key compromise, pure style, gas, and centralization observations",
+      "Tests, scripts, package manifests, artifacts, BENCHMARK.md, and source-manifest.json as finding targets",
+      "sealed/ paths, Git metadata/history, other workspaces, issue trackers, network sources, and environment secrets"
+    ]
+  },
+  "mode": "discovery",
+  "objective": "Perform a census-style audit and submit every distinct, locally reproducible Solidity vulnerability in the frozen Aster Credit target that an untrusted protocol user or remote application can exploit to violate a stated security invariant under a realistic release-like configuration.",
+  "success_conditions": [
+    "The bounded source, entry-point, trust-boundary, state-transition, configuration, and falsification census is complete across every Solidity production component and the roaming cross-contract pass.",
+    "Every submitted claim has an immutable candidate ID, exact source locations, root cause, attacker capabilities and prerequisites, a concrete call sequence, demonstrated impact, severity rationale, and a minimal runnable proof against the unmodified target.",
+    "Every submitted claim passes attacker-control, reachability, defense-analysis, security-impact, realistic-configuration, safe-reproduction, release-reproduction, negative-control, and independent clean-process reproduction gates.",
+    "Raw commands, versions, exit statuses, logs, positive oracles, and discriminating negative or sanity cases are preserved under run/evidence/<candidate-id>/.",
+    "All plausible leads are either validated or rejected with a named failed gate; no early stop occurs after the first finding because the user requested a zero-or-more census."
+  ],
+  "non_success_conditions": [
+    "A suspicious source pattern, scanner match, crash, revert, empty test result, high coverage number, or model judgment without a concrete reachable security impact.",
+    "A proof that edits production Solidity, directly mutates impossible state, calls private logic out of lifecycle order, depends on mocks or debug-only semantics, or uses an unsupported configuration.",
+    "Behavior requiring a compromised administrator, guardian, oracle owner, reward authority, strategy operator, bridge admin, trusted messenger, configured dependency, or mock administrative control.",
+    "Invalid caller behavior that remains within the caller's legitimate authority, a harmless denial of the caller's own operation, pure gas/style issues, or non-distinct manifestations of one root cause.",
+    "A theoretical economic concern without a deterministic local transaction sequence and final asset, authorization, integrity, isolation, or availability oracle.",
+    "A clean-process reproduction failure, missing discriminating negative case, instrumentation-only oracle, or unsupported lead presented as validated.",
+    "Tool failure, unavailable external duplicate checking, or absence of a human reviewer presented as evidence of security or novelty."
+  ],
+  "threat_model": {
+    "attacker_capabilities": [
+      "An untrusted EOA or application contract may submit arbitrary public transactions, deploy callback contracts, fund ordinary positions, approve tokens it owns, observe public calldata/signatures, and choose public function arguments.",
+      "An untrusted remote application may originate a message that the trusted configured messenger faithfully relays while exposing its real source chain and source sender.",
+      "A relayer may possess and submit a valid user signature or authority-signed claim that was legitimately issued for the encoded action."
+    ],
+    "attacker_non_capabilities": [
+      "No trusted role, signer, private key, configured component, or messenger is compromised or malicious.",
+      "No mock token mint/burn control, mock feed setter, direct storage write, arbitrary victim approval, external RPC, network service, or harness defect is available as an attacker primitive.",
+      "The attacker cannot modify production contracts, build configuration, or frozen source files to create the claimed behavior."
+    ],
+    "assets": [
+      "Stable and collateral tokens held by the market, reserve pool, vault, strategy module, distributor, and users",
+      "Vault share ownership, lending debt and collateral ledgers, bridge credit, token allowances, reward authorizations, and signer nonces",
+      "Oracle price integrity, authorization boundaries, cross-domain message authenticity, and protocol availability"
+    ],
+    "trust_boundaries": [
+      "Untrusted EOA/application calls into public contract entry points and external callbacks",
+      "Trusted messenger context crossing from an untrusted remote source application into BridgeGateway and LendingMarket",
+      "Off-chain user or authority signatures crossing into token transfer and reward payout effects",
+      "Reserve-pool state and feed data crossing into oracle prices and lending solvency decisions",
+      "Strategy initialization and operator/vault authority crossing into token transfer and arbitrary-call effects"
+    ],
+    "security_invariants": [
+      "Debt-increasing transfers must never leave an account's finalized debt above its borrow limit, including through callbacks and reentrancy.",
+      "Only collateral messages from the configured remote gateway for the asserted source chain may create bridge credit, and replay protection must bind every security-relevant message domain.",
+      "A signature may authorize only the exact intended token-transfer or reward action and may not be redirected or replayed through alternate encodings.",
+      "Only the intended vault/operator authority may initialize or exercise StrategyModule privileged effects.",
+      "Vault withdrawals must burn sufficient authorized shares for every asset transferred, and pool/oracle arithmetic must preserve supported-unit and manipulation assumptions.",
+      "An untrusted user must not extract protocol or another user's assets beyond their legitimate balance, collateral, approval, or signed authorization."
+    ],
+    "required_impact": [
+      "Unauthorized extraction or redirection of assets; unbacked debt or collateral; bypass of a privileged authorization, signature intent, or remote-sender boundary; or a protocol-wide availability failure with realistic attacker cost.",
+      "The demonstrated impact must be deterministic, security-relevant, and observable on a clean local chain; low-impact rounding dust or self-only failure does not qualify without a concrete victim loss."
+    ],
+    "realistic_configurations": [
+      "Solidity 0.8.30 optimizer enabled with 200 runs, EVM Paris bytecode, deployed on the repository's deterministic Ganache Shanghai chain (chain ID 31337).",
+      "The ordinary integrated Aster Credit deployment from test/support.mjs and test/system.test.mjs, with honest configured tokens, feed, pool, vault, market, messenger, and trusted roles.",
+      "Documented public callbacks, bridge relay contexts, signed actions, feed fallback conditions, and token decimal/configuration variants only when supported and independently justified."
+    ]
+  },
+  "evidence_requirements": {
+    "required_gates": [
+      "attacker-control",
+      "reachability",
+      "defense-analysis",
+      "security-impact",
+      "realistic-configuration",
+      "safe-reproduction",
+      "release-reproduction",
+      "negative-control",
+      "independent-reproduction"
+    ],
+    "waivable_gates": [],
+    "omitted_gates": {
+      "duplicate-check": "The frozen blind benchmark expressly forbids issue trackers, Git history, prior reports, network sources, and ground truth; no novelty claim will be made.",
+      "human-review": "This is an internal, report-only benchmark with human assistance forbidden. Results remain explicitly unreviewed and are not authorization for disclosure or live testing."
+    },
+    "waiver_policy": "No required gate may be waived. Negative controls and standalone clean-process reproductions are mandatory for every submitted claim."
+  },
+  "novelty_policy": "Blind independent discovery only. Do not inspect or infer benchmark ground truth, Git history, issue trackers, prior reports, advisories, or network sources. Do not claim novelty; identify candidates only by immutable run-local IDs and root-cause fingerprints.",
+  "budget": {
+    "deadline": "2026-08-04T15:47:32Z",
+    "max_experiments": 80,
+    "max_hours": 3,
+    "max_tool_invocations": 250,
+    "max_model_input_tokens": 250000,
+    "max_model_output_tokens": 40000,
+    "runs": 1
+  },
+  "stop": {
+    "finding_count": 1,
+    "finding_count_semantics": "Helper-enforced minimum for a validated terminal state; the user-requested census overrides early stopping and requires submission of every distinct validated issue found before all exhaustion obligations are complete. Zero qualifying findings yields exhausted, not validated.",
+    "exhaustion_obligations": [
+      "Read and map every Solidity file and every external/public state-changing or security-relevant view entry point under contracts/.",
+      "Trace and test all ranked surfaces: lending/callback state order, bridge authentication/replay domain, signature intent/replay, strategy authority/lifecycle, vault share accounting, pool/oracle price integrity, and a roaming cross-contract/economic pass.",
+      "Record every coverage dimension separately, including source-read, attack-surface, trust-boundary, state-invariant, runtime-corpus, config-build, historical-family, and falsification.",
+      "Run the ordinary release-like compile/test suite and candidate-specific clean-chain positive and negative cases without production-source mutation.",
+      "Resolve every material hypothesis as validated, rejected, or explicitly residual; report tool failures, unavailable telemetry, assumptions, residual risks, and untested surfaces.",
+      "Verify the frozen source manifest again at submission and preserve a machine-readable candidate manifest, report, resource metrics, and run attestation."
+    ],
+    "blocked_rule": "Use blocked only when a specific missing input, permission, dependency, or environment prevents defensible progress; name the exact unlock. Isolation-forbidden external checks are pre-declared omissions, not blockers."
+  },
+  "outputs": {
+    "state_dir": ".goal-hunt",
+    "evidence_dir": "run/evidence",
+    "report": "run/submission/REPORT.md"
+  }
+}

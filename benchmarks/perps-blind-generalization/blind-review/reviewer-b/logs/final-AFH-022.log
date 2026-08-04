@@ -1,0 +1,10 @@
+{
+  "label": "final-AFH-022",
+  "startedUtc": "2026-08-04T20:13:17.134Z",
+  "finishedUtc": "2026-08-04T20:13:20.913Z",
+  "cwd": "/workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/perps-blind-generalization",
+  "command": "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node --test --test-concurrency=1 --test-name-pattern=H-022 blind-run/poc/integration-accounting.test.mjs",
+  "exitCode": 0,
+  "stdout": "This version of µWS is not compatible with your Node.js build:\n\nError: Cannot find module '../binaries/uws_linux_x64_137.node'\nRequire stack:\n- /workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/perps-blind-generalization/node_modules/ganache/node_modules/@trufflesuite/uws-js-unofficial/src/uws.js\n- /workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/perps-blind-generalization/node_modules/ganache/dist/node/core.js\nFalling back to a NodeJS implementation; performance may be degraded.\n\n\n{\"hunterId\":\"H-022\",\"shareholderDeposit\":\"1000000000\",\"thirdPartyBond\":\"1000000000\",\"redeemed\":\"2000000000\",\"bondTerminalControl\":\"reverted after drain\",\"noBondRedemption\":\"1000000000\"}\n✔ H-022 an insurance shareholder redeems a live bidder bond and makes its return fail (3005.321776ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 3736.981352\n",
+  "stderr": ""
+}

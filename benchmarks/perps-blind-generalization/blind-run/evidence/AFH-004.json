@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "caseId": "AFH-004",
+  "targetRevision": "158651792f770f5e827c1f0c363ea91f916cb1b8",
+  "compiler": "solc-js 0.8.30; optimizer 300; viaIR; Shanghai; metadata hash disabled",
+  "runtime": "Node 24; deterministic Ganache chain 31337; isolated local process",
+  "destructiveOrExternalEffects": false,
+  "executions": [
+    {
+      "command": "node --test --test-concurrency=1 --test-name-pattern=H-004 blind-run/poc/integration-accounting.test.mjs",
+      "freshProcess": true,
+      "releaseLike": true,
+      "embeddedNegativeControl": true,
+      "oracle": {
+        "hunterId": "H-004",
+        "requested": "100000000000000000000",
+        "receivedWithCallback": "200000000000000000000",
+        "noCallbackControl": "100000000000000000000"
+      }
+    }
+  ]
+}

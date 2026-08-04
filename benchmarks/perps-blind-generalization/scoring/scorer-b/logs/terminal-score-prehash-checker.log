@@ -1,0 +1,21 @@
+$ /opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node scoring/scorer-b/check-score.mjs --prehash
+cwd=/workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/perps-blind-generalization
+exit=0
+
+{
+  "scoreCheck": "pass",
+  "truthUnits": 15,
+  "candidates": 25,
+  "exact": 13,
+  "factor06": 0,
+  "factor03": 1,
+  "missed": 1,
+  "weightedPoints": 89.4,
+  "rawPrecision": "25/25",
+  "deduplicatedPrecision": "25/25",
+  "evidencePackets": 25,
+  "candidateReruns": "25/25",
+  "discriminationPairs": "2/2",
+  "hashesVerified": false
+}
+

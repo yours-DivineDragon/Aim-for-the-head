@@ -1,0 +1,15 @@
+$ npm run seal:verify
+cwd=/workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/perps-blind-generalization
+exit=0
+
+
+> meridian-clearing-blind-benchmark@1.0.0 seal:verify
+> node scripts/verify-seal.mjs
+
+{
+  "verified": true,
+  "ciphertextSha256": "9dec48029b1fe1f1e83d1f487cc0f9964c047ef87aabab33cecd820b3db68186",
+  "plaintextCommitment": "fcf3d39b469073757a1191aba5eb870c655fb4f8b3efb862db07550a072ff66e"
+}
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.

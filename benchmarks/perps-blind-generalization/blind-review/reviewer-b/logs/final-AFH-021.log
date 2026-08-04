@@ -1,0 +1,10 @@
+{
+  "label": "final-AFH-021",
+  "startedUtc": "2026-08-04T20:13:14.519Z",
+  "finishedUtc": "2026-08-04T20:13:17.133Z",
+  "cwd": "/workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/perps-blind-generalization",
+  "command": "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node --test --test-concurrency=1 --test-name-pattern=H-021 blind-run/poc/integration-accounting.test.mjs",
+  "exitCode": 0,
+  "stdout": "This version of µWS is not compatible with your Node.js build:\n\nError: Cannot find module '../binaries/uws_linux_x64_137.node'\nRequire stack:\n- /workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/perps-blind-generalization/node_modules/ganache/node_modules/@trufflesuite/uws-js-unofficial/src/uws.js\n- /workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/perps-blind-generalization/node_modules/ganache/dist/node/core.js\nFalling back to a NodeJS implementation; performance may be degraded.\n\n\n{\"hunterId\":\"H-021\",\"liveBondSum\":\"0\",\"aggregateReserved\":\"50000000000000000000\",\"accruedSlash\":\"50000000000000000000\"}\n✔ H-021 slashed bond leaves aggregate reservation with no live bond record (1843.175118ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 2569.955837\n",
+  "stderr": ""
+}

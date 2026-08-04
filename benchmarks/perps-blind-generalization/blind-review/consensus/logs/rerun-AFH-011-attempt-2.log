@@ -1,0 +1,8 @@
+started=2026-08-04T20:36:45.421Z
+attempt=2
+command=node blind-run/run-case.mjs AFH-011 --verify-only
+exit=0
+--- stdout ---
+{"passed":1,"caseIds":["AFH-011"]}
+
+--- stderr ---

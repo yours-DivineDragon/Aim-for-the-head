@@ -1,0 +1,10 @@
+{
+  "label": "seal-verify",
+  "startedUtc": "2026-08-04T19:59:03.351Z",
+  "finishedUtc": "2026-08-04T19:59:03.586Z",
+  "cwd": "/workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/perps-blind-generalization",
+  "command": "npm run seal:verify",
+  "exitCode": 0,
+  "stdout": "\n> meridian-clearing-blind-benchmark@1.0.0 seal:verify\n> node scripts/verify-seal.mjs\n\n{\n  \"verified\": true,\n  \"ciphertextSha256\": \"9dec48029b1fe1f1e83d1f487cc0f9964c047ef87aabab33cecd820b3db68186\",\n  \"plaintextCommitment\": \"fcf3d39b469073757a1191aba5eb870c655fb4f8b3efb862db07550a072ff66e\"\n}\n",
+  "stderr": "npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\n"
+}

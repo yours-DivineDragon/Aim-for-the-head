@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "caseId": "AFH-025",
+  "targetRevision": "158651792f770f5e827c1f0c363ea91f916cb1b8",
+  "compiler": "solc-js 0.8.30; optimizer 300; viaIR; Shanghai; metadata hash disabled",
+  "runtime": "Node 24; deterministic Ganache chain 31337; isolated local process",
+  "destructiveOrExternalEffects": false,
+  "executions": [
+    {
+      "command": "node --test --test-concurrency=1 --test-name-pattern=H-027 blind-run/poc/composition-boundaries.test.mjs",
+      "freshProcess": true,
+      "releaseLike": true,
+      "embeddedNegativeControl": true,
+      "oracle": {
+        "hunterId": "H-027",
+        "executionPrice": "340282366920938463465374607431768211456",
+        "storedEntry": "2000000000000000000",
+        "victimCashDelta": "-408338840305126156158",
+        "inRangeControlCashDelta": "-2"
+      }
+    }
+  ]
+}

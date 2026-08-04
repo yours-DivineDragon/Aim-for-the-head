@@ -1,0 +1,10 @@
+{
+  "label": "final-frozen-diff",
+  "startedUtc": "2026-08-04T20:13:50.260Z",
+  "finishedUtc": "2026-08-04T20:13:50.263Z",
+  "cwd": "/workspace/scratch/c3ce389a9ee1/Aim-for-the-head",
+  "command": "git diff --exit-code 31ea4b7367a42fb1d87d486e945e54361a8d0ca3 -- benchmarks/perps-blind-generalization/README.md benchmarks/perps-blind-generalization/BENCHMARK_CONTRACT.md benchmarks/perps-blind-generalization/SPECIFICATION.md benchmarks/perps-blind-generalization/INVARIANTS.md benchmarks/perps-blind-generalization/THREAT_SURFACE.md benchmarks/perps-blind-generalization/PRE_REGISTRATION.md benchmarks/perps-blind-generalization/SOURCE_MANIFEST.json benchmarks/perps-blind-generalization/contracts benchmarks/perps-blind-generalization/test benchmarks/perps-blind-generalization/scripts benchmarks/perps-blind-generalization/package.json benchmarks/perps-blind-generalization/package-lock.json benchmarks/perps-blind-generalization/sealed benchmarks/perps-blind-generalization/blind-run",
+  "exitCode": 0,
+  "stdout": "",
+  "stderr": ""
+}

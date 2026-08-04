@@ -1,0 +1,6 @@
+command=/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node scripts/compile.mjs
+exit=0
+--- stdout ---
+Compiled 15 Solidity sources with 0.8.30+commit.73712a01.Emscripten.clang; wrote 25 artifacts.
+
+--- stderr ---

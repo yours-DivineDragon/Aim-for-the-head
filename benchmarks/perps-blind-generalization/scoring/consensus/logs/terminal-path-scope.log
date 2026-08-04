@@ -1,0 +1,12 @@
+$ git status --porcelain -- benchmarks/perps-blind-generalization
+cwd=/workspace/scratch/c3ce389a9ee1/Aim-for-the-head
+exit=0
+
+ M benchmarks/perps-blind-generalization/scoring/consensus/check-final-score.mjs
+ M benchmarks/perps-blind-generalization/scoring/consensus/logs/terminal-discrimination.log
+ M benchmarks/perps-blind-generalization/scoring/consensus/logs/terminal-head.log
+ M benchmarks/perps-blind-generalization/scoring/consensus/logs/terminal-input-immutability.log
+ M benchmarks/perps-blind-generalization/scoring/consensus/logs/terminal-ordinary.log
+ M benchmarks/perps-blind-generalization/scoring/consensus/terminal-verify.mjs
+?? benchmarks/perps-blind-generalization/scoring/consensus/logs/terminal-scorer-ancestor.log
+

@@ -206,6 +206,17 @@ closes all 15/15 units with zero unsupported claims on the unchanged target;
 because the truth was known during tuning, that is regression evidence rather
 than a second blind or generalization score.
 
+The separate [Meridian Clearing generalization benchmark](benchmarks/perps-blind-generalization/scoring/consensus/RESULTS.md)
+tests workflow v2 against an entirely unseen cross-margin perpetuals protocol.
+Its frozen blind run earned **89.4/100**: 13 exact units, one 0.3 fragment, and
+one miss across 15 preregistered units, with 25/25 independently validated
+candidate findings and no false positives. Eleven candidates were genuine,
+distinct defects outside the generator's registered rubric, so they measure
+open-world discovery breadth rather than additional recall. The
+[generalization study](benchmarks/perps-blind-generalization/scoring/consensus/GENERALIZATION_STUDY.md)
+separates that result from the truth-informed same-target regression and records
+the remaining signed-arithmetic and critical-composition gaps.
+
 The skill is intended for authorized defensive research only. It improves the
 discipline and auditability of a hunt; it does not guarantee that a vulnerability
 exists, that every bug will be found, or that a finding is ready for disclosure

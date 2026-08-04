@@ -1,0 +1,164 @@
+{
+  "schema": 1,
+  "hashAlgorithm": "SHA-256",
+  "canonicalization": "UTF-8 lines: <sha256><two spaces><bytes><two spaces><path><LF>, sorted by path",
+  "fileCount": 31,
+  "aggregateSha256": "bd7aacd7d51c679b4e40f83d6ca49d49b03b69490ad6751f50c81236e7ef5381",
+  "entries": [
+    {
+      "path": "BENCHMARK_CONTRACT.md",
+      "bytes": 3218,
+      "sha256": "b3b86772a9731100bb671e748f117a175c87d708678ce74c3c7ab8ed5be2b748"
+    },
+    {
+      "path": "INVARIANTS.md",
+      "bytes": 2895,
+      "sha256": "8d8595e4fe47e6ee2f0f8664a2033d259c0cd1a04d8cd8033b929f85ee027ce2"
+    },
+    {
+      "path": "PRE_REGISTRATION.md",
+      "bytes": 2741,
+      "sha256": "36ec2e91a993d6cc172247b5d492552df2ab04ccbb8a6c9abe7689b02af40190"
+    },
+    {
+      "path": "README.md",
+      "bytes": 2220,
+      "sha256": "2f3e60727b7b681a634b16ed83315fe378eebe51d5cd848186a0de9240992f02"
+    },
+    {
+      "path": "SPECIFICATION.md",
+      "bytes": 5081,
+      "sha256": "889167d1af694fc51bf1882fbebf0642562cfdf0899beaff80b11878037ebb10"
+    },
+    {
+      "path": "THREAT_SURFACE.md",
+      "bytes": 2372,
+      "sha256": "0991ed64cd0a1da38ce2e9e3261993e5e9925df3dde0194ad2b7390ab2585444"
+    },
+    {
+      "path": "contracts/ClearingHouse.sol",
+      "bytes": 11319,
+      "sha256": "a86a162dcb6740c550d90156481edb2d96ae174a10a17d1e9e68f93fdfb06f6f"
+    },
+    {
+      "path": "contracts/EpochSettlement.sol",
+      "bytes": 4336,
+      "sha256": "719985d0f559194f23d56a00c8362c6b660ced66e157dede384ba406e27cdb03"
+    },
+    {
+      "path": "contracts/ExecutionRouter.sol",
+      "bytes": 4325,
+      "sha256": "7b806d4c13a5a4d22bd3261da86a56e13bd3a422dee281d6fd39b44b1d129db5"
+    },
+    {
+      "path": "contracts/FundingEngine.sol",
+      "bytes": 3352,
+      "sha256": "b10924a7d91b807755069e9db3b50ccb76e888ea04d89993d026e10c61495a67"
+    },
+    {
+      "path": "contracts/InsuranceFund.sol",
+      "bytes": 8390,
+      "sha256": "aa16ecc82d23ef0b306b119c47b627293b44db915cbbd159ec50b9828fcfe1ac"
+    },
+    {
+      "path": "contracts/LiquidationAuction.sol",
+      "bytes": 8139,
+      "sha256": "d7cbed03ce2f0167dc31424f187943cde6b13c959361d2b013b681fe07a3eb78"
+    },
+    {
+      "path": "contracts/MarginVault.sol",
+      "bytes": 6584,
+      "sha256": "a1c9ea5808af95a12daa8a7d274a096eb9e71760356bbea3f1d688075a2634f3"
+    },
+    {
+      "path": "contracts/MarketCatalog.sol",
+      "bytes": 3639,
+      "sha256": "e59595e88a4245068ee3e8bdca21b9d7ed28c23b2d97db9c66a0feefa9ce0fff"
+    },
+    {
+      "path": "contracts/OracleHub.sol",
+      "bytes": 3875,
+      "sha256": "d830d10b6959f3d0fdfab598f5f2d6d09aa43ed2bb1e338997c343f601cf7629"
+    },
+    {
+      "path": "contracts/interfaces/IProtocolIntegrations.sol",
+      "bytes": 2622,
+      "sha256": "a9bbcb79e003ec163b491e4f0adce05ff4b5830fd41ce8b099f3a2bfba78ff1c"
+    },
+    {
+      "path": "contracts/lib/PortfolioRisk.sol",
+      "bytes": 1849,
+      "sha256": "c818ca599548cf1f78c52002998c5114bca5082c9d783eeca51d1059623f96d1"
+    },
+    {
+      "path": "contracts/lib/SignedWadMath.sol",
+      "bytes": 3338,
+      "sha256": "182131411575c0837eb28e9912bb7259b636a5294c5a9a15c17af40422efc047"
+    },
+    {
+      "path": "contracts/mocks/MockERC20.sol",
+      "bytes": 2008,
+      "sha256": "06b62fa44d8854bf79cc32fcae9cd220c1651bfaca09389ecb237b1a98ce59cb"
+    },
+    {
+      "path": "contracts/mocks/MockPriceFeed.sol",
+      "bytes": 1052,
+      "sha256": "c950fb3b3200bf44254f2324cc9593a1f292a44801399db29d653e5d11bbf392"
+    },
+    {
+      "path": "contracts/mocks/MockVenue.sol",
+      "bytes": 656,
+      "sha256": "bb681e7ec66420cf27f1dbb0aba19488d8f5a14888d7b00ee01f7f84c442f559"
+    },
+    {
+      "path": "package-lock.json",
+      "bytes": 162961,
+      "sha256": "5956e54c4fc0d62ef52ed0d81c560f965ee9a389e2a121d166594a83d881276d"
+    },
+    {
+      "path": "package.json",
+      "bytes": 829,
+      "sha256": "9d2dee775c965c1c07a165ac2bdbe086ca174c6ed5bf6f2fe7e5cb010cb3999b"
+    },
+    {
+      "path": "scripts/compile.mjs",
+      "bytes": 231,
+      "sha256": "98e80a0ef6d9e6989795fa0049a1d9bbd1907d063f5a12200987079665b71db6"
+    },
+    {
+      "path": "scripts/compiler.mjs",
+      "bytes": 2399,
+      "sha256": "e25993f94d7468e43b097010ae8a279cb2014868765a7065813fa7839fc9cfbc"
+    },
+    {
+      "path": "scripts/manifest.mjs",
+      "bytes": 2457,
+      "sha256": "eecb86db5eff7a7c7654ae27d0026a0818de95252a019ca67e7aa76f3a382345"
+    },
+    {
+      "path": "scripts/private-test.mjs",
+      "bytes": 2296,
+      "sha256": "579abb2388e154a9631ec532ea20171bf94cfc856bba0d184fe4a0f095cfef60"
+    },
+    {
+      "path": "scripts/seal.mjs",
+      "bytes": 2956,
+      "sha256": "9124c8414c1d0ed32f57bff45c8c1afabd82d2c5dcef822725cac5648e163c06"
+    },
+    {
+      "path": "scripts/verify-seal.mjs",
+      "bytes": 1256,
+      "sha256": "952a7f5bccf2269f83896749ba9ce3e439c26c48d4b6cd17dfad316f18343065"
+    },
+    {
+      "path": "test/support.mjs",
+      "bytes": 1481,
+      "sha256": "76ed21be5cff57bf118ec482d82011e99ff363eb51bdc9d7a2204ee31b1594e0"
+    },
+    {
+      "path": "test/system.test.mjs",
+      "bytes": 5793,
+      "sha256": "f4cbd09034b6eb6350f32ffe6ef0274f49f31de050c1e62c6bab26e9084c883a"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "schema": 1,
+  "format": "deterministic POSIX tar encrypted as raw ciphertext; authentication tag stored in metadata",
+  "archiveCanonicalization": "tar --sort=name --mtime=@0 --owner=0 --group=0 --numeric-owner",
+  "cipher": "AES-256-GCM",
+  "kdf": {
+    "name": "scrypt",
+    "N": 16384,
+    "r": 8,
+    "p": 1,
+    "derivedBytes": 32
+  },
+  "associatedDataUtf8": "meridian-clearing-private-v1",
+  "saltHex": "f5e384bf75daffdc442615aeb4bc2893",
+  "nonceHex": "fc2d238d1f1a7f5a33ba9691",
+  "tagHex": "e3289fa867476a28cf71fc88cde3feff",
+  "plaintextBytes": 51200,
+  "plaintextSha256": "fcf3d39b469073757a1191aba5eb870c655fb4f8b3efb862db07550a072ff66e",
+  "ciphertextBytes": 51200,
+  "ciphertextSha256": "9dec48029b1fe1f1e83d1f487cc0f9964c047ef87aabab33cecd820b3db68186"
+}

@@ -1,0 +1,11 @@
+$ npm run manifest:verify
+cwd=/workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/perps-blind-generalization
+exit=0
+
+
+> meridian-clearing-blind-benchmark@1.0.0 manifest:verify
+> node scripts/manifest.mjs verify
+
+Verified 31 manifest files: bd7aacd7d51c679b4e40f83d6ca49d49b03b69490ad6751f50c81236e7ef5381
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.

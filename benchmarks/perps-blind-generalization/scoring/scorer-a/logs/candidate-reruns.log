@@ -1,0 +1,7 @@
+name=candidate-reruns
+startedAt=2026-08-04T21:03:12.570Z
+command=/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node blind-run/run-case.mjs all --verify-only
+exit=0
+
+{"passed":25,"caseIds":["AFH-001","AFH-002","AFH-003","AFH-004","AFH-005","AFH-006","AFH-007","AFH-008","AFH-009","AFH-010","AFH-011","AFH-012","AFH-013","AFH-014","AFH-015","AFH-016","AFH-017","AFH-018","AFH-019","AFH-020","AFH-021","AFH-022","AFH-023","AFH-024","AFH-025"]}
+

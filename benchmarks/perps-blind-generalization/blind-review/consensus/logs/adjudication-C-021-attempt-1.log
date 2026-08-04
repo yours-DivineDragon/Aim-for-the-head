@@ -1,0 +1,26 @@
+started=2026-08-04T20:37:50.871Z
+attempt=1
+command=node --test --test-concurrency=1 --test-name-pattern=C-021 blind-review/consensus/adjudication.test.mjs
+exit=0
+--- stdout ---
+This version of µWS is not compatible with your Node.js build:
+
+Error: Cannot find module '../binaries/uws_linux_x64_137.node'
+Require stack:
+- /tmp/perps-consensus-terminal.KgZiUk/benchmarks/perps-blind-generalization/node_modules/ganache/node_modules/@trufflesuite/uws-js-unofficial/src/uws.js
+- /tmp/perps-consensus-terminal.KgZiUk/benchmarks/perps-blind-generalization/node_modules/ganache/dist/node/core.js
+Falling back to a NodeJS implementation; performance may be degraded.
+
+
+{"adjudicationId":"C-021","liveBondWad":"0","phantomReservedWad":"50000000000000000000","coverageAvailableWad":"0","liquidWad":"100000000000000000000","promisedAssetsWad":"150000000000000000000","redemptionReservationCheck":false,"verdict":"confirmed_narrowed"}
+✔ C-021 slash residue blocks deficit coverage; redemption failure comes from NAV double count (744.7704ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1457.125568
+
+--- stderr ---

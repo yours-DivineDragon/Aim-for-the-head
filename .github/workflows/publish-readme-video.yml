@@ -36,10 +36,11 @@ jobs:
         run: |
           set -euo pipefail
           video="$RUNNER_TEMP/aim-for-the-head-quickstart-1080p.mp4"
-          if gh release view readme-video-v1 >/dev/null 2>&1; then
-            gh release upload readme-video-v1 "$video" --clobber
+          if gh release view readme-video-v1 --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload readme-video-v1 "$video" --repo "$GITHUB_REPOSITORY" --clobber
           else
             gh release create readme-video-v1 "$video" \
+              --repo "$GITHUB_REPOSITORY" \
               --target "$GITHUB_SHA" \
               --title "README demo (1080p)" \
               --notes "Crisp 1080p H.264 walkthrough for the repository README. The media is stored as a release asset and is not part of Git history or repository clones."

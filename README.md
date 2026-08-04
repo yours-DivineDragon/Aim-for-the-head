@@ -3,11 +3,13 @@
 **A portable Agent Skill for persistent, evidence-driven security bug hunts.**
 
 <p align="center">
-  <img src="assets/aim-for-the-head-quickstart.gif" width="800" alt="Animated walkthrough: install Aim for the Head, invoke it in Codex, review the generated security contract, and activate the contract with slash-goal." />
+  <a href="https://github.com/yours-DivineDragon/Aim-for-the-head/releases/download/readme-video-v1/aim-for-the-head-quickstart-1080p.mp4">
+    <img src="assets/aim-for-the-head-video-poster.webp" width="800" alt="Click to open the 1080p walkthrough: install Aim for the Head, invoke it in Codex, review the generated security contract, and activate the contract with slash-goal." />
+  </a>
 </p>
 
 <p align="center">
-  <sub>Install → prepare → review → activate. Rendered from the <a href="demo/remotion">Remotion source</a>.</sub>
+  <sub>Install → prepare → review → activate. <a href="https://github.com/yours-DivineDragon/Aim-for-the-head/releases/download/readme-video-v1/aim-for-the-head-quickstart-1080p.mp4">Watch or download the 1080p walkthrough</a> (16 seconds).</sub>
 </p>
 
 ## Start here: audit a codebase with Codex
@@ -1000,10 +1002,8 @@ Aim-for-the-head/
 ├── agents/
 │   └── openai.yaml                Skill metadata and invocation hints
 ├── assets/
-│   └── aim-for-the-head-quickstart.gif
-│                                    Animated README walkthrough
-├── demo/
-│   └── remotion/                  Reproducible Remotion composition and renderer
+│   └── aim-for-the-head-video-poster.webp
+│                                    Lightweight README video preview
 ├── references/
 │   ├── evidence-gates.md          Validation and reproduction requirements
 │   ├── goal-contract.md           Contract schema and red-team checklist
@@ -1042,18 +1042,6 @@ The tests cover initialization, activation, lifecycle transitions, contract
 fingerprinting, evidence requirements, candidate revision rules, coverage,
 validated completion, honest exhaustion, budget-limited and blocked outcomes,
 append-only stream integrity, and corrupted-state rejection.
-
-Type-check and regenerate the animated walkthrough:
-
-```bash
-cd demo/remotion
-./render-readme-demo.sh
-```
-
-The render script requires Node.js, Remotion's supported browser environment,
-and FFmpeg. It installs the pinned dependencies, type-checks the composition,
-writes intermediate video output under the ignored
-`demo/remotion/out/` directory and replaces the tracked README GIF.
 
 ## Troubleshooting
 

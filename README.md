@@ -3,11 +3,13 @@
 **A portable Agent Skill for persistent, evidence-driven security bug hunts.**
 
 <p align="center">
-  <img src="https://files.catbox.moe/4rj077.webp" width="800" alt="Looping walkthrough: install Aim for the Head, invoke it in Codex, review the generated security contract, and activate the contract with slash-goal." />
+  <a href="https://github.com/yours-DivineDragon/Aim-for-the-head/releases/download/readme-video-v1/aim-for-the-head-quickstart-1080p.mp4">
+    <img src="assets/aim-for-the-head-walkthrough-preview.webp" width="800" alt="Looping animated preview: install Aim for the Head, invoke it in Codex, review the generated security contract, and activate the contract with slash-goal." />
+  </a>
 </p>
 
 <p align="center">
-  <sub>Install → prepare → review → activate. The 1080p walkthrough plays automatically and loops continuously.</sub>
+  <sub>Install → prepare → review → activate. The 640×360 animated preview loops inline; the linked 16-second H.264 walkthrough is 1080p and stored as a GitHub Release asset.</sub>
 </p>
 
 ## Start here: audit a codebase with Codex
@@ -1091,9 +1093,18 @@ Aim-for-the-head/
 ├── .github/workflows/ci.yml       Automated package and helper checks
 ├── agents/
 │   └── openai.yaml                Skill metadata and invocation hints
+├── assets/
+│   └── aim-for-the-head-walkthrough-preview.webp  Lightweight looping README preview
 ├── references/
 │   ├── evidence-gates.md          Validation and reproduction requirements
-│   ├── deep-hunt.md               Business-logic, semantic, boundary, and composition passes
+│   ├── deep-hunt.md               Compact pass index and completion contract
+│   ├── deep-business-invariants.md  Business model and conservation pass
+│   ├── deep-consumer-propagation.md Mutable-value consumer pass
+│   ├── deep-boundary-arithmetic.md  Exact arithmetic-boundary pass
+│   ├── deep-external-semantics.md   Integration promise/delta pass
+│   ├── deep-sequence-interleaving.md Callback and ordering pass
+│   ├── deep-exploit-composition.md  Primitive-join pass
+│   ├── deep-economic-closure.md     Final system-impact pass
 │   ├── goal-contract.md           Contract schema and red-team checklist
 │   ├── hunt-strategies.md         Mode-specific investigation strategies
 │   ├── portability.md             Host-specific installation and fallback notes

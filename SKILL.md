@@ -1,6 +1,6 @@
 ---
 name: aim-for-the-head
-description: Turn a repository, threat model, known vulnerability, scanner alert, or vague request to find security bugs into one bounded and persistent evidence-backed hunt. Use for /goal security work, autonomous audits, critical-vulnerability searches, deep business-logic review, composed and cross-contract exploit research, external-integration analysis, variant analysis, fuzzing campaigns, invariant or differential testing, scanner triage, and candidate validation in Codex, Claude Code, Kimi Code, OpenCode, or another coding agent. Includes business-flow modeling, primitive composition, semantic-delta and boundary testing, capability discovery, adversarial goal drafting, multidimensional coverage, safe proofs, false-positive gates, independent reproduction, honest stop conditions, and portable state tracking.
+description: Run a bounded, authorized, evidence-backed security hunt or validate a concrete security finding. Use when the user explicitly requests repository vulnerability discovery, variant analysis, invariant or differential security testing, deep business-logic or composed-exploit research, or reproducible validation with durable goal state.
 ---
 
 # Aim for the Head
@@ -44,9 +44,9 @@ Read linked files completely when their condition applies:
   or reporting a candidate.
 - Read [hunt-strategies.md](references/hunt-strategies.md) before prioritizing
   attack surfaces, selecting techniques, splitting work, or assessing coverage.
-- Read [deep-hunt.md](references/deep-hunt.md) before mapping business logic,
-  testing arithmetic or integrations, escalating a primitive, or completing a
-  discovery, invariant, variant, or differential hunt.
+- For workflow version 2, read the compact
+  [deep-hunt pass index](references/deep-hunt.md) while planning. It routes seven
+  pass-specific references; load each only when its stated condition applies.
 - Read [portability.md](references/portability.md) when installing the skill,
   moving a hunt between agents, or using a host without native goal mode.
 - Read [research-basis.md](references/research-basis.md) when explaining the
@@ -93,11 +93,11 @@ security invariants, dangerous effects, realistic configurations, business
 flows, accounting identities, external semantic assumptions, and attacker
 funding sources.
 
-Create the required maps in [deep-hunt.md](references/deep-hunt.md): the
-business-flow/state-machine model, conservation ledger, attacker-mutable-value
-consumer graph, interface-promise matrix, callback/sequence matrix, primitive
-join graph, and final impact ledger. Keep assumptions visibly distinct from
-verified promises.
+Start with the business-flow/state-machine model and conservation ledger in
+[deep-business-invariants.md](references/deep-business-invariants.md). Load the
+consumer, boundary, integration, sequence, composition, and closure passes only
+as their conditions arise. Keep assumptions visibly distinct from verified
+promises.
 
 Run one bounded mapping pass. Rank three to seven attack surfaces using attacker
 influence, privilege or value at risk, parser or state-machine complexity,
@@ -105,21 +105,10 @@ dangerous sinks, historical defect density, and testing gaps. Mapping is
 successful when it produces a decision-ready queue; it does not need to find a
 bug.
 
-Keep coverage separate and multidimensional:
-
-- source-read coverage;
-- attack-surface and entry-point coverage;
-- trust-boundary and source-to-sink coverage;
-- state-transition and invariant coverage;
-- runtime and corpus coverage;
-- configuration and build-variant coverage;
-- historical bug-family coverage;
-- falsification and negative-control coverage.
-- business-invariant and conservation coverage;
-- downstream consumer-propagation coverage;
-- boundary-arithmetic and external-semantic coverage;
-- sequence/interleaving and exploit-composition coverage;
-- economic or system-impact closure coverage.
+Keep source, attack-surface, trust-boundary, state, runtime, configuration,
+history, and falsification coverage separate. Workflow version 2 additionally
+tracks the seven business, consumer, boundary, external-semantic, sequence,
+composition, and closure passes from the index.
 
 Never blend these into one confidence percentage. AICov-style read coverage
 measures observed source reads, not comprehension or execution. Runtime coverage
@@ -219,10 +208,13 @@ Repeat while the contract is active and within budget:
 10. **Pivot.** When attempts stop producing information, change the surface,
    abstraction level, configuration, or technique.
 
-Run the exact boundary and semantic differentials in `deep-hunt.md`. Do not
-dismiss a rounding edge from one friendly unit configuration, or an integration
-variant because it implements the declared ABI; verify the actual semantic
-promise or allowlist, then measure before/after effects.
+Run exact boundary tests from
+[deep-boundary-arithmetic.md](references/deep-boundary-arithmetic.md) when math
+is relevant and semantic differentials from
+[deep-external-semantics.md](references/deep-external-semantics.md) when an
+integration is relevant. Do not dismiss a rounding edge from one friendly unit
+configuration or an integration variant merely because it implements the
+declared ABI; verify the promise or allowlist, then measure before/after effects.
 
 Checkpoint every material observation:
 
@@ -324,13 +316,10 @@ Do not mark a native goal complete until the terminal check passes.
 ## Deliver the result
 
 Lead with the outcome and confidence. Include the exact target revision and
-configuration, accepted finding and safe reproduction or honest non-finding
-state, positive and negative evidence, rejected candidates, coverage vector,
-tool failures, unresolved assumptions, duplicate-check scope, independent-review
-status, residual risk, and highest-value next action.
-Include the business-invariant model, downstream consumer map, failed and
-successful primitive joins, external-semantic and arithmetic boundaries tested,
-and the final attacker/system/third-party delta ledger.
+configuration; accepted finding or honest non-finding state; positive and
+negative evidence; rejections; coverage; tool failures; assumptions; duplicate
+and independent-review status; residual risk; and the next action. For workflow
+version 2, include the seven pass artifacts named in the index.
 
 Keep uncoordinated exploit material private. Never publish, disclose, or contact
 maintainers without explicit user authorization.

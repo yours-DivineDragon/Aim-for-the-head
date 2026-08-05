@@ -48,6 +48,22 @@ of rubric incompleteness—not extra recall. The registered critical composed
 chain received only 0.3 fragment credit. These limitations are part of the
 result, not footnotes to it.
 
+### Meridian archive erratum: unreachable freeze identifiers
+
+`REVEAL_ATTESTATION.md` in the archived study cites four intermediate freeze
+identifiers that are not reachable as commit objects from any published ref:
+
+- `158651792f770f5e827c1f0c363ea91f916cb1b8` — target and seal;
+- `31ea4b7367a42fb1d87d486e945e54361a8d0ca3` — hunter submission;
+- `c1e2b8cd7bd098098a05bb7010277c81e3ae9aed` — independent reviews;
+- `d07b5ed83def43f6293bd41eaf51e97dc2fec501` — review consensus.
+
+They record local orchestration stages, not third-party-verifiable publication
+boundaries. The archive is preserved unchanged as historical evidence; this
+erratum is the authoritative interpretation of those identifiers. The absence
+of reachable stage commits is one reason Meridian remains classified as a
+common-author self-evaluation.
+
 ## Protocol for future headline benchmarks
 
 A future result may be described as blind or generalizing only when all of the

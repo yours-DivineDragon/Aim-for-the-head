@@ -171,8 +171,9 @@ Use preserved files containing paths, hashes, commands, or trace identifiers as
 artifacts. For the state helper, every `--evidence` value and every candidate
 `--gate NAME=PATH` value must name a real regular file. It records file metadata
 and SHA-256 at insertion and revalidates the bytes later. A bare filename,
-nonexistent path, directory, final symlink, or prose such as “reviewed by agent”
-is not an artifact.
+zero-byte placeholder, nonexistent path, directory, symlinked path component, or
+prose such as “reviewed by agent” is not an artifact. Gates use distinct digests
+unless the activated contract names the exact sharing group and reason.
 
 ## Build a safe reproduction packet
 

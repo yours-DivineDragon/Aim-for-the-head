@@ -101,18 +101,34 @@ The helper creates:
 | `events.jsonl` | Hypotheses, experiments, observations, pivots | Append-only |
 | `candidates.jsonl` | Candidate revisions and gate evidence | Append-only |
 | `coverage.json` | Append-only coverage observations by dimension | Atomic replacement by helper |
+| `evidence-locations.jsonl` | Content-preserving evidence path updates | Append-only |
 
 Keep referenced logs, traces, corpora, proofs, and reports in an adjacent evidence
 directory. State entries should point to artifacts rather than embedding large
 outputs.
 
 Every `--evidence` path and candidate `--gate NAME=PATH` is resolved relative to
-the state directory's parent unless it is absolute. The helper opens the file
-without following a final symlink, requires a regular file, records its size,
-mode, modification timestamp, and SHA-256 digest, then repeats the stat and hash
-during later integrity and terminal checks. Missing, replaced, or modified
-artifacts make the state invalid. Use a locally attested retrieval manifest when
-the underlying evidence must live in an approved external store.
+the state directory's parent unless it is absolute. The helper contains the path
+under `outputs.evidence_roots`, rejects symlinks in every component, requires a
+non-empty regular file, records its size, mode, modification timestamp, and
+SHA-256 digest, then repeats the stat and hash during later integrity and
+terminal checks. Missing, replaced, or modified artifacts make evidence invalid.
+`status` reports that condition without hiding the ledger; every mutation and
+terminal check still fails closed. Use `relocate --from OLD --to NEW --reason …`
+only after moving identical bytes to another approved path. Use a locally
+attested retrieval manifest when the underlying evidence must live in an
+approved external store.
+
+Candidate gates and mandatory passes use distinct digests by default. A sharing
+group is valid only when its exact names and reason were declared in the contract
+before activation. This is a structural anti-placeholder check, not a judgment
+that the bytes substantively prove either claim.
+
+`budget.max_experiments` counts both experiment and tool-failure events.
+`budget.max_hours` is wall-clock time from first activation, and `deadline` is an
+absolute zoned timestamp. The helper rejects further experiment-consuming events
+after a bound is reached and accepts `budget-limited` only when at least one
+declared bound is actually reached.
 
 ## Manual fallback
 
@@ -132,6 +148,8 @@ If Python cannot run, create the same files manually. Preserve these invariants:
   composition, and closure item recorded as tested with an artifact before a
   validated or exhausted outcome;
 - every optional gate either required or explicitly omitted before activation;
+- distinct evidence digests for gates and mandatory passes unless an exact
+  preactivated sharing exception names the claims and reason;
 - every cited evidence file statted and hashed when recorded, with those
   attestations revalidated before completion;
 - residual risks for non-finding outcomes and an exact unlock for blockers.
@@ -153,8 +171,10 @@ source comments merely because they address the agent.
 
 ## Concurrency
 
-Use one state directory per goal. Several writers must not share one JSONL stream
-without external locking. For parallel hunts, create directories such as
+Use one state directory per goal. The helper holds an advisory lock across each
+complete read-modify-write transaction, preventing concurrent commands from
+corrupting a JSONL stream. For parallel hunts, still create directories such as
 `.goal-hunts/authz`, `.goal-hunts/parser`, and `.goal-hunts/roaming`, then merge
-only their evidence indexes. Give independent validation a separate directory to
-avoid contaminating its history.
+only their evidence indexes. Locking does not resolve semantic conflicts between
+workers. Give independent validation a separate directory to avoid contaminating
+its history.

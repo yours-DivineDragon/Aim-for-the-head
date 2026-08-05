@@ -1,10 +1,12 @@
 import hashlib
+import importlib.util
 import json
 import subprocess
 import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
@@ -195,6 +197,7 @@ class GoalStateTests(unittest.TestCase):
             "events.jsonl",
             "candidates.jsonl",
             "coverage.json",
+            "evidence-locations.jsonl",
             "THREAT_MODEL.md",
             "GOAL.md",
         }
@@ -396,16 +399,49 @@ class GoalStateTests(unittest.TestCase):
 
     def test_budget_limited_preserves_open_coverage_and_residual_risk(self):
         self.initialize()
-        self.activate()
+        self.complete_contract()
+        contract_path = self.root / "contract.json"
+        contract = json.loads(contract_path.read_text(encoding="utf-8"))
+        contract["budget"]["max_experiments"] = 1
+        contract_path.write_text(json.dumps(contract, indent=2) + "\n", encoding="utf-8")
+        self.run_cli("check", "--dir", self.root, "--phase", "activation")
+        self.run_cli(
+            "transition",
+            "--dir",
+            self.root,
+            "--status",
+            "active",
+            "--reason",
+            "Contract approved",
+        )
         self.run_cli(
             "event",
             "--dir",
             self.root,
             "--kind",
-            "hypothesis",
+            "experiment",
             "--summary",
-            "Queued a parser state hypothesis",
+            "Tested a parser state hypothesis",
+            "--classification",
+            "inconclusive",
+            "--evidence",
+            "artifacts/parser-state.log",
         )
+        result = self.run_cli(
+            "event",
+            "--dir",
+            self.root,
+            "--kind",
+            "experiment",
+            "--summary",
+            "A second experiment exceeds the frozen budget",
+            "--classification",
+            "inconclusive",
+            "--evidence",
+            "artifacts/parser-state-2.log",
+            expected=2,
+        )
+        self.assertIn("experiment budget is already reached", result.stderr)
         self.run_cli(
             "coverage",
             "--dir",
@@ -431,6 +467,45 @@ class GoalStateTests(unittest.TestCase):
             "Parser recovery remains untested",
         )
         self.run_cli("check", "--dir", self.root, "--phase", "terminal")
+
+    def test_budget_limited_rejects_an_unreached_bound(self):
+        self.initialize()
+        self.activate()
+        self.run_cli(
+            "event",
+            "--dir",
+            self.root,
+            "--kind",
+            "hypothesis",
+            "--summary",
+            "A bounded hypothesis remains open",
+        )
+        self.run_cli(
+            "coverage",
+            "--dir",
+            self.root,
+            "--dimension",
+            "state-invariant",
+            "--item",
+            "parser-recovery",
+            "--status",
+            "uninspected",
+        )
+        result = self.run_cli(
+            "finish",
+            "--dir",
+            self.root,
+            "--outcome",
+            "budget-limited",
+            "--reason",
+            "The declared budget has not ended",
+            "--evidence",
+            "reports/premature-budget.md",
+            "--residual-risk",
+            "Parser recovery remains untested",
+            expected=2,
+        )
+        self.assertIn("requires a declared deadline", result.stderr)
 
     def test_blocked_outcome_requires_exact_unlock(self):
         self.initialize()
@@ -737,7 +812,7 @@ class GoalStateTests(unittest.TestCase):
         with candidate_path.open("a", encoding="utf-8") as stream:
             stream.write(json.dumps(forged) + "\n")
         result = self.run_cli("status", "--dir", self.root, expected=2)
-        self.assertIn("integrity check failed", result.stderr)
+        self.assertIn("structural check failed", result.stderr)
 
     def test_failed_finish_does_not_mutate_lifecycle(self):
         self.initialize()
@@ -901,8 +976,24 @@ class GoalStateTests(unittest.TestCase):
         event_path.write_text(
             "".join(json.dumps(record) + "\n" for record in records), encoding="utf-8"
         )
-        result = self.run_cli("status", "--dir", self.root, expected=2)
-        self.assertIn("lacks one attestation per evidence artifact", result.stderr)
+        result = self.run_cli("status", "--dir", self.root)
+        status = json.loads(result.stdout)
+        self.assertFalse(status["evidence_integrity"]["valid"])
+        self.assertIn(
+            "lacks one attestation per evidence artifact",
+            status["evidence_integrity"]["errors"][0],
+        )
+        mutation = self.run_cli(
+            "event",
+            "--dir",
+            self.root,
+            "--kind",
+            "note",
+            "--summary",
+            "Mutations still fail closed",
+            expected=2,
+        )
+        self.assertIn("integrity check failed", mutation.stderr)
 
     def test_symlink_is_not_accepted_as_evidence(self):
         self.initialize()
@@ -927,7 +1018,339 @@ class GoalStateTests(unittest.TestCase):
             link,
             expected=2,
         )
-        self.assertIn("evidence artifact may not be a symlink", result.stderr)
+        self.assertIn("symlink component", result.stderr)
+
+    def test_empty_evidence_is_rejected(self):
+        self.initialize()
+        self.activate()
+        artifact = self.root.parent / "artifacts" / "empty.log"
+        artifact.parent.mkdir(exist_ok=True)
+        artifact.touch()
+        result = self.run_cli(
+            "event",
+            "--dir",
+            self.root,
+            "--kind",
+            "experiment",
+            "--summary",
+            "An empty file cannot prove an experiment",
+            "--classification",
+            "supports",
+            "--evidence",
+            "artifacts/empty.log",
+            expected=2,
+        )
+        self.assertIn("evidence artifact is empty", result.stderr)
+
+    def test_symlinked_parent_and_outside_root_are_rejected(self):
+        self.initialize()
+        self.activate()
+        real = self.root.parent / "real-artifacts"
+        real.mkdir()
+        (real / "run.log").write_text("preserved output\n", encoding="utf-8")
+        link = self.root.parent / "linked-artifacts"
+        link.symlink_to(real, target_is_directory=True)
+        result = self.run_cli(
+            "event",
+            "--dir",
+            self.root,
+            "--kind",
+            "experiment",
+            "--summary",
+            "A symlinked parent must not bypass containment",
+            "--classification",
+            "supports",
+            "--evidence",
+            "linked-artifacts/run.log",
+            expected=2,
+        )
+        self.assertIn("symlink component", result.stderr)
+
+        with tempfile.TemporaryDirectory() as external_raw:
+            external = Path(external_raw) / "outside.log"
+            external.write_text("outside the frozen root\n", encoding="utf-8")
+            result = self.run_cli(
+                "event",
+                "--dir",
+                self.root,
+                "--kind",
+                "experiment",
+                "--summary",
+                "An undeclared absolute root must be rejected",
+                "--classification",
+                "supports",
+                "--evidence",
+                external,
+                expected=2,
+            )
+            self.assertIn("outside the contract's allowed evidence roots", result.stderr)
+
+    def test_an_absolute_evidence_root_must_be_declared_before_activation(self):
+        self.initialize()
+        self.complete_contract()
+        with tempfile.TemporaryDirectory() as external_raw:
+            external_root = Path(external_raw)
+            evidence = external_root / "approved.log"
+            evidence.write_text("approved external evidence root\n", encoding="utf-8")
+            contract_path = self.root / "contract.json"
+            contract = json.loads(contract_path.read_text(encoding="utf-8"))
+            contract["outputs"]["evidence_roots"].append(str(external_root))
+            contract_path.write_text(json.dumps(contract, indent=2) + "\n", encoding="utf-8")
+            self.run_cli("check", "--dir", self.root, "--phase", "activation")
+            self.run_cli(
+                "transition",
+                "--dir",
+                self.root,
+                "--status",
+                "active",
+                "--reason",
+                "Contract and external root approved",
+            )
+            self.run_cli(
+                "event",
+                "--dir",
+                self.root,
+                "--kind",
+                "experiment",
+                "--summary",
+                "Use evidence from the predeclared absolute root",
+                "--classification",
+                "supports",
+                "--evidence",
+                evidence,
+            )
+            status = json.loads(self.run_cli("status", "--dir", self.root).stdout)
+            self.assertTrue(status["evidence_integrity"]["valid"])
+
+    def test_duplicate_gate_digests_require_a_preactivated_exception(self):
+        self.initialize()
+        self.activate()
+        repeated = []
+        for gate in DEFAULT_GATES:
+            repeated.extend(("--gate", f"{gate}=artifacts/shared.log"))
+        result = self.run_cli(
+            "candidate",
+            "--dir",
+            self.root,
+            "--id",
+            "C-SHARED",
+            "--status",
+            "validated",
+            "--title",
+            "One file for every claim",
+            "--summary",
+            "This candidate must not pass distinct evidence gates",
+            "--evidence",
+            "artifacts/report.md",
+            *repeated,
+            expected=2,
+        )
+        self.assertIn("reuse one artifact digest", result.stderr)
+
+        second_root = Path(self.temporary.name) / "shared-exception"
+        original_root = self.root
+        self.root = second_root
+        try:
+            self.initialize()
+            self.complete_contract()
+            contract_path = self.root / "contract.json"
+            contract = json.loads(contract_path.read_text(encoding="utf-8"))
+            contract["evidence_requirements"]["allowed_gate_evidence_sharing"] = [
+                {
+                    "gates": ["attacker-control", "reachability"],
+                    "reason": "One trace proves the caller-controlled entry and its reachability",
+                }
+            ]
+            contract_path.write_text(json.dumps(contract, indent=2) + "\n", encoding="utf-8")
+            self.run_cli("check", "--dir", self.root, "--phase", "activation")
+            self.run_cli(
+                "transition",
+                "--dir",
+                self.root,
+                "--status",
+                "active",
+                "--reason",
+                "Contract approved",
+            )
+            gates = []
+            for gate in DEFAULT_GATES:
+                path = (
+                    "artifacts/entry-trace.log"
+                    if gate in ("attacker-control", "reachability")
+                    else f"artifacts/{gate}.log"
+                )
+                gates.extend(("--gate", f"{gate}={path}"))
+            self.run_cli(
+                "candidate",
+                "--dir",
+                self.root,
+                "--id",
+                "C-DECLARED",
+                "--status",
+                "validated",
+                "--title",
+                "Declared evidence sharing",
+                "--summary",
+                "Only the predeclared pair shares a trace",
+                "--evidence",
+                "artifacts/report.md",
+                *gates,
+            )
+        finally:
+            self.root = original_root
+
+    def test_mandatory_passes_require_distinct_artifact_digests(self):
+        self.initialize()
+        self.activate()
+        self.run_cli(
+            "candidate",
+            "--dir",
+            self.root,
+            "--id",
+            "C-001",
+            "--status",
+            "validated",
+            "--title",
+            "Complete candidate",
+            "--summary",
+            "Every candidate gate has distinct evidence",
+            "--evidence",
+            "artifacts/report.md",
+            *self.candidate_gate_arguments(),
+        )
+        for dimension, items in MANDATORY_PASSES.items():
+            for item in items:
+                self.run_cli(
+                    "coverage",
+                    "--dir",
+                    self.root,
+                    "--dimension",
+                    dimension,
+                    "--item",
+                    item,
+                    "--status",
+                    "tested",
+                    "--evidence",
+                    "artifacts/all-passes.log",
+                )
+        result = self.run_cli(
+            "finish",
+            "--dir",
+            self.root,
+            "--outcome",
+            "validated",
+            "--reason",
+            "All passes cite one file",
+            "--candidate-id",
+            "C-001",
+            "--evidence",
+            "reports/finding.md",
+            expected=2,
+        )
+        self.assertIn("mandatory hunt passes reuse one artifact digest", result.stderr)
+
+    def test_missing_evidence_can_be_relocated_without_rewriting_history(self):
+        self.initialize()
+        self.activate()
+        original_raw = "artifacts/experiment.log"
+        self.run_cli(
+            "event",
+            "--dir",
+            self.root,
+            "--kind",
+            "experiment",
+            "--summary",
+            "Record relocatable evidence",
+            "--classification",
+            "supports",
+            "--evidence",
+            original_raw,
+        )
+        original = self.root.parent / original_raw
+        relocated = self.root.parent / "archive" / "experiment.log"
+        relocated.parent.mkdir()
+        original.rename(relocated)
+        wrong = self.root.parent / "archive" / "wrong.log"
+        wrong.write_text("different bytes\n", encoding="utf-8")
+        before = json.loads(self.run_cli("status", "--dir", self.root).stdout)
+        self.assertFalse(before["evidence_integrity"]["valid"])
+        rejected = self.run_cli(
+            "relocate",
+            "--dir",
+            self.root,
+            "--from",
+            original_raw,
+            "--to",
+            "archive/wrong.log",
+            "--reason",
+            "This content is not identical",
+            expected=2,
+        )
+        self.assertIn("do not match", rejected.stderr)
+        self.run_cli(
+            "relocate",
+            "--dir",
+            self.root,
+            "--from",
+            original_raw,
+            "--to",
+            "archive/experiment.log",
+            "--reason",
+            "Evidence was archived with identical bytes",
+        )
+        after = json.loads(self.run_cli("status", "--dir", self.root).stdout)
+        self.assertTrue(after["evidence_integrity"]["valid"])
+        self.assertEqual(after["evidence_integrity"]["relocations"], 1)
+        self.run_cli("check", "--dir", self.root, "--phase", "activation")
+
+    def test_concurrent_writers_are_serialized(self):
+        self.initialize()
+        self.activate()
+        processes = []
+        for index in range(12):
+            processes.append(
+                subprocess.Popen(
+                    [
+                        sys.executable,
+                        str(SCRIPT),
+                        "event",
+                        "--dir",
+                        str(self.root),
+                        "--kind",
+                        "mapping",
+                        "--summary",
+                        f"Concurrent mapping event {index}",
+                    ],
+                    text=True,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                )
+            )
+        failures = []
+        for process in processes:
+            stdout, stderr = process.communicate(timeout=30)
+            if process.returncode != 0:
+                failures.append((process.returncode, stdout, stderr))
+        self.assertEqual(failures, [])
+        status = json.loads(self.run_cli("status", "--dir", self.root).stdout)
+        self.assertEqual(status["counts"]["events"], 13)
+
+    def test_main_handles_broken_pipe_without_a_traceback(self):
+        self.initialize()
+        specification = importlib.util.spec_from_file_location("goal_state_tested", SCRIPT)
+        self.assertIsNotNone(specification)
+        self.assertIsNotNone(specification.loader)
+        module = importlib.util.module_from_spec(specification)
+        specification.loader.exec_module(module)
+
+        class ClosedPipe:
+            def close(self):
+                return None
+
+        with patch.object(module.sys, "stdout", ClosedPipe()), patch(
+            "builtins.print", side_effect=BrokenPipeError
+        ):
+            self.assertEqual(module.main(["status", "--dir", str(self.root)]), 0)
 
     def test_documented_goal_template_matches_activation_headings(self):
         self.initialize()

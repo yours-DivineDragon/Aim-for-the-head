@@ -732,10 +732,16 @@ specific enough to falsify. Useful artifacts include:
 
 The helper treats every `--evidence` value and every `--gate NAME=PATH` value as
 a file path. Relative paths resolve from the directory containing the state
-directory. At record time it rejects missing files, directories, and final
-symlinks, records file metadata and a SHA-256 digest, and at every later
-integrity or terminal check it re-stats and re-hashes the artifact. A filename
-alone cannot satisfy a gate, and mutation or deletion invalidates the run.
+directory. At record time it requires a non-empty regular file inside a root
+frozen in `outputs.evidence_roots`, rejects symlinks in every path component,
+records file metadata and a SHA-256 digest, and at every later integrity or
+terminal check it re-stats and re-hashes the artifact. A filename or zero-byte
+placeholder cannot satisfy a gate, and mutation or deletion invalidates the run.
+
+Validated candidate gates and mandatory hunt passes must use distinct artifact
+digests. A contract may pre-authorize an exact multi-gate or multi-pass sharing
+group with a reason when one artifact genuinely proves several claims; copied
+files with identical bytes remain duplicates.
 
 See [`references/evidence-gates.md`](references/evidence-gates.md) for the full
 validation packet and reporting guidance.
@@ -792,6 +798,7 @@ directory per goal.
 | `events.jsonl` | Append-only mappings, hypotheses, experiments, observations, pivots, failures, reviews, transitions, and notes |
 | `candidates.jsonl` | Append-only revisions of leads, rejections, and validated candidates |
 | `coverage.json` | Revisioned coverage items across the fifteen workflow-version-2 dimensions |
+| `evidence-locations.jsonl` | Append-only, digest-preserving evidence relocation records |
 
 Keep large raw artifacts in the evidence directory named by `contract.json`
 (the generated default is `artifacts/`) and refer to them from state records.
@@ -815,8 +822,9 @@ stateDiagram-v2
     blocked --> completed: blocked
 ```
 
-A completed goal is immutable through the helper. Preserve it as the audit trail
-and initialize a new directory for follow-up work.
+A completed goal's semantic records are immutable through the helper. Preserve
+them as the audit trail and initialize a new directory for follow-up work. A
+`relocate` entry may update only where byte-identical evidence is stored.
 
 ### Command synopsis
 
@@ -828,6 +836,7 @@ goal_state.py event      Append an investigation event
 goal_state.py coverage   Revise one coverage item
 goal_state.py candidate  Append a lead, rejection, or validation revision
 goal_state.py finish     Write a checked terminal outcome
+goal_state.py relocate   Record an identical artifact at a new approved path
 goal_state.py status     Print a durable summary
 ```
 
@@ -954,7 +963,7 @@ python3 "$SKILL_ROOT/scripts/goal_state.py" transition \
 | --- | --- | --- |
 | `validated` | The contract's required number of candidates passed every applicable gate. | Finish from `active`; name a validated candidate, provide terminal evidence, and complete every mandatory deep-hunt pass. |
 | `exhausted` | The prioritized queue and all coverage obligations are complete without enough validated findings. | Finish from `active`; no open coverage items or leads, all required dimensions and deep-hunt items represented, residual risks recorded, and obligation attestations exactly match the contract. |
-| `budget-limited` | The deadline, experiment limit, or hour limit arrived before exhaustion. | Finish from `active` or `paused`; include substantive hunt evidence, coverage records, and residual risks. |
+| `budget-limited` | The deadline, experiment limit, or wall-clock hour limit arrived before exhaustion. | Finish from `active` or `paused`; a declared bound must actually be reached, with substantive hunt evidence, coverage records, and residual risks. |
 | `blocked` | A concrete external prerequisite prevents progress. | Transition to `blocked`, then finish with evidence and the exact unlock needed. |
 
 ### Finish with a validated finding
@@ -973,6 +982,10 @@ python3 "$SKILL_ROOT/scripts/goal_state.py" check \
 ```
 
 ### Finish at the budget limit
+
+`experiment` and `tool-failure` events consume `max_experiments`. Once any
+declared bound is reached, further experiment-consuming events are rejected;
+bookkeeping and a truthful terminal record remain available.
 
 ```bash
 python3 "$SKILL_ROOT/scripts/goal_state.py" finish \
@@ -1188,6 +1201,23 @@ inspection if necessary, and start a new run for any result that must pass the
 current terminal check. Do not backdate a newly computed hash as if it existed
 when the original evidence was recorded.
 
+### A cited artifact was moved or archived
+
+`status` still prints the ledger and reports `evidence_integrity.valid: false`.
+Move the identical bytes beneath an approved evidence root, then append a
+location record without changing historical claims:
+
+```bash
+python3 "$SKILL_ROOT/scripts/goal_state.py" relocate \
+  --dir "$HUNT_DIR" \
+  --from "artifacts/original.log" \
+  --to "archive/original.log" \
+  --reason "Archived after review with identical bytes"
+```
+
+The command requires the new SHA-256 and size to match the original attestation.
+Changed evidence needs a new event, coverage record, or candidate revision.
+
 ## Frequently asked questions
 
 ### Is this a scanner?
@@ -1222,17 +1252,20 @@ run.
 
 ### Can several agents share one hunt directory?
 
-They should not write to it concurrently. Use separate goal directories and let
-one coordinator merge evidence and coverage into the authoritative run.
+The helper now locks each complete command transaction, so concurrent processes
+cannot corrupt its JSONL streams. Separate goal directories are still preferable
+for independent or parallel hunts: locking prevents byte-level corruption, not
+semantic contamination or conflicting ownership of the same goal.
 
 ### Where should evidence live?
 
 Use the evidence directory declared in `contract.json`, keep artifacts scoped to
-the pinned target, and reference them from events and candidate gates. The helper
-requires each cited path to be a local regular file so it can hash and later
-revalidate it. For a large or sensitive artifact in an approved external store,
-cite a local retrieval manifest containing its stable access-controlled URL and
-remote checksum.
+the pinned target, keep `outputs.evidence_roots` narrow, and reference artifacts
+from events and candidate gates. The helper requires each cited path to be a
+local, non-empty regular file so it can hash and later revalidate it. For a large
+or sensitive artifact in an approved external store, cite a non-empty local
+retrieval manifest containing its stable access-controlled URL and remote
+checksum.
 
 ## Research basis
 

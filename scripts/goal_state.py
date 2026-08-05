@@ -4,6 +4,8 @@
 from __future__ import annotations
 
 import argparse
+import fnmatch
+import glob
 import hashlib
 import json
 import os
@@ -27,12 +29,19 @@ except ImportError:  # pragma: no cover - exercised only on non-Windows hosts
 
 
 SCHEMA_VERSION = 1
-WORKFLOW_VERSION = 2
+DEEP_HUNT_WORKFLOW_VERSION = 2
+WORKFLOW_VERSION = 3
 EVIDENCE_ATTESTATION_VERSION = 1
 EVIDENCE_LOCATIONS_FILE = "evidence-locations.jsonl"
+SCOPE_MANIFEST_FILE = "scope-manifest.json"
+AUDIT_MATRIX_FILE = "audit-matrix.json"
 LOCK_FILE = ".goal-state.lock"
 EXPERIMENT_EVENT_KINDS = frozenset(("experiment", "tool-failure"))
 MODES = ("discovery", "variant", "invariant", "differential", "validation")
+PROFILES = ("focused-hunt", "broad-audit")
+KNOWLEDGE_MODES = ("inventory", "blind-novelty", "validation")
+STOP_POLICIES = ("finding-count", "coverage-complete")
+BASELINE_STATES = ("tested", "reasoned-not-applicable")
 LIFECYCLE_STATES = ("draft", "active", "paused", "blocked", "completed")
 TERMINAL_OUTCOMES = ("validated", "exhausted", "budget-limited", "blocked")
 CANDIDATE_STATES = ("lead", "rejected", "validated")
@@ -121,6 +130,17 @@ DEFAULT_MANDATORY_PASSES = {
     "exploit-composition": ["primitive-join-graph"],
     "economic-closure": ["funding-repayment-profit-and-system-loss-ledger"],
 }
+DEFAULT_BASELINE_LENSES = (
+    "entry-points-and-privilege",
+    "known-material-and-provenance",
+    "zero-empty-one-and-extremes",
+    "units-scaling-rounding-and-casts",
+    "external-calls-and-native-sentinels",
+    "lifecycle-time-and-transition-boundaries",
+    "identity-domain-and-deterministic-collisions",
+    "valuation-solvency-and-incentive-extremes",
+    "cross-instance-and-shared-state-isolation",
+)
 PLACEHOLDER = "[REPLACE]"
 REQUIRED_FILES = (
     "contract.json",
@@ -221,7 +241,9 @@ def load_jsonl(path: Path) -> List[Dict[str, Any]]:
 
 
 def state_dir(raw_path: str, require_initialized: bool = True) -> Path:
-    root = Path(raw_path).expanduser().resolve()
+    root = Path(raw_path).expanduser().absolute()
+    if root.is_symlink():
+        raise GoalStateError(f"state directory may not be a symlink: {root}")
     if require_initialized:
         if not root.is_dir():
             raise GoalStateError(f"state directory does not exist: {root}")
@@ -310,21 +332,35 @@ def workflow_version(contract: Mapping[str, Any]) -> int:
 
 
 def gates_for_contract(contract: Mapping[str, Any]) -> Tuple[str, ...]:
-    if workflow_version(contract) >= WORKFLOW_VERSION:
+    if workflow_version(contract) >= DEEP_HUNT_WORKFLOW_VERSION:
         return EVIDENCE_GATES
     return LEGACY_EVIDENCE_GATES
 
 
 def required_gates_for_contract(contract: Mapping[str, Any]) -> frozenset[str]:
-    if workflow_version(contract) >= WORKFLOW_VERSION:
+    if workflow_version(contract) >= DEEP_HUNT_WORKFLOW_VERSION:
         return ALWAYS_REQUIRED_GATES
     return LEGACY_ALWAYS_REQUIRED_GATES
 
 
 def coverage_dimensions_for_contract(contract: Mapping[str, Any]) -> Tuple[str, ...]:
-    if workflow_version(contract) >= WORKFLOW_VERSION:
+    if workflow_version(contract) >= DEEP_HUNT_WORKFLOW_VERSION:
         return COVERAGE_DIMENSIONS
     return LEGACY_COVERAGE_DIMENSIONS
+
+
+def profile_for_contract(contract: Mapping[str, Any]) -> str:
+    if workflow_version(contract) < WORKFLOW_VERSION:
+        return "focused-hunt"
+    value = contract.get("profile")
+    return value if isinstance(value, str) else ""
+
+
+def baseline_lenses(contract: Mapping[str, Any]) -> Tuple[str, ...]:
+    value = nested(contract, "search_requirements", "baseline_lenses")
+    if not nonempty_strings(value):
+        return ()
+    return tuple(value)
 
 
 def mandatory_passes(contract: Mapping[str, Any]) -> Dict[str, List[str]]:
@@ -419,8 +455,11 @@ def contract_errors(contract: Mapping[str, Any]) -> List[str]:
     if contract.get("schema_version") != SCHEMA_VERSION:
         errors.append(f"contract.schema_version must be {SCHEMA_VERSION}")
     version = workflow_version(contract)
-    if version not in (1, WORKFLOW_VERSION):
-        errors.append(f"contract.workflow_version must be 1 or {WORKFLOW_VERSION}")
+    if version not in (1, DEEP_HUNT_WORKFLOW_VERSION, WORKFLOW_VERSION):
+        errors.append(
+            "contract.workflow_version must be 1, "
+            f"{DEEP_HUNT_WORKFLOW_VERSION}, or {WORKFLOW_VERSION}"
+        )
     if contract.get("mode") not in MODES:
         errors.append("contract.mode is invalid")
     if not isinstance(contract.get("objective"), str) or not contract["objective"].strip():
@@ -455,7 +494,7 @@ def contract_errors(contract: Mapping[str, Any]) -> List[str]:
     ):
         if not nonempty_strings(nested(contract, "threat_model", field)):
             errors.append(f"threat_model.{field} must contain at least one item")
-    if version >= WORKFLOW_VERSION:
+    if version >= DEEP_HUNT_WORKFLOW_VERSION:
         for field in (
             "business_flows",
             "accounting_invariants",
@@ -524,7 +563,7 @@ def contract_errors(contract: Mapping[str, Any]) -> List[str]:
     novelty = contract.get("novelty_policy")
     if not isinstance(novelty, str) or not novelty.strip():
         errors.append("novelty_policy must be non-empty")
-    if version >= WORKFLOW_VERSION:
+    if version >= DEEP_HUNT_WORKFLOW_VERSION:
         search = contract.get("search_requirements")
         if not isinstance(search, dict):
             errors.append("search_requirements must be an object")
@@ -571,6 +610,54 @@ def contract_errors(contract: Mapping[str, Any]) -> List[str]:
                     allowed=pass_names,
                 )
             )
+    if version >= WORKFLOW_VERSION:
+        profile = contract.get("profile")
+        if profile not in PROFILES:
+            errors.append("profile must be focused-hunt or broad-audit")
+        for field in ("scope_basis", "scope_sources"):
+            value = nested(contract, "target", field)
+            if field == "scope_sources":
+                if not nonempty_strings(value):
+                    errors.append("target.scope_sources must contain at least one item")
+            elif not isinstance(value, str) or not value.strip():
+                errors.append("target.scope_basis must be non-empty")
+        knowledge = contract.get("knowledge_policy")
+        if not isinstance(knowledge, dict):
+            errors.append("knowledge_policy must be an object")
+        else:
+            knowledge_mode = knowledge.get("mode")
+            if knowledge_mode not in KNOWLEDGE_MODES:
+                errors.append("knowledge_policy.mode is invalid")
+            if not nonempty_strings(knowledge.get("sources")):
+                errors.append("knowledge_policy.sources must contain at least one item")
+            disposition = knowledge.get("known_issue_disposition")
+            if not isinstance(disposition, str) or not disposition.strip():
+                errors.append("knowledge_policy.known_issue_disposition must be non-empty")
+            blindness_basis = knowledge.get("explicit_blindness_basis")
+            if knowledge_mode == "blind-novelty" and (
+                not isinstance(blindness_basis, str) or not blindness_basis.strip()
+            ):
+                errors.append(
+                    "knowledge_policy.explicit_blindness_basis is required for blind-novelty"
+                )
+        search = contract.get("search_requirements")
+        lenses = search.get("baseline_lenses") if isinstance(search, dict) else None
+        if not nonempty_strings(lenses):
+            errors.append("search_requirements.baseline_lenses must contain items")
+            lenses = []
+        elif len(lenses) != len(set(lenses)):
+            errors.append("search_requirements.baseline_lenses has duplicates")
+        if profile == "broad-audit":
+            missing_lenses = sorted(set(DEFAULT_BASELINE_LENSES) - set(lenses))
+            if missing_lenses:
+                errors.append(
+                    "broad-audit baseline lenses omitted: " + ", ".join(missing_lenses)
+                )
+            if nested(contract, "stop", "policy") != "coverage-complete":
+                errors.append("broad-audit requires stop.policy=coverage-complete")
+        stop_policy = nested(contract, "stop", "policy")
+        if stop_policy not in STOP_POLICIES:
+            errors.append("stop.policy is invalid")
     budget = contract.get("budget")
     if not isinstance(budget, dict):
         errors.append("budget must be an object")
@@ -638,8 +725,14 @@ def file_sha256(path: Path) -> str:
 def evidence_path(root: Path, raw_path: str) -> Path:
     """Resolve an evidence reference against the directory containing state."""
     candidate = Path(raw_path).expanduser()
+    lexical_parent = Path(os.path.abspath(root.parent))
+    canonical_parent = Path(os.path.realpath(root.parent))
     if not candidate.is_absolute():
-        candidate = root.parent / candidate
+        candidate = canonical_parent / candidate
+    else:
+        candidate = Path(os.path.abspath(candidate))
+        if path_is_within(candidate, lexical_parent):
+            candidate = canonical_parent / candidate.relative_to(lexical_parent)
     return Path(os.path.abspath(candidate))
 
 
@@ -652,7 +745,7 @@ def configured_evidence_roots(root: Path) -> List[Path]:
     for raw in values:
         candidate = Path(raw).expanduser()
         if not candidate.is_absolute():
-            candidate = root.parent / candidate
+            candidate = Path(os.path.realpath(root.parent)) / candidate
         roots.append(Path(os.path.abspath(candidate)))
     return roots
 
@@ -914,6 +1007,15 @@ def recorded_evidence_attestations(root: Path) -> List[Mapping[str, Any]]:
             values = record.get("evidence_attestations") if isinstance(record, dict) else None
             if isinstance(values, list):
                 result.extend(item for item in values if isinstance(item, dict))
+    matrix_path = root / AUDIT_MATRIX_FILE
+    if matrix_path.is_file():
+        matrix = load_json(matrix_path)
+        matrix_records = matrix.get("records")
+        if isinstance(matrix_records, list):
+            for record in matrix_records:
+                values = record.get("evidence_attestations") if isinstance(record, dict) else None
+                if isinstance(values, list):
+                    result.extend(item for item in values if isinstance(item, dict))
     state = load_json(root / "state.json")
     terminal = state.get("terminal")
     if isinstance(terminal, dict):
@@ -923,11 +1025,247 @@ def recorded_evidence_attestations(root: Path) -> List[Mapping[str, Any]]:
     return result
 
 
-def activation_fingerprint(root: Path) -> Dict[str, str]:
+def target_root_path(root: Path, contract: Mapping[str, Any]) -> Path:
+    raw_target = nested(contract, "target", "path")
+    if not isinstance(raw_target, str) or not raw_target.strip():
+        raise GoalStateError("target.path must be non-empty")
+    target = Path(raw_target).expanduser()
+    if not target.is_absolute():
+        target = root.parent / target
+    try:
+        return target.resolve(strict=True)
+    except FileNotFoundError as exc:
+        raise GoalStateError(f"target path does not exist: {raw_target}") from exc
+
+
+def scoped_component(root: Path, contract: Mapping[str, Any], raw_path: str) -> Dict[str, Any]:
+    target = target_root_path(root, contract)
+    if target.is_file():
+        if raw_path not in (".", target.name):
+            raise GoalStateError(
+                f"file target accepts only '.' or {target.name!r} as its component"
+            )
+        component = target
+        relative = target.name
+    else:
+        candidate = Path(raw_path)
+        if candidate.is_absolute() or ".." in candidate.parts:
+            raise GoalStateError(f"scope component must be target-relative: {raw_path}")
+        try:
+            component = (target / candidate).resolve(strict=True)
+        except FileNotFoundError as exc:
+            raise GoalStateError(f"scope component does not exist: {raw_path}") from exc
+        if not path_is_within(component, target):
+            raise GoalStateError(f"scope component escapes target: {raw_path}")
+        relative = component.relative_to(target).as_posix()
+    if not component.is_file():
+        raise GoalStateError(f"scope component is not a regular file: {raw_path}")
+    metadata = component.stat()
     return {
+        "id": relative,
+        "path": relative,
+        "sha256": file_sha256(component),
+        "size": metadata.st_size,
+    }
+
+
+def expanded_scope_components(root: Path, contract: Mapping[str, Any]) -> List[str]:
+    target = target_root_path(root, contract)
+    includes = nested(contract, "target", "include")
+    excludes = nested(contract, "target", "exclude")
+    if not nonempty_strings(includes) or not isinstance(excludes, list):
+        raise GoalStateError("target include/exclude patterns are incomplete")
+    if target.is_file():
+        return [target.name]
+    selected: Set[str] = set()
+    for pattern in includes:
+        candidate = Path(pattern)
+        if candidate.is_absolute() or ".." in candidate.parts:
+            raise GoalStateError(f"scope include must be target-relative: {pattern}")
+        matches: List[Path]
+        if glob.has_magic(pattern):
+            matches = list(target.glob(pattern))
+        else:
+            exact = target / candidate
+            if exact.is_dir():
+                matches = list(exact.rglob("*"))
+            else:
+                matches = [exact]
+        files = [value for value in matches if value.is_file()]
+        if not files:
+            raise GoalStateError(f"scope include matched no files: {pattern}")
+        for value in files:
+            resolved = value.resolve(strict=True)
+            if not path_is_within(resolved, target):
+                raise GoalStateError(f"scope include escapes target: {pattern}")
+            selected.add(resolved.relative_to(target).as_posix())
+    normalized_excludes: List[str] = []
+    for pattern in excludes:
+        candidate = Path(pattern)
+        if candidate.is_absolute() or ".." in candidate.parts:
+            raise GoalStateError(f"scope exclude must be target-relative: {pattern}")
+        normalized_excludes.append(candidate.as_posix())
+    result = sorted(
+        value
+        for value in selected
+        if not any(fnmatch.fnmatchcase(value, pattern) for pattern in normalized_excludes)
+    )
+    if not result:
+        raise GoalStateError("scope include/exclude patterns select no files")
+    return result
+
+
+def scope_manifest_errors(root: Path, contract: Mapping[str, Any]) -> List[str]:
+    if workflow_version(contract) < WORKFLOW_VERSION:
+        return []
+    path = root / SCOPE_MANIFEST_FILE
+    try:
+        manifest = load_json(path)
+    except GoalStateError as exc:
+        return [str(exc)]
+    errors: List[str] = []
+    if manifest.get("schema_version") != SCHEMA_VERSION:
+        errors.append(f"{SCOPE_MANIFEST_FILE}.schema_version must be {SCHEMA_VERSION}")
+    expected = {
+        "target_revision": nested(contract, "target", "revision"),
+        "include": nested(contract, "target", "include"),
+        "exclude": nested(contract, "target", "exclude"),
+        "scope_basis": nested(contract, "target", "scope_basis"),
+        "scope_sources": nested(contract, "target", "scope_sources"),
+    }
+    for field, value in expected.items():
+        if manifest.get(field) != value:
+            errors.append(f"{SCOPE_MANIFEST_FILE}.{field} does not match contract.target")
+    components = manifest.get("components")
+    if not isinstance(components, list) or not components:
+        return errors + [f"{SCOPE_MANIFEST_FILE}.components must be non-empty"]
+    seen: Set[str] = set()
+    for position, record in enumerate(components, start=1):
+        label = f"scope component {position}"
+        if not isinstance(record, dict):
+            errors.append(f"{label} must be an object")
+            continue
+        component_id = record.get("id")
+        raw_path = record.get("path")
+        if not isinstance(component_id, str) or not component_id.strip():
+            errors.append(f"{label}.id must be non-empty")
+            continue
+        if component_id in seen:
+            errors.append(f"duplicate scope component id: {component_id}")
+        seen.add(component_id)
+        if raw_path != component_id:
+            errors.append(f"{label}.path must equal its normalized id")
+            continue
+        try:
+            current = scoped_component(root, contract, raw_path)
+        except GoalStateError as exc:
+            errors.append(f"{label}: {exc}")
+            continue
+        for field in ("sha256", "size"):
+            if record.get(field) != current[field]:
+                errors.append(f"{label} changed after scope lock: {field}")
+    try:
+        expected_components = set(expanded_scope_components(root, contract))
+    except GoalStateError as exc:
+        errors.append(str(exc))
+    else:
+        if seen != expected_components:
+            missing = sorted(expected_components - seen)
+            extra = sorted(seen - expected_components)
+            if missing:
+                errors.append("scope manifest omits included files: " + ", ".join(missing))
+            if extra:
+                errors.append("scope manifest contains excluded files: " + ", ".join(extra))
+    return errors
+
+
+def latest_baseline_records(records: Sequence[Mapping[str, Any]]) -> Dict[Tuple[str, str], Mapping[str, Any]]:
+    latest: Dict[Tuple[str, str], Mapping[str, Any]] = {}
+    for record in records:
+        component = record.get("component")
+        lens = record.get("lens")
+        if isinstance(component, str) and isinstance(lens, str):
+            latest[(component, lens)] = record
+    return latest
+
+
+def audit_matrix_errors(
+    root: Path, contract: Mapping[str, Any], *, require_complete: bool
+) -> List[str]:
+    if workflow_version(contract) < WORKFLOW_VERSION:
+        return []
+    path = root / AUDIT_MATRIX_FILE
+    try:
+        matrix = load_json(path)
+    except GoalStateError as exc:
+        return [str(exc)]
+    errors: List[str] = []
+    if matrix.get("schema_version") != SCHEMA_VERSION:
+        errors.append(f"{AUDIT_MATRIX_FILE}.schema_version must be {SCHEMA_VERSION}")
+    records = matrix.get("records")
+    if not isinstance(records, list):
+        return errors + [f"{AUDIT_MATRIX_FILE}.records must be a list"]
+    errors.extend(sequence_errors(records, "audit baseline"))
+    try:
+        manifest = load_json(root / SCOPE_MANIFEST_FILE)
+    except GoalStateError as exc:
+        return errors + [str(exc)]
+    components = {
+        item.get("id")
+        for item in manifest.get("components", [])
+        if isinstance(item, dict) and isinstance(item.get("id"), str)
+    }
+    lenses = set(baseline_lenses(contract))
+    relocations = relocation_index(root)
+    for position, record in enumerate(records, start=1):
+        if not isinstance(record, dict):
+            errors.append(f"audit baseline record {position} must be an object")
+            continue
+        component = record.get("component")
+        lens = record.get("lens")
+        status = record.get("status")
+        if component not in components:
+            errors.append(f"audit baseline record {position} has unknown component")
+        if lens not in lenses:
+            errors.append(f"audit baseline record {position} has unknown lens")
+        if status not in BASELINE_STATES:
+            errors.append(f"audit baseline record {position} has invalid status")
+        evidence = record.get("evidence")
+        if not nonempty_strings(evidence):
+            errors.append(f"audit baseline record {position} requires evidence")
+        note = record.get("note")
+        if not isinstance(note, str) or not note.strip():
+            errors.append(f"audit baseline record {position} requires a note")
+        errors.extend(
+            evidence_attestation_errors(
+                root,
+                evidence,
+                record.get("evidence_attestations"),
+                f"audit baseline record {position}",
+                relocations,
+            )
+        )
+    if require_complete:
+        current = latest_baseline_records(records)
+        for component in sorted(components):
+            for lens in sorted(lenses):
+                record = current.get((component, lens))
+                if record is None:
+                    errors.append(f"broad audit baseline is unrecorded: {component}/{lens}")
+                elif record.get("status") not in BASELINE_STATES:
+                    errors.append(f"broad audit baseline is open: {component}/{lens}")
+    return errors
+
+
+def activation_fingerprint(root: Path) -> Dict[str, str]:
+    fingerprint = {
         "contract_sha256": file_sha256(root / "contract.json"),
         "goal_sha256": file_sha256(root / "GOAL.md"),
     }
+    contract = load_json(root / "contract.json")
+    if workflow_version(contract) >= WORKFLOW_VERSION:
+        fingerprint["scope_manifest_sha256"] = file_sha256(root / SCOPE_MANIFEST_FILE)
+    return fingerprint
 
 
 def markdown_errors(path: Path, required_headings: Sequence[str]) -> List[str]:
@@ -946,6 +1284,8 @@ def markdown_errors(path: Path, required_headings: Sequence[str]) -> List[str]:
 def activation_errors(root: Path) -> List[str]:
     contract = load_json(root / "contract.json")
     errors = integrity_errors(root) + contract_errors(contract)
+    errors.extend(scope_manifest_errors(root, contract))
+    errors.extend(audit_matrix_errors(root, contract, require_complete=False))
     errors.extend(markdown_errors(root / "GOAL.md", GOAL_HEADINGS))
     errors.extend(markdown_errors(root / "THREAT_MODEL.md", THREAT_MODEL_HEADINGS))
     state = load_json(root / "state.json")
@@ -998,7 +1338,7 @@ def shared_digest_errors(
 def mandatory_pass_errors(
     contract: Mapping[str, Any], records: Sequence[Mapping[str, Any]]
 ) -> List[str]:
-    if workflow_version(contract) < WORKFLOW_VERSION:
+    if workflow_version(contract) < DEEP_HUNT_WORKFLOW_VERSION:
         return []
     current = current_coverage(records)
     errors: List[str] = []
@@ -1049,10 +1389,22 @@ def sequence_errors(records: Sequence[Mapping[str, Any]], label: str) -> List[st
 def integrity_errors(root: Path, *, verify_evidence: bool = True) -> List[str]:
     errors: List[str] = []
     state = load_json(root / "state.json")
+    contract = load_json(root / "contract.json")
     events = load_jsonl(root / "events.jsonl")
     candidates = load_jsonl(root / "candidates.jsonl")
     coverage = load_json(root / "coverage.json")
     records = coverage.get("records")
+    matrix_records: List[Mapping[str, Any]] = []
+    if workflow_version(contract) >= WORKFLOW_VERSION:
+        try:
+            matrix = load_json(root / AUDIT_MATRIX_FILE)
+            raw_matrix_records = matrix.get("records")
+            if isinstance(raw_matrix_records, list):
+                matrix_records = raw_matrix_records
+            else:
+                errors.append(f"{AUDIT_MATRIX_FILE}.records must be a list")
+        except GoalStateError as exc:
+            errors.append(str(exc))
     relocations = relocation_index(root)
     errors.extend(evidence_location_errors(root))
     if state.get("schema_version") != SCHEMA_VERSION:
@@ -1097,6 +1449,8 @@ def integrity_errors(root: Path, *, verify_evidence: bool = True) -> List[str]:
         ("candidate_revision_count", len(candidates)),
         ("coverage_revision_count", len(records)),
     )
+    if workflow_version(contract) >= WORKFLOW_VERSION:
+        counters += (("baseline_revision_count", len(matrix_records)),)
     for field, expected in counters:
         if state.get(field) != expected:
             errors.append(f"state.{field} is {state.get(field)!r}; expected {expected}")
@@ -1216,6 +1570,11 @@ def integrity_errors(root: Path, *, verify_evidence: bool = True) -> List[str]:
                 relocations,
             )
         )
+    if workflow_version(contract) >= WORKFLOW_VERSION:
+        errors.extend(sequence_errors(matrix_records, "audit baseline"))
+        if state.get("activation_fingerprint") is not None:
+            errors.extend(scope_manifest_errors(root, contract))
+            errors.extend(audit_matrix_errors(root, contract, require_complete=False))
     return errors
 
 
@@ -1387,7 +1746,7 @@ def ensure_experiment_budget(root: Path, state: Mapping[str, Any]) -> None:
         )
 
 
-def initial_contract(target: str, mode: str, objective: str) -> Dict[str, Any]:
+def initial_contract(target: str, mode: str, objective: str, profile: str) -> Dict[str, Any]:
     return {
         "schema_version": SCHEMA_VERSION,
         "workflow_version": WORKFLOW_VERSION,
@@ -1398,7 +1757,10 @@ def initial_contract(target: str, mode: str, objective: str) -> Dict[str, Any]:
             "revision": PLACEHOLDER,
             "include": [target],
             "exclude": [],
+            "scope_basis": PLACEHOLDER,
+            "scope_sources": [PLACEHOLDER],
         },
+        "profile": profile,
         "mode": mode,
         "objective": objective,
         "success_conditions": [PLACEHOLDER],
@@ -1426,8 +1788,18 @@ def initial_contract(target: str, mode: str, objective: str) -> Dict[str, Any]:
             ),
         },
         "novelty_policy": PLACEHOLDER,
+        "knowledge_policy": {
+            "mode": "inventory",
+            "sources": [PLACEHOLDER],
+            "known_issue_disposition": (
+                "Reproduce and report technically valid current vulnerabilities with provenance; "
+                "do not call them novel unless a separate novelty check passes."
+            ),
+            "explicit_blindness_basis": None,
+        },
         "search_requirements": {
             "mandatory_passes": DEFAULT_MANDATORY_PASSES,
+            "baseline_lenses": list(DEFAULT_BASELINE_LENSES),
             "allowed_pass_evidence_sharing": [],
             "primitive_escalation_policy": (
                 "Trace every manipulable value through all direct consumers and test joins with "
@@ -1442,6 +1814,9 @@ def initial_contract(target: str, mode: str, objective: str) -> Dict[str, Any]:
         "budget": {"deadline": None, "max_experiments": 50, "max_hours": None},
         "stop": {
             "finding_count": 1,
+            "policy": (
+                "coverage-complete" if profile == "broad-audit" else "finding-count"
+            ),
             "exhaustion_obligations": [
                 "Complete the prioritized surface queue",
                 "Record all coverage dimensions",
@@ -1509,20 +1884,22 @@ def threat_model_template(target: str) -> str:
 """
 
 
-def goal_template(target: str, mode: str, objective: str) -> str:
+def goal_template(target: str, mode: str, objective: str, profile: str) -> str:
     return f"""# Goal
 
 ## Outcome
 {objective}
 
 ## Mode
-{mode}
+{mode}; profile: {profile}
 
 ## Target and scope
 - Target: {target}
 - Revision: {PLACEHOLDER}
 - Included: {PLACEHOLDER}
 - Excluded: {PLACEHOLDER}
+- Scope authority and manifest: {PLACEHOLDER}
+- Known-material policy: {PLACEHOLDER}
 - Proof-safety constraints: {PLACEHOLDER}
 
 ## Threat model
@@ -1533,6 +1910,7 @@ def goal_template(target: str, mode: str, objective: str) -> str:
 ## Acceptance evidence
 - Required gates: see contract.json
 - Mandatory deep-hunt passes: see contract.json
+- Broad-audit baseline matrix: see audit-matrix.json when applicable
 - Safe reproduction oracle: {PLACEHOLDER}
 - Release-like configuration: {PLACEHOLDER}
 - Negative control: {PLACEHOLDER}
@@ -1544,6 +1922,7 @@ def goal_template(target: str, mode: str, objective: str) -> str:
 
 ## Budget and stop
 - Finding count: 1
+- Stop policy: {"coverage-complete" if profile == "broad-audit" else "finding-count"}
 - Budget: {PLACEHOLDER}
 - Exhaustion obligations: see contract.json
 - Blocked rule: see contract.json
@@ -1561,9 +1940,13 @@ def command_init(args: argparse.Namespace) -> None:
         raise GoalStateError(f"state path exists and is not a directory: {root}")
     if root.exists() and any(root.iterdir()):
         raise GoalStateError(f"refusing to initialize non-empty directory: {root}")
+    try:
+        normalized_target = str(Path(args.target).expanduser().resolve(strict=True))
+    except FileNotFoundError as exc:
+        raise GoalStateError(f"target path does not exist: {args.target}") from exc
     root.mkdir(parents=True, exist_ok=True)
     timestamp = utc_now()
-    contract = initial_contract(args.target, args.mode, args.objective)
+    contract = initial_contract(normalized_target, args.mode, args.objective, args.profile)
     state = {
         "schema_version": SCHEMA_VERSION,
         "created_at": timestamp,
@@ -1575,18 +1958,26 @@ def command_init(args: argparse.Namespace) -> None:
         "event_count": 0,
         "candidate_revision_count": 0,
         "coverage_revision_count": 0,
+        "baseline_revision_count": 0,
         "terminal": None,
     }
     coverage = {"schema_version": SCHEMA_VERSION, "updated_at": timestamp, "records": []}
     atomic_write_json(root / "contract.json", contract)
     atomic_write_json(root / "state.json", state)
     atomic_write_json(root / "coverage.json", coverage)
+    atomic_write_json(
+        root / AUDIT_MATRIX_FILE,
+        {"schema_version": SCHEMA_VERSION, "updated_at": timestamp, "records": []},
+    )
     (root / "events.jsonl").touch(exist_ok=False)
     (root / "candidates.jsonl").touch(exist_ok=False)
     (root / EVIDENCE_LOCATIONS_FILE).touch(exist_ok=False)
-    (root / "THREAT_MODEL.md").write_text(threat_model_template(args.target), encoding="utf-8")
+    (root / "THREAT_MODEL.md").write_text(
+        threat_model_template(normalized_target), encoding="utf-8"
+    )
     (root / "GOAL.md").write_text(
-        goal_template(args.target, args.mode, args.objective), encoding="utf-8"
+        goal_template(normalized_target, args.mode, args.objective, args.profile),
+        encoding="utf-8",
     )
     print(json.dumps({"initialized": str(root), "status": "draft"}, indent=2))
 
@@ -1702,6 +2093,8 @@ def terminal_payload_errors(
         unlock = terminal.get("unlock")
         if not isinstance(unlock, str) or not unlock.strip():
             errors.append("blocked outcome requires an exact unlock")
+    if outcome in ("validated", "exhausted") and profile_for_contract(contract) == "broad-audit":
+        errors.extend(audit_matrix_errors(root, contract, require_complete=True))
     return errors
 
 
@@ -1844,6 +2237,95 @@ def command_coverage(args: argparse.Namespace) -> None:
     state["coverage_revision_count"] = sequence
     state["updated_at"] = record["timestamp"]
     atomic_write_json(root / "coverage.json", coverage)
+    atomic_write_json(root / "state.json", state)
+    print(json.dumps(record, indent=2))
+
+
+def command_scope(args: argparse.Namespace) -> None:
+    root = state_dir(args.directory)
+    ensure_integrity(root)
+    state = load_json(root / "state.json")
+    if state.get("status") != "draft" or state.get("activation_fingerprint") is not None:
+        raise GoalStateError("scope may be locked only while the goal is draft")
+    contract = load_json(root / "contract.json")
+    if workflow_version(contract) < WORKFLOW_VERSION:
+        raise GoalStateError("scope manifests require workflow version 3")
+    errors = contract_errors(contract)
+    if errors:
+        raise GoalStateError("complete the contract before locking scope: " + "; ".join(errors))
+    expected = expanded_scope_components(root, contract)
+    requested = args.component or expected
+    if set(requested) != set(expected):
+        missing = sorted(set(expected) - set(requested))
+        extra = sorted(set(requested) - set(expected))
+        details = []
+        if missing:
+            details.append("missing: " + ", ".join(missing))
+        if extra:
+            details.append("not included: " + ", ".join(extra))
+        raise GoalStateError("scope components must exactly match target.include: " + "; ".join(details))
+    components = [scoped_component(root, contract, value) for value in requested]
+    ids = [value["id"] for value in components]
+    if len(ids) != len(set(ids)):
+        raise GoalStateError("scope components must be unique")
+    manifest = {
+        "schema_version": SCHEMA_VERSION,
+        "created_at": utc_now(),
+        "target_revision": nested(contract, "target", "revision"),
+        "include": nested(contract, "target", "include"),
+        "exclude": nested(contract, "target", "exclude"),
+        "scope_basis": nested(contract, "target", "scope_basis"),
+        "scope_sources": nested(contract, "target", "scope_sources"),
+        "components": sorted(components, key=lambda item: item["id"]),
+    }
+    atomic_write_json(root / SCOPE_MANIFEST_FILE, manifest)
+    print(json.dumps(manifest, indent=2))
+
+
+def command_baseline(args: argparse.Namespace) -> None:
+    root = state_dir(args.directory)
+    ensure_integrity(root)
+    state = load_json(root / "state.json")
+    if state.get("status") != "active" or state.get("activation_fingerprint") is None:
+        raise GoalStateError("baseline records require an active, validated contract")
+    contract = load_json(root / "contract.json")
+    if profile_for_contract(contract) != "broad-audit":
+        raise GoalStateError("baseline records are required only for broad-audit profiles")
+    manifest = load_json(root / SCOPE_MANIFEST_FILE)
+    components = {
+        item.get("id")
+        for item in manifest.get("components", [])
+        if isinstance(item, dict) and isinstance(item.get("id"), str)
+    }
+    if args.component not in components:
+        raise GoalStateError(f"unknown scope component: {args.component}")
+    if args.lens not in baseline_lenses(contract):
+        raise GoalStateError(f"unknown baseline lens: {args.lens}")
+    if not args.evidence:
+        raise GoalStateError("baseline records require at least one --evidence artifact")
+    if not isinstance(args.note, str) or not args.note.strip():
+        raise GoalStateError("baseline records require a discriminating note")
+    matrix = load_json(root / AUDIT_MATRIX_FILE)
+    records = matrix.get("records")
+    if not isinstance(records, list):
+        raise GoalStateError(f"{AUDIT_MATRIX_FILE}.records must be a list")
+    sequence = len(records) + 1
+    record = {
+        "schema_version": SCHEMA_VERSION,
+        "sequence": sequence,
+        "timestamp": utc_now(),
+        "component": args.component,
+        "lens": args.lens,
+        "status": args.status,
+        "evidence": args.evidence,
+        "evidence_attestations": evidence_attestations(root, args.evidence),
+        "note": args.note,
+    }
+    records.append(record)
+    matrix["updated_at"] = record["timestamp"]
+    state["baseline_revision_count"] = sequence
+    state["updated_at"] = record["timestamp"]
+    atomic_write_json(root / AUDIT_MATRIX_FILE, matrix)
     atomic_write_json(root / "state.json", state)
     print(json.dumps(record, indent=2))
 
@@ -2024,15 +2506,24 @@ def command_status(args: argparse.Namespace) -> None:
         for dimension, items in mandatory_passes(contract).items()
         for item in items
     }
+    baseline_summary: Dict[str, int] = {}
+    if workflow_version(contract) >= WORKFLOW_VERSION:
+        matrix = load_json(root / AUDIT_MATRIX_FILE)
+        matrix_records = matrix.get("records") if isinstance(matrix.get("records"), list) else []
+        for record in latest_baseline_records(matrix_records).values():
+            status = str(record.get("status"))
+            baseline_summary[status] = baseline_summary.get(status, 0) + 1
     summary = {
         "directory": str(root),
         "workflow_version": workflow_version(contract),
+        "profile": profile_for_contract(contract),
         "status": state.get("status"),
         "outcome": state.get("outcome"),
         "counts": {
             "events": len(events),
             "candidate_revisions": int(state.get("candidate_revision_count", 0)),
             "coverage_revisions": int(state.get("coverage_revision_count", 0)),
+            "baseline_revisions": int(state.get("baseline_revision_count", 0)),
         },
         "candidates": {
             candidate_id: {
@@ -2044,6 +2535,7 @@ def command_status(args: argparse.Namespace) -> None:
         },
         "coverage": coverage_summary,
         "mandatory_passes": pass_summary,
+        "audit_baseline": baseline_summary,
         "budget": budget_status(root, state, contract),
         "evidence_integrity": {
             "valid": not evidence_errors,
@@ -2066,6 +2558,7 @@ def build_parser() -> argparse.ArgumentParser:
     init_parser.add_argument("--dir", dest="directory", required=True)
     init_parser.add_argument("--target", required=True)
     init_parser.add_argument("--mode", choices=MODES, required=True)
+    init_parser.add_argument("--profile", choices=PROFILES, default="focused-hunt")
     init_parser.add_argument("--objective", required=True)
     init_parser.set_defaults(function=command_init)
 
@@ -2088,6 +2581,22 @@ def build_parser() -> argparse.ArgumentParser:
     event_parser.add_argument("--classification", choices=CLASSIFICATIONS)
     event_parser.add_argument("--evidence", action="append", default=[])
     event_parser.set_defaults(function=command_event)
+
+    scope_parser = commands.add_parser("scope", help="freeze the exact workflow-v3 target files")
+    scope_parser.add_argument("--dir", dest="directory", required=True)
+    scope_parser.add_argument("--component", action="append", default=[])
+    scope_parser.set_defaults(function=command_scope)
+
+    baseline_parser = commands.add_parser(
+        "baseline", help="append one broad-audit component-by-lens result"
+    )
+    baseline_parser.add_argument("--dir", dest="directory", required=True)
+    baseline_parser.add_argument("--component", required=True)
+    baseline_parser.add_argument("--lens", required=True)
+    baseline_parser.add_argument("--status", choices=BASELINE_STATES, required=True)
+    baseline_parser.add_argument("--evidence", action="append", default=[])
+    baseline_parser.add_argument("--note", required=True)
+    baseline_parser.set_defaults(function=command_baseline)
 
     coverage_parser = commands.add_parser("coverage", help="append a coverage observation")
     coverage_parser.add_argument("--dir", dest="directory", required=True)

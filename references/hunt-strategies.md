@@ -6,6 +6,9 @@ plausible security hypotheses, not the one that produces the most output.
 Use the [deep-hunt pass index](deep-hunt.md) to load only the business,
 consumer, integration, arithmetic, interleaving, composition, or closure pass
 needed for the current experiment.
+For repository-wide work, first use the component matrix in
+[breadth-first-audit.md](breadth-first-audit.md); candidate depth cannot replace
+scope-wide baseline coverage.
 
 ## Build the surface queue
 
@@ -63,15 +66,18 @@ when its output can feed a contract gate.
 
 ### Discovery sequence
 
-1. Map sources, boundaries, enforcement points, and dangerous effects.
-2. Form a small hypothesis around a violated security invariant.
-3. Trace a concrete path manually before scaling the search.
-4. Create the smallest oracle that discriminates safe from unsafe behavior.
-5. Scale with a query, fuzzer, generator, or state exploration only after the
+1. Lock exact scope, profile, and known-material policy.
+2. Map sources, boundaries, enforcement points, and dangerous effects.
+3. For a broad audit, run the baseline lenses across every component and use
+   open or failed rows to prioritize deeper hypotheses.
+4. Form a small hypothesis around a violated security invariant.
+5. Trace a concrete path manually before scaling the search.
+6. Create the smallest oracle that discriminates safe from unsafe behavior.
+7. Scale with a query, fuzzer, generator, or state exploration only after the
    oracle and reachable configuration are credible.
-6. Falsify high-ranked candidates early; preserve rejected patterns to improve
+8. Falsify high-ranked candidates early; preserve rejected patterns to improve
    later searches.
-7. Trace every supported primitive through downstream consumers and run the
+9. Trace every supported primitive through downstream consumers and run the
    mandatory boundary, semantic, sequence, composition, and closure passes.
 
 Retain one unconstrained roaming pass. Pure checklist decomposition can miss
@@ -195,6 +201,7 @@ append-only index of hypotheses and evidence paths, but avoid exposing a
 hunter's conclusion to its independent validator. Use different model families
 for validation when available because shared blind spots can correlate.
 
-Do not let parallelism create several weak reports. Stop the requested hunt once
-the finding count passes all gates, then preserve remaining leads as follow-up
-work rather than silently expanding scope.
+Do not let parallelism create several weak reports. A focused hunt may stop once
+the requested finding count passes all gates. A broad audit must continue until
+its component-by-lens baseline closes or its declared budget produces an honest
+`budget-limited` result; report every validated issue found along the way.

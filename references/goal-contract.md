@@ -15,6 +15,7 @@ write `none known` rather than silently omitting one.
 
 ## Target
 - Repository and revision:
+- Scope authority and source documents:
 - Included components:
 - Excluded components:
 - Release-like configurations:
@@ -69,15 +70,20 @@ Create `GOAL.md` with this structure:
 # Goal
 
 ## Outcome
-Find/prove/reject exactly <count> <finding or property> in <target and revision>
-that allows <attacker> to cause <required impact> under <realistic config>.
+For a focused hunt, find/prove/reject exactly <count> <finding or property> in
+<target and revision>. For a broad audit, complete the bounded scope-wide
+baseline and report every validated issue encountered. Require <attacker> to
+cause <required impact> under <realistic config>.
 
 ## Mode
-<discovery, variant, invariant, differential, or validation>
+Profile: <focused-hunt or broad-audit>
+Mode: <discovery, variant, invariant, differential, or validation>
 
 ## Target and scope
 - Included:
 - Excluded:
+- Scope authority and sources:
+- Knowledge policy and known-material disposition:
 - Allowed methods and environments:
 - Proof-safety constraints:
 
@@ -112,6 +118,8 @@ that allows <attacker> to cause <required impact> under <realistic config>.
 - Start and deadline:
 - Experiment or compute limits:
 - Finding count:
+- Stop policy:
+- Broad-audit baseline matrix:
 - Exhaustion obligations:
 - Blocked condition and required unlock:
 
@@ -135,6 +143,8 @@ activation. Its important fields are:
 | --- | --- |
 | `authorization.confirmed` and `basis` | Why this assessment is allowed |
 | `target.path`, `revision`, `include`, `exclude` | Exact audit boundary |
+| `target.scope_basis`, `scope_sources` | Authority used to choose the boundary |
+| `profile` | Focused finding-count hunt or scope-wide broad audit |
 | `mode` and `objective` | One outcome, not a list of tasks |
 | `success_conditions` | Observable conditions that satisfy the outcome |
 | `non_success_conditions` | Shortcuts and false positives that do not count |
@@ -148,12 +158,14 @@ activation. Its important fields are:
 | `evidence_requirements.omitted_gates` | Optional gates excluded before activation, mapped to reasons |
 | `evidence_requirements.allowed_gate_evidence_sharing` | Exact gate groups allowed to share one digest, each with a reason |
 | `novelty_policy` | When and how to check issues, reports, and prior fixes |
+| `knowledge_policy` | Inventory, blind-novelty, or validation handling for answer-bearing material |
 | `search_requirements.mandatory_passes` | Deep-hunt artifacts required before completion |
+| `search_requirements.baseline_lenses` | Component-wide checks required by a broad audit |
 | `search_requirements.allowed_pass_evidence_sharing` | Exact mandatory-pass groups allowed to share one digest, each with a reason |
 | `search_requirements.primitive_escalation_policy` | How primitives are traced through consumers and joins |
 | `search_requirements.impact_priority_policy` | When a lower-impact finding does not satisfy a highest-impact objective |
 | `budget` | Time, compute, token, or experiment limits |
-| `stop` | Finding count, exhaustion obligations, and blocked rule |
+| `stop` | Finding threshold, profile-specific stop policy, exhaustion obligations, and blocked rule |
 | `outputs.evidence_roots` | Containment roots for local evidence artifacts |
 
 Do not reduce the default evidence gates merely because a tool cannot produce
@@ -181,6 +193,11 @@ direct consumers. The second compares the primitive with other active and
 rejected leads and records why each material join succeeds or fails. These are
 review obligations, not permission to infer impact without a combined proof.
 
+Workflow version 3 freezes `scope-manifest.json`. A `broad-audit` must use
+`stop.policy=coverage-complete` and complete the component-by-lens matrix in
+[`breadth-first-audit.md`](breadth-first-audit.md) before either `validated` or
+`exhausted`. A `focused-hunt` may use `finding-count`.
+
 Treat `budget.max_experiments` as a positive integer counting both experiments
 and tool failures. Treat `max_hours` as wall-clock hours since first activation
 and `deadline` as an absolute ISO-8601 timestamp with timezone. A
@@ -196,10 +213,12 @@ configuration is friendly or one local candidate already validated.
 
 ### Discovery
 
-State an attacker, impact floor, realistic configuration, novelty policy, and
-one finding count. Keep the first technical pass blind to current issue trackers
-when benchmark integrity or independent discovery matters. Search duplicates
-after a candidate has a stable trigger and root-cause fingerprint.
+State an attacker, impact floor, realistic configuration, knowledge policy, and
+stop policy. Do not infer a novelty-only objective. Default a broad audit to
+known-material inventory and report reproduced current issues with provenance.
+Keep the first technical pass blind only when benchmark integrity or explicit
+independent discovery requires it; record the blindness basis and inventory the
+sequestered material after the pass.
 
 ### Variant
 
@@ -253,6 +272,15 @@ Before activation, answer these questions adversarially:
     boundary that the supported input domain permits?
 15. Could a same-function callback test miss a cross-function or cross-contract
     action before the outer state is committed?
+16. Could a repository-wide request silently become a focused stop-after-one
+    hunt?
+17. Could known tests, PoCs, reports, or audit annotations be classified as
+    duplicates and therefore disappear from the current-risk result?
+18. Could the run select an attractive complex surface before checking simple
+    zero, unit, decimal, native-sentinel, lifecycle, identity, valuation, and
+    cross-instance boundaries across every component?
+19. Could the declared scope differ from a supplied competition or engagement
+    document, or change after activation?
 
 Add a success or non-success clause for every shortcut that remains possible.
 
@@ -261,8 +289,10 @@ Add a success or non-success clause for every shortcut that remains possible.
 Activate only when all answers are yes:
 
 - Is authority recorded?
+- Is the focused or broad profile explicit?
 - Is there exactly one primary outcome?
 - Are the target and revision unambiguous?
+- Are scope authority, exact files, and knowledge handling explicit?
 - Are attacker capabilities and non-capabilities explicit?
 - Is security impact observable?
 - Are realistic configurations named?
@@ -270,6 +300,8 @@ Activate only when all answers are yes:
 - Are evidence and independent-review gates defined?
 - Are business flows, conservation identities, consumers, external semantics,
   attacker funding, and mandatory composition passes explicit?
+- For a broad audit, are the baseline lenses and coverage-complete stop policy
+  frozen?
 - Are budget, exhaustion, and blocked rules explicit?
 - Is state durable across context loss?
 

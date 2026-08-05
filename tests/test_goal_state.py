@@ -62,6 +62,17 @@ MANDATORY_PASSES = {
     "exploit-composition": ("primitive-join-graph",),
     "economic-closure": ("funding-repayment-profit-and-system-loss-ledger",),
 }
+BASELINE_LENSES = (
+    "entry-points-and-privilege",
+    "known-material-and-provenance",
+    "zero-empty-one-and-extremes",
+    "units-scaling-rounding-and-casts",
+    "external-calls-and-native-sentinels",
+    "lifecycle-time-and-transition-boundaries",
+    "identity-domain-and-deterministic-collisions",
+    "valuation-solvency-and-incentive-extremes",
+    "cross-instance-and-shared-state-isolation",
+)
 
 
 class GoalStateTests(unittest.TestCase):
@@ -102,15 +113,17 @@ class GoalStateTests(unittest.TestCase):
             if not artifact.exists():
                 artifact.write_text(f"fixture evidence for {raw_path}\n", encoding="utf-8")
 
-    def initialize(self, mode="discovery"):
+    def initialize(self, mode="discovery", profile="focused-hunt"):
         return self.run_cli(
             "init",
             "--dir",
             self.root,
             "--target",
-            ".",
+            self.root.parent,
             "--mode",
             mode,
+            "--profile",
+            profile,
             "--objective",
             "Find exactly one authorized vulnerability",
         )
@@ -123,6 +136,9 @@ class GoalStateTests(unittest.TestCase):
             "basis": "The local fixture is owned by the test",
         }
         contract["target"]["revision"] = "fixture-commit"
+        contract["target"]["include"] = ["fixture-target.txt"]
+        contract["target"]["scope_basis"] = "Exact local fixture selected by the test"
+        contract["target"]["scope_sources"] = ["test-owned fixture manifest"]
         contract["success_conditions"] = ["One candidate passes every required gate"]
         contract["non_success_conditions"] = ["A crash without impact does not count"]
         contract["threat_model"] = {
@@ -139,6 +155,14 @@ class GoalStateTests(unittest.TestCase):
             "attacker_funding_sources": ["No funding is required for this fixture"],
         }
         contract["novelty_policy"] = "Check duplicates after the trigger is stable"
+        contract["knowledge_policy"] = {
+            "mode": "inventory",
+            "sources": ["local tests and issue annotations"],
+            "known_issue_disposition": (
+                "Reproduce valid current issues and label their provenance without a novelty claim"
+            ),
+            "explicit_blindness_basis": None,
+        }
         contract_path.write_text(json.dumps(contract, indent=2) + "\n", encoding="utf-8")
         for name in ("GOAL.md", "THREAT_MODEL.md"):
             path = self.root / name
@@ -146,6 +170,15 @@ class GoalStateTests(unittest.TestCase):
                 path.read_text(encoding="utf-8").replace("[REPLACE]", "documented"),
                 encoding="utf-8",
             )
+        fixture = self.root.parent / "fixture-target.txt"
+        fixture.write_text("fixture source bytes\n", encoding="utf-8")
+        self.run_cli(
+            "scope",
+            "--dir",
+            self.root,
+            "--component",
+            "fixture-target.txt",
+        )
 
     def activate(self):
         self.complete_contract()
@@ -189,6 +222,24 @@ class GoalStateTests(unittest.TestCase):
                     f"artifacts/{dimension}-{item}.md",
                 )
 
+    def complete_broad_audit_baseline(self):
+        for lens in BASELINE_LENSES:
+            self.run_cli(
+                "baseline",
+                "--dir",
+                self.root,
+                "--component",
+                "fixture-target.txt",
+                "--lens",
+                lens,
+                "--status",
+                "tested",
+                "--evidence",
+                f"artifacts/baseline-{lens}.md",
+                "--note",
+                f"Ran a discriminating fixture check for {lens}",
+            )
+
     def test_init_scaffolds_and_refuses_overwrite(self):
         self.initialize()
         expected = {
@@ -197,6 +248,7 @@ class GoalStateTests(unittest.TestCase):
             "events.jsonl",
             "candidates.jsonl",
             "coverage.json",
+            "audit-matrix.json",
             "evidence-locations.jsonl",
             "THREAT_MODEL.md",
             "GOAL.md",
@@ -305,7 +357,7 @@ class GoalStateTests(unittest.TestCase):
         status = json.loads(self.run_cli("status", "--dir", self.root).stdout)
         self.assertEqual(status["status"], "completed")
         self.assertEqual(status["outcome"], "validated")
-        self.assertEqual(status["workflow_version"], 2)
+        self.assertEqual(status["workflow_version"], 3)
         self.assertEqual(set(status["mandatory_passes"].values()), {"tested"})
         self.assertEqual(status["candidates"]["C-001"]["revision"], 2)
 
@@ -332,6 +384,105 @@ class GoalStateTests(unittest.TestCase):
         )
         self.assertIn("missing required gate", result.stderr)
         self.assertEqual((self.root / "candidates.jsonl").read_text(encoding="utf-8"), "")
+
+    def test_broad_audit_cannot_stop_after_one_finding_before_baseline_closure(self):
+        self.initialize(profile="broad-audit")
+        self.activate()
+        self.run_cli(
+            "candidate",
+            "--dir",
+            self.root,
+            "--id",
+            "C-001",
+            "--status",
+            "validated",
+            "--title",
+            "Validated boundary crossing",
+            "--summary",
+            "Every candidate-specific gate passes",
+            "--evidence",
+            "artifacts/reproduction.log",
+            *self.candidate_gate_arguments(),
+        )
+        self.complete_mandatory_passes()
+        finish = (
+            "finish",
+            "--dir",
+            self.root,
+            "--outcome",
+            "validated",
+            "--candidate-id",
+            "C-001",
+            "--reason",
+            "Candidate gates passed",
+            "--evidence",
+            "findings/C-001.md",
+        )
+        result = self.run_cli(*finish, expected=2)
+        self.assertIn("broad audit baseline is unrecorded", result.stderr)
+        self.complete_broad_audit_baseline()
+        self.run_cli(*finish)
+        status = json.loads(self.run_cli("status", "--dir", self.root).stdout)
+        self.assertEqual(status["profile"], "broad-audit")
+        self.assertEqual(status["audit_baseline"], {"tested": len(BASELINE_LENSES)})
+
+    def test_scope_manifest_freezes_the_exact_target_bytes(self):
+        self.initialize()
+        self.activate()
+        (self.root.parent / "fixture-target.txt").write_text(
+            "mutated after activation\n", encoding="utf-8"
+        )
+        result = self.run_cli(
+            "check", "--dir", self.root, "--phase", "activation", expected=2
+        )
+        self.assertIn("changed after scope lock", result.stdout)
+
+    def test_scope_lock_rejects_an_omitted_included_file(self):
+        self.initialize()
+        self.complete_contract()
+        second = self.root.parent / "second-target.txt"
+        second.write_text("second fixture source\n", encoding="utf-8")
+        contract_path = self.root / "contract.json"
+        contract = json.loads(contract_path.read_text(encoding="utf-8"))
+        contract["target"]["include"].append("second-target.txt")
+        contract_path.write_text(json.dumps(contract, indent=2) + "\n", encoding="utf-8")
+        result = self.run_cli(
+            "scope",
+            "--dir",
+            self.root,
+            "--component",
+            "fixture-target.txt",
+            expected=2,
+        )
+        self.assertIn("missing: second-target.txt", result.stderr)
+
+    def test_blind_novelty_requires_an_explicit_basis(self):
+        self.initialize(profile="broad-audit")
+        self.complete_contract()
+        contract_path = self.root / "contract.json"
+        contract = json.loads(contract_path.read_text(encoding="utf-8"))
+        contract["knowledge_policy"]["mode"] = "blind-novelty"
+        contract["knowledge_policy"]["explicit_blindness_basis"] = None
+        contract_path.write_text(json.dumps(contract, indent=2) + "\n", encoding="utf-8")
+        result = self.run_cli(
+            "check", "--dir", self.root, "--phase", "activation", expected=2
+        )
+        self.assertIn("explicit_blindness_basis", result.stdout)
+
+    def test_workflow_v2_contract_remains_checkable(self):
+        self.initialize()
+        self.complete_contract()
+        contract_path = self.root / "contract.json"
+        contract = json.loads(contract_path.read_text(encoding="utf-8"))
+        contract["workflow_version"] = 2
+        contract.pop("profile")
+        contract.pop("knowledge_policy")
+        contract["target"].pop("scope_basis")
+        contract["target"].pop("scope_sources")
+        contract["search_requirements"].pop("baseline_lenses")
+        contract["stop"].pop("policy")
+        contract_path.write_text(json.dumps(contract, indent=2) + "\n", encoding="utf-8")
+        self.run_cli("check", "--dir", self.root, "--phase", "activation")
 
     def test_exhaustion_requires_closed_coverage(self):
         self.initialize()

@@ -15,9 +15,13 @@ entire deep-hunt protocol up front:
 
 The objective is not to name more bug classes. Reconstruct intended economics
 and state transitions, then test whether individually valid operations compose
-into an invalid global result. A workflow-version-2 `validated` or `exhausted`
+into an invalid global result. A workflow-version-2+ `validated` or `exhausted`
 outcome must eventually complete every registered item, but the passes should be
 loaded and executed when their evidence becomes relevant.
+
+These passes establish candidate and interaction depth. For a workflow-v3
+`broad-audit`, they do not replace the scope-wide component matrix in
+[`breadth-first-audit.md`](breadth-first-audit.md); both must close.
 
 ## Preserve precision across passes
 

@@ -146,12 +146,15 @@ activation. Its important fields are:
 | `evidence_requirements.required_gates` | Candidate gates required by this hunt |
 | `evidence_requirements.waivable_gates` | Exceptional gates that may be waived with a reason |
 | `evidence_requirements.omitted_gates` | Optional gates excluded before activation, mapped to reasons |
+| `evidence_requirements.allowed_gate_evidence_sharing` | Exact gate groups allowed to share one digest, each with a reason |
 | `novelty_policy` | When and how to check issues, reports, and prior fixes |
 | `search_requirements.mandatory_passes` | Deep-hunt artifacts required before completion |
+| `search_requirements.allowed_pass_evidence_sharing` | Exact mandatory-pass groups allowed to share one digest, each with a reason |
 | `search_requirements.primitive_escalation_policy` | How primitives are traced through consumers and joins |
 | `search_requirements.impact_priority_policy` | When a lower-impact finding does not satisfy a highest-impact objective |
 | `budget` | Time, compute, token, or experiment limits |
 | `stop` | Finding count, exhaustion obligations, and blocked rule |
+| `outputs.evidence_roots` | Containment roots for local evidence artifacts |
 
 Do not reduce the default evidence gates merely because a tool cannot produce
 the evidence. Attacker control, reachability, defense analysis, impact,
@@ -162,11 +165,26 @@ named. Omit duplicate or human review only when genuinely inapplicable, map the
 gate to a reason in `omitted_gates` before activation, and disclose the omission
 in the result.
 
+Use a distinct artifact digest for each validated gate and each mandatory pass.
+When one trace genuinely establishes more than one named claim, declare the
+smallest exact sharing group and a substantive reason before activation. Copying
+the same bytes to another filename does not make the evidence independent.
+
+Keep evidence under the state directory's parent by default. Add a narrow
+absolute root to `outputs.evidence_roots` before activation only when the hunt
+must use an existing artifact location. Relative roots may narrow the state
+parent but may not escape it.
+
 Workflow version 2 also requires `downstream-impact` and
 `composition-review`. The first proves the strongest supported effect through
 direct consumers. The second compares the primitive with other active and
 rejected leads and records why each material join succeeds or fails. These are
 review obligations, not permission to infer impact without a combined proof.
+
+Treat `budget.max_experiments` as a positive integer counting both experiments
+and tool failures. Treat `max_hours` as wall-clock hours since first activation
+and `deadline` as an absolute ISO-8601 timestamp with timezone. A
+`budget-limited` outcome is valid only after one declared bound is reached.
 
 Keep every mandatory pass and exact item from
 [`deep-hunt.md`](deep-hunt.md) in `search_requirements.mandatory_passes`. A pass

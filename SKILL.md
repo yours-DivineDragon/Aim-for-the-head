@@ -235,10 +235,14 @@ python3 "<skill-root>/scripts/goal_state.py" event \
 ```
 
 Every `--evidence` value and every candidate `--gate NAME=PATH` value must name
-an existing regular file. Relative paths resolve from the state directory's
-parent. The helper records file metadata and SHA-256 at insertion and revalidates
-the artifact on later checks; missing, symlinked, or changed evidence fails
-closed. Put remote-storage details and checksums in a local retrieval manifest.
+an existing, non-empty regular file below a contract-approved evidence root.
+Relative paths resolve from the state directory's parent. The helper rejects
+symlinks in every path component, records file metadata and SHA-256 at insertion,
+and revalidates the artifact on later checks. Missing or changed evidence fails
+closed for mutations and terminal checks. `status` remains readable and reports
+the evidence error so an identical moved artifact can be recovered with
+`relocate`; relocation never permits different bytes. Put remote-storage details
+and checksums in a non-empty local retrieval manifest.
 
 When isolated agents or fresh contexts are available, give each one surface and
 one outcome, plus at most one roaming hunt for cross-surface interactions. For
@@ -267,6 +271,11 @@ Apply every required gate from [evidence-gates.md](references/evidence-gates.md)
 7. Require human security judgment before disclosure, live testing, final
    severity claims, or a claim of a previously unknown vulnerability.
 
+A validated candidate must use a distinct artifact digest for each gate, and
+each mandatory hunt pass must likewise have distinct evidence. If one artifact
+genuinely proves multiple named claims, declare the exact sharing group and a
+reason in `contract.json` before activation; do not create cosmetic file copies.
+
 Record candidate revisions append-only. A `validated` revision must supply each
 gate named by the approved contract:
 
@@ -290,6 +299,9 @@ Use only these terminal outcomes:
   prevents defensible progress.
 
 For exhaustion or budget limits, state residual risks and untested surfaces. For
+a budget-limited outcome, the helper verifies that the declared deadline,
+wall-clock hour limit, or experiment limit has actually been reached. Experiment
+and tool-failure events both consume the experiment count. For
 a blocker, transition the lifecycle to `blocked` and state exactly what would
 unlock progress. For exhaustion, attest every contract exhaustion obligation
 with repeated `--obligation` arguments. Finalize and machine-check:

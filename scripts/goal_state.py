@@ -10,14 +10,28 @@ import os
 import stat
 import sys
 import tempfile
+from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Mapping, Optional, Sequence, Tuple
+from typing import Any, Dict, Iterator, List, Mapping, Optional, Sequence, Set, Tuple
+
+try:
+    import fcntl
+except ImportError:  # pragma: no cover - exercised only on non-POSIX hosts
+    fcntl = None  # type: ignore[assignment]
+
+try:
+    import msvcrt
+except ImportError:  # pragma: no cover - exercised only on non-Windows hosts
+    msvcrt = None  # type: ignore[assignment]
 
 
 SCHEMA_VERSION = 1
 WORKFLOW_VERSION = 2
 EVIDENCE_ATTESTATION_VERSION = 1
+EVIDENCE_LOCATIONS_FILE = "evidence-locations.jsonl"
+LOCK_FILE = ".goal-state.lock"
+EXPERIMENT_EVENT_KINDS = frozenset(("experiment", "tool-failure"))
 MODES = ("discovery", "variant", "invariant", "differential", "validation")
 LIFECYCLE_STATES = ("draft", "active", "paused", "blocked", "completed")
 TERMINAL_OUTCOMES = ("validated", "exhausted", "budget-limited", "blocked")
@@ -217,6 +231,52 @@ def state_dir(raw_path: str, require_initialized: bool = True) -> Path:
     return root
 
 
+@contextmanager
+def state_lock(raw_path: str, *, initialize: bool, exclusive: bool) -> Iterator[None]:
+    """Serialize one complete helper command against a state directory."""
+    root = Path(raw_path).expanduser().resolve()
+    if initialize:
+        root.parent.mkdir(parents=True, exist_ok=True)
+        lock_path = root.parent / f".{root.name}.goal-state.lock"
+    else:
+        if not root.is_dir():
+            raise GoalStateError(f"state directory does not exist: {root}")
+        lock_path = root / LOCK_FILE
+    flags = (
+        os.O_RDWR
+        | os.O_CREAT
+        | getattr(os, "O_BINARY", 0)
+        | getattr(os, "O_NOFOLLOW", 0)
+    )
+    try:
+        descriptor = os.open(lock_path, flags, 0o600)
+    except OSError as exc:
+        raise GoalStateError(f"cannot open state lock {lock_path}: {exc.strerror}") from exc
+    with os.fdopen(descriptor, "r+b") as stream:
+        if fcntl is not None:
+            operation = fcntl.LOCK_EX if exclusive else fcntl.LOCK_SH
+            fcntl.flock(stream.fileno(), operation)
+            try:
+                yield
+            finally:
+                fcntl.flock(stream.fileno(), fcntl.LOCK_UN)
+            return
+        if msvcrt is not None:  # pragma: no cover - Windows fallback
+            stream.seek(0, os.SEEK_END)
+            if stream.tell() == 0:
+                stream.write(b"\0")
+                stream.flush()
+            stream.seek(0)
+            msvcrt.locking(stream.fileno(), msvcrt.LK_LOCK, 1)
+            try:
+                yield
+            finally:
+                stream.seek(0)
+                msvcrt.locking(stream.fileno(), msvcrt.LK_UNLCK, 1)
+            return
+        raise GoalStateError("this platform does not provide advisory file locking")
+
+
 def contains_placeholder(value: Any) -> bool:
     if isinstance(value, str):
         return PLACEHOLDER in value
@@ -276,6 +336,82 @@ def mandatory_passes(contract: Mapping[str, Any]) -> Dict[str, List[str]]:
         if isinstance(dimension, str) and nonempty_strings(items):
             result[dimension] = list(items)
     return result
+
+
+def sharing_groups(
+    contract: Mapping[str, Any], *, kind: str
+) -> List[Set[str]]:
+    if kind == "gate":
+        raw = nested(
+            contract,
+            "evidence_requirements",
+            "allowed_gate_evidence_sharing",
+        )
+        member_field = "gates"
+    else:
+        raw = nested(
+            contract,
+            "search_requirements",
+            "allowed_pass_evidence_sharing",
+        )
+        member_field = "passes"
+    if not isinstance(raw, list):
+        return []
+    groups: List[Set[str]] = []
+    for item in raw:
+        if isinstance(item, dict) and nonempty_strings(item.get(member_field)):
+            groups.append(set(item[member_field]))
+    return groups
+
+
+def sharing_policy_errors(
+    raw: Any,
+    *,
+    label: str,
+    member_field: str,
+    allowed: Set[str],
+) -> List[str]:
+    if raw is None:
+        return []
+    if not isinstance(raw, list):
+        return [f"{label} must be a list"]
+    errors: List[str] = []
+    seen: Set[Tuple[str, ...]] = set()
+    for index, item in enumerate(raw, start=1):
+        item_label = f"{label} entry {index}"
+        if not isinstance(item, dict):
+            errors.append(f"{item_label} must be an object")
+            continue
+        members = item.get(member_field)
+        if not nonempty_strings(members) or len(members) < 2:
+            errors.append(f"{item_label}.{member_field} must contain at least two names")
+            continue
+        if len(members) != len(set(members)):
+            errors.append(f"{item_label}.{member_field} must not contain duplicates")
+        unknown = sorted(set(members) - allowed)
+        if unknown:
+            errors.append(f"{item_label} has unknown names: " + ", ".join(unknown))
+        reason = item.get("reason")
+        if not isinstance(reason, str) or not reason.strip():
+            errors.append(f"{item_label}.reason must be non-empty")
+        identity = tuple(sorted(set(members)))
+        if identity in seen:
+            errors.append(f"{item_label} duplicates an earlier sharing group")
+        seen.add(identity)
+    return errors
+
+
+def parse_utc_timestamp(value: Any, label: str) -> datetime:
+    if not isinstance(value, str) or not value.strip():
+        raise GoalStateError(f"{label} must be an ISO-8601 timestamp")
+    normalized = value.strip().replace("Z", "+00:00")
+    try:
+        parsed = datetime.fromisoformat(normalized)
+    except ValueError as exc:
+        raise GoalStateError(f"{label} must be an ISO-8601 timestamp") from exc
+    if parsed.tzinfo is None:
+        raise GoalStateError(f"{label} must include a timezone")
+    return parsed.astimezone(timezone.utc)
 
 
 def contract_errors(contract: Mapping[str, Any]) -> List[str]:
@@ -373,6 +509,18 @@ def contract_errors(contract: Mapping[str, Any]) -> List[str]:
     waiver_policy = nested(contract, "evidence_requirements", "waiver_policy")
     if not isinstance(waiver_policy, str) or not waiver_policy.strip():
         errors.append("evidence_requirements.waiver_policy must be non-empty")
+    errors.extend(
+        sharing_policy_errors(
+            nested(
+                contract,
+                "evidence_requirements",
+                "allowed_gate_evidence_sharing",
+            ),
+            label="evidence_requirements.allowed_gate_evidence_sharing",
+            member_field="gates",
+            allowed=available_gates,
+        )
+    )
     novelty = contract.get("novelty_policy")
     if not isinstance(novelty, str) or not novelty.strip():
         errors.append("novelty_policy must be non-empty")
@@ -408,6 +556,21 @@ def contract_errors(contract: Mapping[str, Any]) -> List[str]:
                 value = search.get(field)
                 if not isinstance(value, str) or not value.strip():
                     errors.append(f"search_requirements.{field} must be non-empty")
+            pass_names = {
+                f"{dimension}/{item}"
+                for dimension, items in raw_passes.items()
+                if isinstance(dimension, str) and isinstance(items, list)
+                for item in items
+                if isinstance(item, str)
+            }
+            errors.extend(
+                sharing_policy_errors(
+                    search.get("allowed_pass_evidence_sharing"),
+                    label="search_requirements.allowed_pass_evidence_sharing",
+                    member_field="passes",
+                    allowed=pass_names,
+                )
+            )
     budget = contract.get("budget")
     if not isinstance(budget, dict):
         errors.append("budget must be an object")
@@ -415,12 +578,24 @@ def contract_errors(contract: Mapping[str, Any]) -> List[str]:
         bounds = (budget.get("deadline"), budget.get("max_experiments"), budget.get("max_hours"))
         if not any(value not in (None, "") for value in bounds):
             errors.append("budget must define deadline, max_experiments, or max_hours")
-        for key in ("max_experiments", "max_hours"):
-            value = budget.get(key)
-            if value is not None and (
-                isinstance(value, bool) or not isinstance(value, (int, float)) or value <= 0
-            ):
-                errors.append(f"budget.{key} must be positive or null")
+        experiments = budget.get("max_experiments")
+        if experiments is not None and (
+            isinstance(experiments, bool)
+            or not isinstance(experiments, int)
+            or experiments <= 0
+        ):
+            errors.append("budget.max_experiments must be a positive integer or null")
+        hours = budget.get("max_hours")
+        if hours is not None and (
+            isinstance(hours, bool) or not isinstance(hours, (int, float)) or hours <= 0
+        ):
+            errors.append("budget.max_hours must be positive or null")
+        deadline = budget.get("deadline")
+        if deadline not in (None, ""):
+            try:
+                parse_utc_timestamp(deadline, "budget.deadline")
+            except GoalStateError as exc:
+                errors.append(str(exc))
     count = nested(contract, "stop", "finding_count")
     if not isinstance(count, int) or isinstance(count, bool) or count < 1:
         errors.append("stop.finding_count must be a positive integer")
@@ -433,6 +608,20 @@ def contract_errors(contract: Mapping[str, Any]) -> List[str]:
         value = nested(contract, "outputs", field)
         if not isinstance(value, str) or not value.strip():
             errors.append(f"outputs.{field} must be non-empty")
+    roots = nested(contract, "outputs", "evidence_roots")
+    if roots is not None and not nonempty_strings(roots):
+        errors.append("outputs.evidence_roots must contain non-empty paths when declared")
+    elif isinstance(roots, list):
+        escaping = [
+            value
+            for value in roots
+            if not Path(value).is_absolute() and ".." in Path(value).parts
+        ]
+        if escaping:
+            errors.append(
+                "relative outputs.evidence_roots may not escape the state parent: "
+                + ", ".join(escaping)
+            )
     if contains_placeholder(contract):
         errors.append(f"contract still contains {PLACEHOLDER} placeholders")
     return errors
@@ -454,24 +643,87 @@ def evidence_path(root: Path, raw_path: str) -> Path:
     return Path(os.path.abspath(candidate))
 
 
-def evidence_attestation(root: Path, raw_path: str) -> Dict[str, Any]:
-    """Open, stat, and hash one regular evidence file without following a final symlink."""
-    if not isinstance(raw_path, str) or not raw_path.strip():
-        raise GoalStateError("evidence paths must be non-empty strings")
-    path = evidence_path(root, raw_path)
-    if path.is_symlink():
-        raise GoalStateError(f"evidence artifact may not be a symlink: {raw_path}")
+def configured_evidence_roots(root: Path) -> List[Path]:
+    """Return lexical roots frozen by the contract, defaulting to the state parent."""
+    contract = load_json(root / "contract.json")
+    declared = nested(contract, "outputs", "evidence_roots")
+    values = declared if nonempty_strings(declared) else ["."]
+    roots: List[Path] = []
+    for raw in values:
+        candidate = Path(raw).expanduser()
+        if not candidate.is_absolute():
+            candidate = root.parent / candidate
+        roots.append(Path(os.path.abspath(candidate)))
+    return roots
+
+
+def path_is_within(path: Path, parent: Path) -> bool:
+    try:
+        return os.path.commonpath((str(path), str(parent))) == str(parent)
+    except ValueError:
+        return False
+
+
+def evidence_root_for_path(root: Path, path: Path) -> Path:
+    """Choose the narrowest declared root and reject symlink escapes."""
+    eligible = [item for item in configured_evidence_roots(root) if path_is_within(path, item)]
+    if not eligible:
+        raise GoalStateError(
+            "evidence artifact is outside the contract's allowed evidence roots: " + str(path)
+        )
+    allowed = max(eligible, key=lambda item: len(item.parts))
+    if allowed.is_symlink():
+        raise GoalStateError(f"declared evidence root may not be a symlink: {allowed}")
+    try:
+        resolved_allowed = allowed.resolve(strict=True)
+    except FileNotFoundError as exc:
+        raise GoalStateError(f"declared evidence root does not exist: {allowed}") from exc
+    if not resolved_allowed.is_dir():
+        raise GoalStateError(f"declared evidence root is not a directory: {allowed}")
+    resolved_path = Path(os.path.realpath(path))
+    if not path_is_within(resolved_path, resolved_allowed):
+        raise GoalStateError(
+            f"evidence artifact escapes its declared root through a symlink: {path}"
+        )
+    return allowed
+
+
+def open_evidence_descriptor(path: Path, allowed_root: Path, raw_path: str) -> int:
+    """Open an evidence file after rejecting every symlinked path component."""
+    relative = path.relative_to(allowed_root)
+    current = allowed_root
+    for part in relative.parts:
+        current = current / part
+        try:
+            metadata = os.lstat(current)
+        except FileNotFoundError as exc:
+            raise GoalStateError(f"evidence artifact does not exist: {raw_path}") from exc
+        if stat.S_ISLNK(metadata.st_mode):
+            raise GoalStateError(
+                f"evidence artifact path contains a symlink component: {raw_path}"
+            )
     flags = os.O_RDONLY | getattr(os, "O_BINARY", 0) | getattr(os, "O_NOFOLLOW", 0)
     try:
-        descriptor = os.open(path, flags)
+        return os.open(path, flags)
     except FileNotFoundError as exc:
         raise GoalStateError(f"evidence artifact does not exist: {raw_path}") from exc
     except OSError as exc:
         raise GoalStateError(f"cannot open evidence artifact {raw_path!r}: {exc.strerror}") from exc
+
+
+def evidence_attestation(root: Path, raw_path: str) -> Dict[str, Any]:
+    """Contain, open, stat, and hash one non-empty regular evidence file."""
+    if not isinstance(raw_path, str) or not raw_path.strip():
+        raise GoalStateError("evidence paths must be non-empty strings")
+    path = evidence_path(root, raw_path)
+    allowed_root = evidence_root_for_path(root, path)
+    descriptor = open_evidence_descriptor(path, allowed_root, raw_path)
     try:
         before = os.fstat(descriptor)
         if not stat.S_ISREG(before.st_mode):
             raise GoalStateError(f"evidence artifact is not a regular file: {raw_path}")
+        if before.st_size < 1:
+            raise GoalStateError(f"evidence artifact is empty: {raw_path}")
         digest = hashlib.sha256()
         while True:
             chunk = os.read(descriptor, 65536)
@@ -517,11 +769,28 @@ def evidence_attestations(root: Path, paths: Sequence[str]) -> List[Dict[str, An
     return [evidence_attestation(root, path) for path in paths]
 
 
+def load_evidence_locations(root: Path) -> List[Dict[str, Any]]:
+    path = root / EVIDENCE_LOCATIONS_FILE
+    return load_jsonl(path) if path.exists() else []
+
+
+def evidence_identity(attestation: Mapping[str, Any]) -> Tuple[Any, Any]:
+    return attestation.get("sha256"), attestation.get("size")
+
+
+def relocation_index(root: Path) -> Dict[Tuple[Any, Any], Mapping[str, Any]]:
+    latest: Dict[Tuple[Any, Any], Mapping[str, Any]] = {}
+    for record in load_evidence_locations(root):
+        latest[(record.get("sha256"), record.get("size"))] = record
+    return latest
+
+
 def evidence_attestation_errors(
     root: Path,
     paths: Any,
     attestations: Any,
     label: str,
+    relocations: Optional[Mapping[Tuple[Any, Any], Mapping[str, Any]]] = None,
 ) -> List[str]:
     """Re-stat and re-hash recorded evidence, returning durable integrity errors."""
     if not isinstance(paths, list) or not all(isinstance(item, str) for item in paths):
@@ -538,12 +807,21 @@ def evidence_attestation_errors(
         if not isinstance(recorded, dict):
             errors.append(f"{item_label} has an invalid attestation")
             continue
+        location_map = relocations if relocations is not None else relocation_index(root)
+        relocation = location_map.get(evidence_identity(recorded))
+        current_path = relocation.get("to_path") if isinstance(relocation, dict) else raw_path
+        if not isinstance(current_path, str) or not current_path.strip():
+            errors.append(f"{item_label} has an invalid relocation path")
+            continue
         try:
-            current = evidence_attestation(root, raw_path)
+            current = evidence_attestation(root, current_path)
         except GoalStateError as exc:
             errors.append(f"{item_label}: {exc}")
             continue
-        for field in ("version", "path", "base", "location", "sha256", "size"):
+        fields = ("version", "sha256", "size")
+        if relocation is None:
+            fields += ("path", "base", "location")
+        for field in fields:
             if recorded.get(field) != current[field]:
                 errors.append(f"{item_label} attestation mismatch: {field}")
     return errors
@@ -554,6 +832,7 @@ def gate_attestation_errors(
     gates: Any,
     attestations: Any,
     label: str,
+    relocations: Optional[Mapping[Tuple[Any, Any], Mapping[str, Any]]] = None,
 ) -> List[str]:
     if not isinstance(gates, dict):
         return []
@@ -573,9 +852,75 @@ def gate_attestation_errors(
                 [raw_path],
                 [attestations.get(gate)],
                 f"{label} gate {gate}",
+                relocations,
             )
         )
     return errors
+
+
+def evidence_location_errors(root: Path) -> List[str]:
+    records = load_evidence_locations(root)
+    errors = sequence_errors(records, "evidence location")
+    if not records:
+        return errors
+    known_paths: Dict[Tuple[Any, Any], Set[Any]] = {}
+    for attestation in recorded_evidence_attestations(root):
+        known_paths.setdefault(evidence_identity(attestation), set()).add(attestation.get("path"))
+    for position, record in enumerate(records, start=1):
+        label = f"evidence location record {position}"
+        if record.get("schema_version") != SCHEMA_VERSION:
+            errors.append(f"{label} has an invalid schema_version")
+        if not isinstance(record.get("sha256"), str) or len(record["sha256"]) != 64:
+            errors.append(f"{label} has an invalid sha256")
+        if not isinstance(record.get("size"), int) or record.get("size", 0) < 1:
+            errors.append(f"{label} has an invalid size")
+        for field in ("from_path", "to_path", "reason"):
+            if not isinstance(record.get(field), str) or not record[field].strip():
+                errors.append(f"{label}.{field} must be non-empty")
+        target = record.get("to_attestation")
+        if not isinstance(target, dict):
+            errors.append(f"{label} lacks to_attestation")
+        elif evidence_identity(target) != (record.get("sha256"), record.get("size")):
+            errors.append(f"{label} target identity does not match its preserved identity")
+        identity = (record.get("sha256"), record.get("size"))
+        paths = known_paths.get(identity)
+        if not paths:
+            errors.append(f"{label} does not refer to a recorded evidence identity")
+        elif record.get("from_path") not in paths:
+            errors.append(f"{label}.from_path is not a current recorded location")
+        else:
+            paths.clear()
+            paths.add(record.get("to_path"))
+    return errors
+
+
+def recorded_evidence_attestations(root: Path) -> List[Mapping[str, Any]]:
+    result: List[Mapping[str, Any]] = []
+    for record in load_jsonl(root / "events.jsonl"):
+        values = record.get("evidence_attestations")
+        if isinstance(values, list):
+            result.extend(item for item in values if isinstance(item, dict))
+    for record in load_jsonl(root / "candidates.jsonl"):
+        values = record.get("evidence_attestations")
+        if isinstance(values, list):
+            result.extend(item for item in values if isinstance(item, dict))
+        gates = record.get("gate_attestations")
+        if isinstance(gates, dict):
+            result.extend(item for item in gates.values() if isinstance(item, dict))
+    coverage = load_json(root / "coverage.json")
+    records = coverage.get("records")
+    if isinstance(records, list):
+        for record in records:
+            values = record.get("evidence_attestations") if isinstance(record, dict) else None
+            if isinstance(values, list):
+                result.extend(item for item in values if isinstance(item, dict))
+    state = load_json(root / "state.json")
+    terminal = state.get("terminal")
+    if isinstance(terminal, dict):
+        values = terminal.get("evidence_attestations")
+        if isinstance(values, list):
+            result.extend(item for item in values if isinstance(item, dict))
+    return result
 
 
 def activation_fingerprint(root: Path) -> Dict[str, str]:
@@ -629,6 +974,27 @@ def current_coverage(records: Sequence[Mapping[str, Any]]) -> Dict[Tuple[str, st
     return current
 
 
+def shared_digest_errors(
+    evidence_by_name: Mapping[str, Set[str]],
+    allowed_groups: Sequence[Set[str]],
+    label: str,
+) -> List[str]:
+    owners: Dict[str, Set[str]] = {}
+    for name, digests in evidence_by_name.items():
+        for digest in digests:
+            owners.setdefault(digest, set()).add(name)
+    errors: List[str] = []
+    for digest, names in sorted(owners.items()):
+        if len(names) < 2:
+            continue
+        if any(names.issubset(group) for group in allowed_groups):
+            continue
+        errors.append(
+            f"{label} reuse one artifact digest {digest}: " + ", ".join(sorted(names))
+        )
+    return errors
+
+
 def mandatory_pass_errors(
     contract: Mapping[str, Any], records: Sequence[Mapping[str, Any]]
 ) -> List[str]:
@@ -636,19 +1002,35 @@ def mandatory_pass_errors(
         return []
     current = current_coverage(records)
     errors: List[str] = []
+    evidence_by_pass: Dict[str, Set[str]] = {}
     for dimension, items in mandatory_passes(contract).items():
         for item in items:
+            pass_name = f"{dimension}/{item}"
             record = current.get((dimension, item))
             if record is None:
-                errors.append(f"mandatory hunt pass is unrecorded: {dimension}/{item}")
+                errors.append(f"mandatory hunt pass is unrecorded: {pass_name}")
                 continue
             if record.get("status") != "tested":
                 errors.append(
-                    f"mandatory hunt pass is not tested: {dimension}/{item} "
+                    f"mandatory hunt pass is not tested: {pass_name} "
                     f"({record.get('status')})"
                 )
             if not nonempty_strings(record.get("evidence")):
-                errors.append(f"mandatory hunt pass lacks evidence: {dimension}/{item}")
+                errors.append(f"mandatory hunt pass lacks evidence: {pass_name}")
+            attestations = record.get("evidence_attestations")
+            if isinstance(attestations, list):
+                evidence_by_pass[pass_name] = {
+                    value.get("sha256")
+                    for value in attestations
+                    if isinstance(value, dict) and isinstance(value.get("sha256"), str)
+                }
+    errors.extend(
+        shared_digest_errors(
+            evidence_by_pass,
+            sharing_groups(contract, kind="pass"),
+            "mandatory hunt passes",
+        )
+    )
     return errors
 
 
@@ -664,13 +1046,15 @@ def sequence_errors(records: Sequence[Mapping[str, Any]], label: str) -> List[st
     return errors
 
 
-def integrity_errors(root: Path) -> List[str]:
+def integrity_errors(root: Path, *, verify_evidence: bool = True) -> List[str]:
     errors: List[str] = []
     state = load_json(root / "state.json")
     events = load_jsonl(root / "events.jsonl")
     candidates = load_jsonl(root / "candidates.jsonl")
     coverage = load_json(root / "coverage.json")
     records = coverage.get("records")
+    relocations = relocation_index(root)
+    errors.extend(evidence_location_errors(root))
     if state.get("schema_version") != SCHEMA_VERSION:
         errors.append(f"state.schema_version must be {SCHEMA_VERSION}")
     if state.get("status") not in LIFECYCLE_STATES:
@@ -686,6 +1070,20 @@ def integrity_errors(root: Path) -> List[str]:
         state.get("activation_fingerprint"), dict
     ):
         errors.append("state.activation_fingerprint must be null or an object")
+    elif state.get("activation_fingerprint") is not None:
+        try:
+            if state.get("activation_fingerprint") != activation_fingerprint(root):
+                errors.append(
+                    "the activated contract or GOAL.md changed; start a new goal directory"
+                )
+        except FileNotFoundError:
+            pass
+    activated_at = state.get("activated_at")
+    if activated_at is not None:
+        try:
+            parse_utc_timestamp(activated_at, "state.activated_at")
+        except GoalStateError as exc:
+            errors.append(str(exc))
     errors.extend(sequence_errors(events, "event"))
     errors.extend(sequence_errors(candidates, "candidate"))
     if coverage.get("schema_version") != SCHEMA_VERSION:
@@ -719,14 +1117,16 @@ def integrity_errors(root: Path) -> List[str]:
             errors.append(f"candidate {candidate_id} has an invalid status")
         if not nonempty_strings(record.get("evidence")):
             errors.append(f"candidate {candidate_id} revision {expected_revision} lacks evidence")
-        errors.extend(
-            evidence_attestation_errors(
-                root,
-                record.get("evidence"),
-                record.get("evidence_attestations"),
-                f"candidate {candidate_id} revision {expected_revision}",
+        if verify_evidence:
+            errors.extend(
+                evidence_attestation_errors(
+                    root,
+                    record.get("evidence"),
+                    record.get("evidence_attestations"),
+                    f"candidate {candidate_id} revision {expected_revision}",
+                    relocations,
+                )
             )
-        )
         gates = record.get("gates")
         waivers = record.get("waivers")
         if not isinstance(gates, dict) or not isinstance(waivers, dict):
@@ -741,14 +1141,16 @@ def integrity_errors(root: Path) -> List[str]:
                 errors.append(f"candidate {candidate_id} has empty gate evidence")
             if not all(isinstance(value, str) and value.strip() for value in waivers.values()):
                 errors.append(f"candidate {candidate_id} has empty waiver reasons")
-            errors.extend(
-                gate_attestation_errors(
-                    root,
-                    gates,
-                    record.get("gate_attestations"),
-                    f"candidate {candidate_id} revision {expected_revision}",
+            if verify_evidence:
+                errors.extend(
+                    gate_attestation_errors(
+                        root,
+                        gates,
+                        record.get("gate_attestations"),
+                        f"candidate {candidate_id} revision {expected_revision}",
+                        relocations,
+                    )
                 )
-            )
     for position, record in enumerate(events, start=1):
         if record.get("kind") not in EVENT_KINDS:
             errors.append(f"event record {position} has an invalid kind")
@@ -770,14 +1172,16 @@ def integrity_errors(root: Path) -> List[str]:
             errors.append(f"experiment event {position} requires a classification")
         if record.get("kind") == "tool-failure" and record.get("classification") != "tool-failure":
             errors.append(f"tool-failure event {position} has the wrong classification")
-        errors.extend(
-            evidence_attestation_errors(
-                root,
-                evidence,
-                record.get("evidence_attestations"),
-                f"event record {position}",
+        if verify_evidence:
+            errors.extend(
+                evidence_attestation_errors(
+                    root,
+                    evidence,
+                    record.get("evidence_attestations"),
+                    f"event record {position}",
+                    relocations,
+                )
             )
-        )
     for position, record in enumerate(records, start=1):
         if record.get("dimension") not in COVERAGE_DIMENSIONS:
             errors.append(f"coverage record {position} has an invalid dimension")
@@ -791,22 +1195,25 @@ def integrity_errors(root: Path) -> List[str]:
             evidence = []
         if record.get("status") in ("inspected", "tested") and not evidence:
             errors.append(f"coverage record {position} requires evidence")
-        errors.extend(
-            evidence_attestation_errors(
-                root,
-                evidence,
-                record.get("evidence_attestations"),
-                f"coverage record {position}",
+        if verify_evidence:
+            errors.extend(
+                evidence_attestation_errors(
+                    root,
+                    evidence,
+                    record.get("evidence_attestations"),
+                    f"coverage record {position}",
+                    relocations,
+                )
             )
-        )
     terminal = state.get("terminal")
-    if isinstance(terminal, dict):
+    if verify_evidence and isinstance(terminal, dict):
         errors.extend(
             evidence_attestation_errors(
                 root,
                 terminal.get("evidence"),
                 terminal.get("evidence_attestations"),
                 "terminal record",
+                relocations,
             )
         )
     return errors
@@ -860,6 +1267,20 @@ def validate_candidate_record(
     unexpected_waivers = sorted(set(waivers) - allowed_waivers)
     if unexpected_waivers:
         errors.append("candidate uses unauthorized waivers: " + ", ".join(unexpected_waivers))
+    attestations = record.get("gate_attestations")
+    if isinstance(attestations, dict):
+        evidence_by_gate = {
+            gate: {value.get("sha256")}
+            for gate, value in attestations.items()
+            if isinstance(value, dict) and isinstance(value.get("sha256"), str)
+        }
+        errors.extend(
+            shared_digest_errors(
+                evidence_by_gate,
+                sharing_groups(contract, kind="gate"),
+                "validated candidate gates",
+            )
+        )
     return errors
 
 
@@ -900,6 +1321,72 @@ def append_event(
     return record
 
 
+def budget_status(
+    root: Path,
+    state: Mapping[str, Any],
+    contract: Mapping[str, Any],
+    *,
+    now: Optional[datetime] = None,
+) -> Dict[str, Any]:
+    budget = contract.get("budget") if isinstance(contract.get("budget"), dict) else {}
+    current = now or datetime.now(timezone.utc)
+    events = load_jsonl(root / "events.jsonl")
+    experiments = sum(1 for record in events if record.get("kind") in EXPERIMENT_EVENT_KINDS)
+    maximum = budget.get("max_experiments")
+    reached: List[str] = []
+    if isinstance(maximum, (int, float)) and not isinstance(maximum, bool):
+        if experiments >= maximum:
+            reached.append("max_experiments")
+    deadline = budget.get("deadline")
+    if deadline not in (None, ""):
+        try:
+            if current >= parse_utc_timestamp(deadline, "budget.deadline"):
+                reached.append("deadline")
+        except GoalStateError:
+            pass
+    activated_at = state.get("activated_at")
+    if activated_at is None and state.get("activation_fingerprint") is not None:
+        for record in events:
+            if record.get("kind") == "transition" and "-> active:" in str(
+                record.get("summary", "")
+            ):
+                activated_at = record.get("timestamp")
+                break
+    elapsed_hours: Optional[float] = None
+    if activated_at is not None:
+        try:
+            activated = parse_utc_timestamp(activated_at, "state.activated_at")
+            elapsed_hours = max(0.0, (current - activated).total_seconds() / 3600)
+        except GoalStateError:
+            pass
+    max_hours = budget.get("max_hours")
+    if (
+        isinstance(max_hours, (int, float))
+        and not isinstance(max_hours, bool)
+        and elapsed_hours is not None
+        and elapsed_hours >= max_hours
+    ):
+        reached.append("max_hours")
+    return {
+        "experiments_used": experiments,
+        "max_experiments": maximum,
+        "activated_at": activated_at,
+        "elapsed_hours": elapsed_hours,
+        "max_hours": max_hours,
+        "deadline": deadline,
+        "reached": reached,
+    }
+
+
+def ensure_experiment_budget(root: Path, state: Mapping[str, Any]) -> None:
+    contract = load_json(root / "contract.json")
+    status = budget_status(root, state, contract)
+    if status["reached"]:
+        raise GoalStateError(
+            "experiment budget is already reached: " + ", ".join(status["reached"])
+        )
+
+
 def initial_contract(target: str, mode: str, objective: str) -> Dict[str, Any]:
     return {
         "schema_version": SCHEMA_VERSION,
@@ -933,6 +1420,7 @@ def initial_contract(target: str, mode: str, objective: str) -> Dict[str, Any]:
             "required_gates": list(EVIDENCE_GATES),
             "waivable_gates": ["negative-control"],
             "omitted_gates": {},
+            "allowed_gate_evidence_sharing": [],
             "waiver_policy": (
                 "Authorize an inapplicable gate before activation and record equivalent evidence."
             ),
@@ -940,6 +1428,7 @@ def initial_contract(target: str, mode: str, objective: str) -> Dict[str, Any]:
         "novelty_policy": PLACEHOLDER,
         "search_requirements": {
             "mandatory_passes": DEFAULT_MANDATORY_PASSES,
+            "allowed_pass_evidence_sharing": [],
             "primitive_escalation_policy": (
                 "Trace every manipulable value through all direct consumers and test joins with "
                 "other supported primitives before closing the primitive or its surface."
@@ -967,6 +1456,7 @@ def initial_contract(target: str, mode: str, objective: str) -> Dict[str, Any]:
         "outputs": {
             "state_dir": ".",
             "evidence_dir": "artifacts",
+            "evidence_roots": ["."],
             "report": "RESULT.md",
         },
     }
@@ -1081,6 +1571,7 @@ def command_init(args: argparse.Namespace) -> None:
         "status": "draft",
         "outcome": None,
         "activation_fingerprint": None,
+        "activated_at": None,
         "event_count": 0,
         "candidate_revision_count": 0,
         "coverage_revision_count": 0,
@@ -1092,6 +1583,7 @@ def command_init(args: argparse.Namespace) -> None:
     atomic_write_json(root / "coverage.json", coverage)
     (root / "events.jsonl").touch(exist_ok=False)
     (root / "candidates.jsonl").touch(exist_ok=False)
+    (root / EVIDENCE_LOCATIONS_FILE).touch(exist_ok=False)
     (root / "THREAT_MODEL.md").write_text(threat_model_template(args.target), encoding="utf-8")
     (root / "GOAL.md").write_text(
         goal_template(args.target, args.mode, args.objective), encoding="utf-8"
@@ -1166,6 +1658,13 @@ def terminal_payload_errors(
         records = coverage_records
         if not records:
             errors.append("non-finding outcome requires coverage records")
+        if outcome == "budget-limited":
+            reached = budget_status(root, state, contract)["reached"]
+            if not reached:
+                errors.append(
+                    "budget-limited outcome requires a declared deadline, experiment, "
+                    "or hour bound to be reached"
+                )
         if outcome == "exhausted":
             errors.extend(mandatory_pass_errors(contract, records))
             open_items = [
@@ -1271,6 +1770,8 @@ def command_transition(args: argparse.Namespace) -> None:
         f"{current} -> {args.status}: {args.reason}",
         [],
     )
+    if args.status == "active" and state.get("activated_at") is None:
+        state["activated_at"] = record["timestamp"]
     state["status"] = args.status
     atomic_write_json(root / "state.json", state)
     print(json.dumps({"transition": record, "status": args.status}, indent=2))
@@ -1287,6 +1788,8 @@ def command_event(args: argparse.Namespace) -> None:
     active_only = ("experiment", "observation", "rejection", "pivot", "tool-failure", "review")
     if args.kind in active_only and state.get("status") != "active":
         raise GoalStateError(f"{args.kind} events require an active goal")
+    if args.kind in EXPERIMENT_EVENT_KINDS:
+        ensure_experiment_budget(root, state)
     evidence = args.evidence or []
     if args.kind in ("experiment", "observation", "rejection", "tool-failure", "review") and not evidence:
         raise GoalStateError(f"{args.kind} events require at least one --evidence artifact")
@@ -1445,9 +1948,59 @@ def command_finish(args: argparse.Namespace) -> None:
     print(json.dumps(terminal, indent=2))
 
 
+def command_relocate(args: argparse.Namespace) -> None:
+    """Append a content-preserving location update without rewriting history."""
+    root = state_dir(args.directory)
+    structural = integrity_errors(root, verify_evidence=False)
+    if structural:
+        raise GoalStateError("state structural check failed: " + "; ".join(structural))
+    if not args.reason.strip():
+        raise GoalStateError("relocation reason must be non-empty")
+    relocations = relocation_index(root)
+    matches: Dict[Tuple[Any, Any], Mapping[str, Any]] = {}
+    for attestation in recorded_evidence_attestations(root):
+        identity = evidence_identity(attestation)
+        latest = relocations.get(identity)
+        current_path = (
+            latest.get("to_path") if isinstance(latest, dict) else attestation.get("path")
+        )
+        if args.from_path != current_path:
+            continue
+        if args.sha256 and attestation.get("sha256") != args.sha256:
+            continue
+        matches[identity] = attestation
+    if not matches:
+        raise GoalStateError("no recorded evidence identity matches --from")
+    if len(matches) > 1:
+        raise GoalStateError("--from matches multiple historical identities; select one with --sha256")
+    (identity, original), = matches.items()
+    target = evidence_attestation(root, args.to_path)
+    if evidence_identity(target) != identity:
+        raise GoalStateError(
+            "relocated evidence bytes do not match the original SHA-256 and size"
+        )
+    records = load_evidence_locations(root)
+    record = {
+        "schema_version": SCHEMA_VERSION,
+        "sequence": len(records) + 1,
+        "timestamp": utc_now(),
+        "sha256": original.get("sha256"),
+        "size": original.get("size"),
+        "from_path": args.from_path,
+        "to_path": args.to_path,
+        "to_attestation": target,
+        "reason": args.reason,
+    }
+    append_jsonl(root / EVIDENCE_LOCATIONS_FILE, record)
+    print(json.dumps(record, indent=2))
+
+
 def command_status(args: argparse.Namespace) -> None:
     root = state_dir(args.directory)
-    ensure_integrity(root)
+    structural_errors = integrity_errors(root, verify_evidence=False)
+    if structural_errors:
+        raise GoalStateError("state structural check failed: " + "; ".join(structural_errors))
+    evidence_errors = integrity_errors(root, verify_evidence=True)
     state = load_json(root / "state.json")
     contract = load_json(root / "contract.json")
     candidates = latest_candidates(load_jsonl(root / "candidates.jsonl"))
@@ -1491,6 +2044,12 @@ def command_status(args: argparse.Namespace) -> None:
         },
         "coverage": coverage_summary,
         "mandatory_passes": pass_summary,
+        "budget": budget_status(root, state, contract),
+        "evidence_integrity": {
+            "valid": not evidence_errors,
+            "errors": evidence_errors,
+            "relocations": len(load_evidence_locations(root)),
+        },
         "last_event": events[-1] if events else None,
         "terminal": state.get("terminal"),
     }
@@ -1566,6 +2125,16 @@ def build_parser() -> argparse.ArgumentParser:
     finish_parser.add_argument("--unlock")
     finish_parser.set_defaults(function=command_finish)
 
+    relocate_parser = commands.add_parser(
+        "relocate", help="record a content-preserving evidence path change"
+    )
+    relocate_parser.add_argument("--dir", dest="directory", required=True)
+    relocate_parser.add_argument("--from", dest="from_path", required=True)
+    relocate_parser.add_argument("--to", dest="to_path", required=True)
+    relocate_parser.add_argument("--sha256")
+    relocate_parser.add_argument("--reason", required=True)
+    relocate_parser.set_defaults(function=command_relocate)
+
     status_parser = commands.add_parser("status", help="summarize durable state")
     status_parser.add_argument("--dir", dest="directory", required=True)
     status_parser.set_defaults(function=command_status)
@@ -1576,10 +2145,21 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
     try:
-        args.function(args)
+        with state_lock(
+            args.directory,
+            initialize=args.command == "init",
+            exclusive=args.command not in ("check", "status"),
+        ):
+            args.function(args)
     except GoalStateError as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 2
+    except BrokenPipeError:
+        try:
+            sys.stdout.close()
+        except BrokenPipeError:
+            pass
+        return 0
     return 0
 
 

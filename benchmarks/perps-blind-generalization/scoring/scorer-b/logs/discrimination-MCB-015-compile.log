@@ -1,6 +1,0 @@
-$ /opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node scripts/compile.mjs
-cwd=/tmp/perps-scorer-b-mcb015-vs-afh012-OwkulF
-exit=0
-
-Compiled 15 Solidity sources with 0.8.30+commit.73712a01.Emscripten.clang; wrote 25 artifacts.
-

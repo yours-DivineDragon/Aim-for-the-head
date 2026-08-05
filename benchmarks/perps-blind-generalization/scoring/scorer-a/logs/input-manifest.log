@@ -1,7 +1,0 @@
-name=input-manifest
-startedAt=2026-08-04T20:58:26.585Z
-command=/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node scripts/manifest.mjs verify
-exit=0
-
-Verified 31 manifest files: bd7aacd7d51c679b4e40f83d6ca49d49b03b69490ad6751f50c81236e7ef5381
-

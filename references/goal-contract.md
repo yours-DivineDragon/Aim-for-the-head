@@ -72,7 +72,10 @@ Create `GOAL.md` with this structure:
 Find/prove/reject exactly <count> <finding or property> in <target and revision>
 that allows <attacker> to cause <required impact> under <realistic config>.
 
-## Scope
+## Mode
+<discovery, variant, invariant, differential, or validation>
+
+## Target and scope
 - Included:
 - Excluded:
 - Allowed methods and environments:

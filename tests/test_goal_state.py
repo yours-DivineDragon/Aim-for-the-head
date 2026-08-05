@@ -1,3 +1,4 @@
+import hashlib
 import json
 import subprocess
 import sys
@@ -68,6 +69,7 @@ class GoalStateTests(unittest.TestCase):
         self.root = Path(self.temporary.name) / "hunt"
 
     def run_cli(self, *arguments, expected=0):
+        self.materialize_evidence_arguments(arguments)
         completed = subprocess.run(
             [sys.executable, str(SCRIPT), *map(str, arguments)],
             text=True,
@@ -80,6 +82,23 @@ class GoalStateTests(unittest.TestCase):
             msg=f"stdout:\n{completed.stdout}\nstderr:\n{completed.stderr}",
         )
         return completed
+
+    def materialize_evidence_arguments(self, arguments):
+        """Create ordinary relative-path fixtures used by lifecycle tests."""
+        paths = []
+        for index, argument in enumerate(arguments[:-1]):
+            if argument == "--evidence":
+                paths.append(str(arguments[index + 1]))
+            elif argument == "--gate" and "=" in str(arguments[index + 1]):
+                paths.append(str(arguments[index + 1]).split("=", 1)[1])
+        for raw_path in paths:
+            path = Path(raw_path)
+            if path.is_absolute():
+                continue
+            artifact = self.root.parent / path
+            artifact.parent.mkdir(parents=True, exist_ok=True)
+            if not artifact.exists():
+                artifact.write_text(f"fixture evidence for {raw_path}\n", encoding="utf-8")
 
     def initialize(self, mode="discovery"):
         return self.run_cli(
@@ -775,6 +794,163 @@ class GoalStateTests(unittest.TestCase):
             "inspected",
             expected=2,
         )
+
+    def test_missing_candidate_gate_and_mandatory_pass_artifacts_are_rejected(self):
+        self.initialize()
+        self.activate()
+        missing = self.root.parent / "does-not-exist" / "artifact.txt"
+        result = self.run_cli(
+            "coverage",
+            "--dir",
+            self.root,
+            "--dimension",
+            "exploit-composition",
+            "--item",
+            "primitive-join-graph",
+            "--status",
+            "tested",
+            "--evidence",
+            missing,
+            expected=2,
+        )
+        self.assertIn("evidence artifact does not exist", result.stderr)
+
+        gate_arguments = []
+        for gate in DEFAULT_GATES:
+            gate_arguments.extend(("--gate", f"{gate}={missing}"))
+        result = self.run_cli(
+            "candidate",
+            "--dir",
+            self.root,
+            "--id",
+            "C-FAKE",
+            "--status",
+            "validated",
+            "--title",
+            "Fake-path candidate",
+            "--summary",
+            "Every gate cites a nonexistent file",
+            "--evidence",
+            "artifacts/reproduction.log",
+            *gate_arguments,
+            expected=2,
+        )
+        self.assertIn("evidence artifact does not exist", result.stderr)
+        self.assertEqual((self.root / "candidates.jsonl").read_text(encoding="utf-8"), "")
+
+    def test_evidence_is_attested_and_terminal_check_detects_mutation(self):
+        self.initialize()
+        self.activate()
+        self.run_cli(
+            "transition",
+            "--dir",
+            self.root,
+            "--status",
+            "blocked",
+            "--reason",
+            "A release dependency is unavailable",
+        )
+        evidence = "reports/blocker.md"
+        self.run_cli(
+            "finish",
+            "--dir",
+            self.root,
+            "--outcome",
+            "blocked",
+            "--reason",
+            "A release dependency is unavailable",
+            "--evidence",
+            evidence,
+            "--unlock",
+            "Provide the release dependency archive",
+        )
+        self.run_cli("check", "--dir", self.root, "--phase", "terminal")
+        state = json.loads((self.root / "state.json").read_text(encoding="utf-8"))
+        attestation = state["terminal"]["evidence_attestations"][0]
+        artifact = self.root.parent / evidence
+        self.assertEqual(attestation["size"], artifact.stat().st_size)
+        self.assertEqual(
+            attestation["sha256"], hashlib.sha256(artifact.read_bytes()).hexdigest()
+        )
+
+        artifact.write_text("mutated after completion\n", encoding="utf-8")
+        result = self.run_cli(
+            "check", "--dir", self.root, "--phase", "terminal", expected=2
+        )
+        self.assertIn("attestation mismatch: sha256", result.stdout)
+
+    def test_unattested_existing_evidence_fails_closed(self):
+        self.initialize()
+        self.activate()
+        self.run_cli(
+            "event",
+            "--dir",
+            self.root,
+            "--kind",
+            "experiment",
+            "--summary",
+            "A recorded experiment must carry its evidence attestation",
+            "--classification",
+            "supports",
+            "--evidence",
+            "artifacts/experiment.log",
+        )
+        event_path = self.root / "events.jsonl"
+        records = [json.loads(line) for line in event_path.read_text().splitlines()]
+        records[-1].pop("evidence_attestations")
+        event_path.write_text(
+            "".join(json.dumps(record) + "\n" for record in records), encoding="utf-8"
+        )
+        result = self.run_cli("status", "--dir", self.root, expected=2)
+        self.assertIn("lacks one attestation per evidence artifact", result.stderr)
+
+    def test_symlink_is_not_accepted_as_evidence(self):
+        self.initialize()
+        self.activate()
+        artifact_dir = self.root.parent / "artifacts"
+        artifact_dir.mkdir(exist_ok=True)
+        target = artifact_dir / "target.log"
+        target.write_text("real bytes\n", encoding="utf-8")
+        link = artifact_dir / "link.log"
+        link.symlink_to(target)
+        result = self.run_cli(
+            "event",
+            "--dir",
+            self.root,
+            "--kind",
+            "experiment",
+            "--summary",
+            "A symlink must not stand in for preserved evidence",
+            "--classification",
+            "supports",
+            "--evidence",
+            link,
+            expected=2,
+        )
+        self.assertIn("evidence artifact may not be a symlink", result.stderr)
+
+    def test_documented_goal_template_matches_activation_headings(self):
+        self.initialize()
+        self.complete_contract()
+        reference = (REPOSITORY_ROOT / "references" / "goal-contract.md").read_text(
+            encoding="utf-8"
+        )
+        template = reference.split("```markdown", 2)[2].split("```", 1)[0].strip()
+        (self.root / "GOAL.md").write_text(template + "\n", encoding="utf-8")
+        self.run_cli("check", "--dir", self.root, "--phase", "activation")
+
+    def test_installable_package_excludes_benchmark_payloads(self):
+        self.assertFalse((REPOSITORY_ROOT / "benchmarks").exists())
+        self.assertTrue((REPOSITORY_ROOT / "BENCHMARKS.md").is_file())
+        self.assertTrue((REPOSITORY_ROOT / "LICENSE").is_file())
+        readme = (REPOSITORY_ROOT / "README.md").read_text(encoding="utf-8")
+        self.assertIn("--depth 1 --single-branch --branch main", readme)
+
+    def test_readme_validated_example_contains_every_default_gate(self):
+        readme = (REPOSITORY_ROOT / "README.md").read_text(encoding="utf-8")
+        example = readme.split("### Validate a candidate", 1)[1].split("### Pause", 1)[0]
+        for gate in DEFAULT_GATES:
+            self.assertIn(f'--gate "{gate}=', example)
 
 
 if __name__ == "__main__":

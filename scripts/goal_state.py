@@ -7,6 +7,7 @@ import argparse
 import hashlib
 import json
 import os
+import stat
 import sys
 import tempfile
 from datetime import datetime, timezone
@@ -16,6 +17,7 @@ from typing import Any, Dict, List, Mapping, Optional, Sequence, Tuple
 
 SCHEMA_VERSION = 1
 WORKFLOW_VERSION = 2
+EVIDENCE_ATTESTATION_VERSION = 1
 MODES = ("discovery", "variant", "invariant", "differential", "validation")
 LIFECYCLE_STATES = ("draft", "active", "paused", "blocked", "completed")
 TERMINAL_OUTCOMES = ("validated", "exhausted", "budget-limited", "blocked")
@@ -444,6 +446,138 @@ def file_sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def evidence_path(root: Path, raw_path: str) -> Path:
+    """Resolve an evidence reference against the directory containing state."""
+    candidate = Path(raw_path).expanduser()
+    if not candidate.is_absolute():
+        candidate = root.parent / candidate
+    return Path(os.path.abspath(candidate))
+
+
+def evidence_attestation(root: Path, raw_path: str) -> Dict[str, Any]:
+    """Open, stat, and hash one regular evidence file without following a final symlink."""
+    if not isinstance(raw_path, str) or not raw_path.strip():
+        raise GoalStateError("evidence paths must be non-empty strings")
+    path = evidence_path(root, raw_path)
+    if path.is_symlink():
+        raise GoalStateError(f"evidence artifact may not be a symlink: {raw_path}")
+    flags = os.O_RDONLY | getattr(os, "O_BINARY", 0) | getattr(os, "O_NOFOLLOW", 0)
+    try:
+        descriptor = os.open(path, flags)
+    except FileNotFoundError as exc:
+        raise GoalStateError(f"evidence artifact does not exist: {raw_path}") from exc
+    except OSError as exc:
+        raise GoalStateError(f"cannot open evidence artifact {raw_path!r}: {exc.strerror}") from exc
+    try:
+        before = os.fstat(descriptor)
+        if not stat.S_ISREG(before.st_mode):
+            raise GoalStateError(f"evidence artifact is not a regular file: {raw_path}")
+        digest = hashlib.sha256()
+        while True:
+            chunk = os.read(descriptor, 65536)
+            if not chunk:
+                break
+            digest.update(chunk)
+        after = os.fstat(descriptor)
+        identity_before = (
+            before.st_dev,
+            before.st_ino,
+            before.st_size,
+            before.st_mtime_ns,
+        )
+        identity_after = (
+            after.st_dev,
+            after.st_ino,
+            after.st_size,
+            after.st_mtime_ns,
+        )
+        if identity_before != identity_after:
+            raise GoalStateError(f"evidence artifact changed while hashing: {raw_path}")
+    finally:
+        os.close(descriptor)
+    try:
+        location = str(path.relative_to(root.parent))
+        base = "state-parent"
+    except ValueError:
+        location = str(path)
+        base = "absolute"
+    return {
+        "version": EVIDENCE_ATTESTATION_VERSION,
+        "path": raw_path,
+        "base": base,
+        "location": location,
+        "sha256": digest.hexdigest(),
+        "size": after.st_size,
+        "mode": f"{stat.S_IMODE(after.st_mode):04o}",
+        "mtime_ns": after.st_mtime_ns,
+    }
+
+
+def evidence_attestations(root: Path, paths: Sequence[str]) -> List[Dict[str, Any]]:
+    return [evidence_attestation(root, path) for path in paths]
+
+
+def evidence_attestation_errors(
+    root: Path,
+    paths: Any,
+    attestations: Any,
+    label: str,
+) -> List[str]:
+    """Re-stat and re-hash recorded evidence, returning durable integrity errors."""
+    if not isinstance(paths, list) or not all(isinstance(item, str) for item in paths):
+        return []
+    if not paths:
+        if attestations not in (None, []):
+            return [f"{label} has attestations without evidence"]
+        return []
+    if not isinstance(attestations, list) or len(attestations) != len(paths):
+        return [f"{label} lacks one attestation per evidence artifact"]
+    errors: List[str] = []
+    for index, (raw_path, recorded) in enumerate(zip(paths, attestations), start=1):
+        item_label = f"{label} evidence {index} ({raw_path})"
+        if not isinstance(recorded, dict):
+            errors.append(f"{item_label} has an invalid attestation")
+            continue
+        try:
+            current = evidence_attestation(root, raw_path)
+        except GoalStateError as exc:
+            errors.append(f"{item_label}: {exc}")
+            continue
+        for field in ("version", "path", "base", "location", "sha256", "size"):
+            if recorded.get(field) != current[field]:
+                errors.append(f"{item_label} attestation mismatch: {field}")
+    return errors
+
+
+def gate_attestation_errors(
+    root: Path,
+    gates: Any,
+    attestations: Any,
+    label: str,
+) -> List[str]:
+    if not isinstance(gates, dict):
+        return []
+    if not all(isinstance(path, str) and path.strip() for path in gates.values()):
+        return []
+    if not gates:
+        if attestations not in (None, {}):
+            return [f"{label} has gate attestations without gate evidence"]
+        return []
+    if not isinstance(attestations, dict) or set(attestations) != set(gates):
+        return [f"{label} lacks one attestation per gate evidence artifact"]
+    errors: List[str] = []
+    for gate, raw_path in sorted(gates.items()):
+        errors.extend(
+            evidence_attestation_errors(
+                root,
+                [raw_path],
+                [attestations.get(gate)],
+                f"{label} gate {gate}",
+            )
+        )
+    return errors
+
+
 def activation_fingerprint(root: Path) -> Dict[str, str]:
     return {
         "contract_sha256": file_sha256(root / "contract.json"),
@@ -585,6 +719,14 @@ def integrity_errors(root: Path) -> List[str]:
             errors.append(f"candidate {candidate_id} has an invalid status")
         if not nonempty_strings(record.get("evidence")):
             errors.append(f"candidate {candidate_id} revision {expected_revision} lacks evidence")
+        errors.extend(
+            evidence_attestation_errors(
+                root,
+                record.get("evidence"),
+                record.get("evidence_attestations"),
+                f"candidate {candidate_id} revision {expected_revision}",
+            )
+        )
         gates = record.get("gates")
         waivers = record.get("waivers")
         if not isinstance(gates, dict) or not isinstance(waivers, dict):
@@ -599,6 +741,14 @@ def integrity_errors(root: Path) -> List[str]:
                 errors.append(f"candidate {candidate_id} has empty gate evidence")
             if not all(isinstance(value, str) and value.strip() for value in waivers.values()):
                 errors.append(f"candidate {candidate_id} has empty waiver reasons")
+            errors.extend(
+                gate_attestation_errors(
+                    root,
+                    gates,
+                    record.get("gate_attestations"),
+                    f"candidate {candidate_id} revision {expected_revision}",
+                )
+            )
     for position, record in enumerate(events, start=1):
         if record.get("kind") not in EVENT_KINDS:
             errors.append(f"event record {position} has an invalid kind")
@@ -620,6 +770,14 @@ def integrity_errors(root: Path) -> List[str]:
             errors.append(f"experiment event {position} requires a classification")
         if record.get("kind") == "tool-failure" and record.get("classification") != "tool-failure":
             errors.append(f"tool-failure event {position} has the wrong classification")
+        errors.extend(
+            evidence_attestation_errors(
+                root,
+                evidence,
+                record.get("evidence_attestations"),
+                f"event record {position}",
+            )
+        )
     for position, record in enumerate(records, start=1):
         if record.get("dimension") not in COVERAGE_DIMENSIONS:
             errors.append(f"coverage record {position} has an invalid dimension")
@@ -633,6 +791,24 @@ def integrity_errors(root: Path) -> List[str]:
             evidence = []
         if record.get("status") in ("inspected", "tested") and not evidence:
             errors.append(f"coverage record {position} requires evidence")
+        errors.extend(
+            evidence_attestation_errors(
+                root,
+                evidence,
+                record.get("evidence_attestations"),
+                f"coverage record {position}",
+            )
+        )
+    terminal = state.get("terminal")
+    if isinstance(terminal, dict):
+        errors.extend(
+            evidence_attestation_errors(
+                root,
+                terminal.get("evidence"),
+                terminal.get("evidence_attestations"),
+                "terminal record",
+            )
+        )
     return errors
 
 
@@ -695,6 +871,7 @@ def append_event(
     evidence: Sequence[str],
     hypothesis: Optional[str] = None,
     classification: Optional[str] = None,
+    attestations: Optional[Sequence[Mapping[str, Any]]] = None,
 ) -> Dict[str, Any]:
     records = load_jsonl(root / "events.jsonl")
     if state.get("event_count") != len(records):
@@ -707,6 +884,11 @@ def append_event(
         "kind": kind,
         "summary": summary,
         "evidence": list(evidence),
+        "evidence_attestations": (
+            [dict(item) for item in attestations]
+            if attestations is not None
+            else evidence_attestations(root, evidence)
+        ),
     }
     if hypothesis:
         record["hypothesis"] = hypothesis
@@ -1151,6 +1333,7 @@ def command_coverage(args: argparse.Namespace) -> None:
         "item": args.item,
         "status": args.status,
         "evidence": evidence,
+        "evidence_attestations": evidence_attestations(root, evidence),
         "note": args.note or "",
     }
     records.append(record)
@@ -1201,7 +1384,11 @@ def command_candidate(args: argparse.Namespace) -> None:
         "title": args.title,
         "summary": args.summary,
         "evidence": args.evidence or [],
+        "evidence_attestations": evidence_attestations(root, args.evidence or []),
         "gates": gates,
+        "gate_attestations": {
+            gate: evidence_attestation(root, path) for gate, path in gates.items()
+        },
         "waivers": waivers,
         "failed_gate": args.failed_gate,
     }
@@ -1233,6 +1420,7 @@ def command_finish(args: argparse.Namespace) -> None:
         "from_status": state.get("status"),
         "candidate_id": args.candidate_id,
         "evidence": args.evidence or [],
+        "evidence_attestations": evidence_attestations(root, args.evidence or []),
         "residual_risks": args.residual_risk or [],
         "obligations": args.obligation or [],
         "unlock": args.unlock,
@@ -1247,6 +1435,7 @@ def command_finish(args: argparse.Namespace) -> None:
         "terminal",
         f"{args.outcome}: {args.reason}",
         terminal["evidence"],
+        attestations=terminal["evidence_attestations"],
     )
     state["status"] = "completed"
     state["outcome"] = args.outcome

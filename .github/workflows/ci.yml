@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  helper-tests:
+    name: Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Compile helper and tests
+        run: python -m py_compile scripts/goal_state.py tests/test_goal_state.py
+      - name: Run unit tests
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: python -B -m unittest discover -s tests -v
+
+  package-boundary:
+    name: Installable package boundary
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Verify required package files and archive separation
+        shell: bash
+        run: |
+          test -f SKILL.md
+          test -f LICENSE
+          test -f BENCHMARKS.md
+          test ! -e benchmarks
+          test "$(find . -path './.git' -prune -o -type f -print | wc -l)" -lt 100

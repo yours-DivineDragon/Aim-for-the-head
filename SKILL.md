@@ -234,6 +234,12 @@ python3 "<skill-root>/scripts/goal_state.py" event \
   --evidence artifacts/h-001-release.log
 ```
 
+Every `--evidence` value and every candidate `--gate NAME=PATH` value must name
+an existing regular file. Relative paths resolve from the state directory's
+parent. The helper records file metadata and SHA-256 at insertion and revalidates
+the artifact on later checks; missing, symlinked, or changed evidence fails
+closed. Put remote-storage details and checksums in a local retrieval manifest.
+
 When isolated agents or fresh contexts are available, give each one surface and
 one outcome, plus at most one roaming hunt for cross-surface interactions. For
 variant work, give the hunter a one-sentence risk abstraction and retain exact

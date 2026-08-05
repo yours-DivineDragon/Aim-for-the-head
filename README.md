@@ -35,7 +35,8 @@ adding it to each target codebase:
 ```bash
 mkdir -p "$HOME/.agents/skills"
 
-git clone https://github.com/yours-DivineDragon/Aim-for-the-head.git \
+git clone --depth 1 --single-branch --branch main \
+  https://github.com/yours-DivineDragon/Aim-for-the-head.git \
   "$HOME/.agents/skills/aim-for-the-head"
 ```
 
@@ -187,35 +188,28 @@ package or follow a Markdown playbook.
 > The agent must inventory the tools actually visible in its environment, invoke
 > useful ones explicitly, preserve their outputs, and record any blind spots.
 
-## Blind benchmark
+## Benchmark evidence
 
-The repository includes a sealed, reproducible Solidity audit benchmark with a
-fresh-context hunter, independent blind reproduction, a committed reveal, and
-deterministic scoring. On this instance, Aim for the Head achieved 9 exact and 2
-partial matches across 15 committed findings, with no false positives. See the
-[benchmark result](benchmarks/solidity-blind-audit/RESULTS.md) for the complete
-evidence, misses, protocol caveats, and calculation checker. The
-[baseline research record](benchmarks/solidity-blind-audit/BASELINE_RECORD.md)
-indexes every frozen artifact, hash, environment detail, and reproduction
-command, and defines the contamination boundary for later tuning runs. The
-[workflow-v2 improvement study](benchmarks/solidity-blind-audit/IMPROVEMENT_STUDY.md)
-records the evidence-led diagnosis, generalized changes, precision constraints,
-and same-target regression protocol. Its deliberately labeled
-[revealed regression](benchmarks/solidity-blind-audit/regression-v2/RESULTS.md)
-closes all 15/15 units with zero unsupported claims on the unchanged target;
-because the truth was known during tuning, that is regression evidence rather
-than a second blind or generalization score.
+Benchmark payloads are not part of the installable skill. The original corpus is
+preserved on the `archive/benchmarks-2026-08-05` branch and pinned by exact
+commit; see [BENCHMARKS.md](BENCHMARKS.md) for links, chronology, limitations,
+and the protocol required for future headline results.
 
-The separate [Meridian Clearing generalization benchmark](benchmarks/perps-blind-generalization/scoring/consensus/RESULTS.md)
-tests workflow v2 against an entirely unseen cross-margin perpetuals protocol.
-Its frozen blind run earned **89.4/100**: 13 exact units, one 0.3 fragment, and
-one miss across 15 preregistered units, with 25/25 independently validated
-candidate findings and no false positives. Eleven candidates were genuine,
-distinct defects outside the generator's registered rubric, so they measure
-open-world discovery breadth rather than additional recall. The
-[generalization study](benchmarks/perps-blind-generalization/scoring/consensus/GENERALIZATION_STUDY.md)
-separates that result from the truth-informed same-target regression and records
-the remaining signed-arithmetic and critical-composition gaps.
+The Aster benchmark is the stronger result: its sealed target and commitment
+were published in commit `75d19f5` before the hunter submission in `2818814`.
+That reachable Git history supplies a third-party-verifiable chronology, not
+merely ciphertext integrity. Its blind score was 66.67% with no false positives.
+The later 15/15 same-target run remains labeled truth-informed regression.
+
+The Meridian run scored **89.4/100**, and its seal, reveal, tests, and arithmetic
+remain reproducible. It is nevertheless an internally consistent common-author
+self-evaluation—not evidence of independent generalization. The checklist,
+target taxonomy, planted rubric, hunter, reviewers, and scorers were produced
+within one operator-controlled study, and the public repository has no
+independently verifiable pre-run commit boundary for that result. The code was
+unseen to the hunter context; the research interests were not independent. The
+11 valid out-of-rubric defects show useful breadth and an incomplete generator
+rubric, while the registered critical composition received only fragment credit.
 
 The skill is intended for authorized defensive research only. It improves the
 discipline and auditability of a hunt; it does not guarantee that a vulnerability
@@ -234,7 +228,7 @@ without expert review.
 - [Hunt modes](#hunt-modes)
 - [The investigation workflow](#the-investigation-workflow)
 - [Tools, plugins, and project-specific analyzers](#tools-plugins-and-project-specific-analyzers)
-- [Blind benchmark](#blind-benchmark)
+- [Benchmark evidence](#benchmark-evidence)
 - [Evidence gates](#evidence-gates)
 - [Coverage accounting](#coverage-accounting)
 - [Durable state and command reference](#durable-state-and-command-reference)
@@ -358,14 +352,16 @@ its current skill documentation and confirm that the directory containing
 For a Codex-style project-local installation:
 
 ```bash
-git clone https://github.com/yours-DivineDragon/Aim-for-the-head.git \
+git clone --depth 1 --single-branch --branch main \
+  https://github.com/yours-DivineDragon/Aim-for-the-head.git \
   .agents/skills/aim-for-the-head
 ```
 
 For Claude Code:
 
 ```bash
-git clone https://github.com/yours-DivineDragon/Aim-for-the-head.git \
+git clone --depth 1 --single-branch --branch main \
+  https://github.com/yours-DivineDragon/Aim-for-the-head.git \
   .claude/skills/aim-for-the-head
 ```
 
@@ -734,6 +730,13 @@ specific enough to falsify. Useful artifacts include:
 - clean-room reproduction notes; and
 - the duplicate-search query and inspected history.
 
+The helper treats every `--evidence` value and every `--gate NAME=PATH` value as
+a file path. Relative paths resolve from the directory containing the state
+directory. At record time it rejects missing files, directories, and final
+symlinks, records file metadata and a SHA-256 digest, and at every later
+integrity or terminal check it re-stats and re-hashes the artifact. A filename
+alone cannot satisfy a gate, and mutation or deletion invalidates the run.
+
 See [`references/evidence-gates.md`](references/evidence-gates.md) for the full
 validation packet and reporting guidance.
 
@@ -792,6 +795,9 @@ directory per goal.
 
 Keep large raw artifacts in the evidence directory named by `contract.json`
 (the generated default is `artifacts/`) and refer to them from state records.
+If bytes must remain in an approved external store, preserve a local manifest or
+receipt containing the stable URL, access policy, remote checksum, and retrieval
+instructions, then cite and attest that local file.
 
 ### Lifecycle
 
@@ -909,7 +915,9 @@ python3 "$SKILL_ROOT/scripts/goal_state.py" candidate \
   --gate "negative-control=artifacts/negative-control.txt" \
   --gate "independent-reproduction=artifacts/independent-run.txt" \
   --gate "duplicate-check=artifacts/history-search.md" \
-  --gate "human-review=artifacts/review-notes.md"
+  --gate "human-review=artifacts/review-notes.md" \
+  --gate "downstream-impact=artifacts/consumer-impact.md" \
+  --gate "composition-review=artifacts/primitive-joins.md"
 ```
 
 For a gate made waivable in the activated contract, replace its `--gate` entry
@@ -1065,6 +1073,9 @@ to make it more dramatic.
 Aim-for-the-head/
 ├── SKILL.md                       Runtime instructions loaded by the agent
 ├── README.md                      Human-facing installation and operating guide
+├── BENCHMARKS.md                  Archived-study index and independence policy
+├── LICENSE                        Apache License 2.0
+├── .github/workflows/ci.yml       Automated package and helper checks
 ├── agents/
 │   └── openai.yaml                Skill metadata and invocation hints
 ├── references/
@@ -1103,7 +1114,8 @@ PYTHONDONTWRITEBYTECODE=1 python3 -B -m unittest discover -s tests -v
 ```
 
 The tests cover initialization, activation, lifecycle transitions, contract
-fingerprinting, evidence requirements, candidate revision rules, coverage,
+fingerprinting, file existence and SHA-256 evidence attestations, documented
+template compatibility, candidate revision rules, coverage,
 mandatory deep-hunt completion, validated completion, honest exhaustion,
 budget-limited and blocked outcomes, append-only stream integrity, and
 corrupted-state rejection.
@@ -1167,6 +1179,15 @@ records, and state counters must agree with them. Avoid deleting, reordering, or
 rewriting prior records. If the audit trail is no longer trustworthy, start a new
 goal directory and cite the damaged run as an input rather than hiding it.
 
+### An older state directory lacks evidence attestations
+
+Runs that recorded evidence before file attestations were introduced do not have
+enough information for the hardened helper to certify them. Preserve the old
+directory unchanged, use its original pinned helper revision for historical
+inspection if necessary, and start a new run for any result that must pass the
+current terminal check. Do not backdate a newly computed hash as if it existed
+when the original evidence was recorded.
+
 ## Frequently asked questions
 
 ### Is this a scanner?
@@ -1207,9 +1228,11 @@ one coordinator merge evidence and coverage into the authoritative run.
 ### Where should evidence live?
 
 Use the evidence directory declared in `contract.json`, keep artifacts scoped to
-the pinned target, and reference them from events and candidate gates. Large or
-sensitive artifacts may live in an approved external store if the ledger records
-a stable, access-controlled reference.
+the pinned target, and reference them from events and candidate gates. The helper
+requires each cited path to be a local regular file so it can hash and later
+revalidate it. For a large or sensitive artifact in an approved external store,
+cite a local retrieval manifest containing its stable access-controlled URL and
+remote checksum.
 
 ## Research basis
 
@@ -1235,6 +1258,10 @@ The central synthesis is simple: persistence works best when paired with a
 well-designed outcome; coverage works best when used to choose the next
 experiment; and a security claim is only as strong as its falsification and
 reproduction evidence.
+
+## License
+
+Licensed under the [Apache License 2.0](LICENSE).
 
 ## Contributing
 

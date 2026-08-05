@@ -66,6 +66,15 @@ common-author self-evaluation.
 
 ## Protocol for future headline benchmarks
 
+The executable procedure is documented in
+[`references/benchmark-protocol.md`](references/benchmark-protocol.md) and
+implemented by [`scripts/benchmark_protocol.py`](scripts/benchmark_protocol.py).
+Its private pre-seal gate rejects unmapped public invariants, orphaned or
+multiply mapped scoring units, missing controls, and weights that do not total
+100. Its publication gate requires distinct remote refs and a direct-parent
+commit chain for sealed target, submission, reveal, and scoring, with chained
+receipts and no future-stage material in earlier trees or intermediate commits.
+
 A future result may be described as blind or generalizing only when all of the
 following are publicly verifiable:
 
@@ -95,3 +104,9 @@ If independence or chronology is missing, publish the work as a regression,
 ablation, or common-author self-evaluation and state the confound next to the
 number. The next generalization target for this project must come from an
 external target/rubric author.
+
+That final requirement is an external dependency, not a repository task that
+the current operator can self-certify. Until a genuinely independent author or
+naturally occurring third-party target with an appropriate disclosure history
+is secured, the project must not publish another common-author score as a
+generalization result.

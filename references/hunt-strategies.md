@@ -3,8 +3,9 @@
 Use this reference to choose experiments without hard-coding a tool into the
 goal. The best next experiment is the one that most cheaply distinguishes
 plausible security hypotheses, not the one that produces the most output.
-Use [deep-hunt.md](deep-hunt.md) alongside this reference for business-flow,
-consumer, integration-semantic, arithmetic, interleaving, and composition work.
+Use the [deep-hunt pass index](deep-hunt.md) to load only the business,
+consumer, integration, arithmetic, interleaving, composition, or closure pass
+needed for the current experiment.
 
 ## Build the surface queue
 

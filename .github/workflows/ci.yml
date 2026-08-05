@@ -42,4 +42,8 @@ jobs:
           test -f LICENSE
           test -f BENCHMARKS.md
           test ! -e benchmarks
+          test -f assets/aim-for-the-head-walkthrough-preview.webp
+          test "$(wc -c < assets/aim-for-the-head-walkthrough-preview.webp)" -lt 1000000
+          ! grep -q 'files.catbox.moe' README.md
+          test "$(find references -maxdepth 1 -name 'deep-*.md' -type f | wc -l)" -eq 8
           test "$(find . -path './.git' -prune -o -type f -print | wc -l)" -lt 100

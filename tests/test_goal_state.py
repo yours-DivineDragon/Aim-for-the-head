@@ -1369,6 +1369,54 @@ class GoalStateTests(unittest.TestCase):
         readme = (REPOSITORY_ROOT / "README.md").read_text(encoding="utf-8")
         self.assertIn("--depth 1 --single-branch --branch main", readme)
 
+    def test_demo_preview_is_local_looping_and_release_backed(self):
+        readme = (REPOSITORY_ROOT / "README.md").read_text(encoding="utf-8")
+        preview = REPOSITORY_ROOT / "assets" / "aim-for-the-head-walkthrough-preview.webp"
+        self.assertNotIn("files.catbox.moe", readme)
+        self.assertIn("assets/aim-for-the-head-walkthrough-preview.webp", readme)
+        self.assertIn("releases/download/readme-video-v1", readme)
+        self.assertIn("640×360 animated preview", readme)
+        contents = preview.read_bytes()
+        self.assertLess(len(contents), 1_000_000)
+        self.assertTrue(contents.startswith(b"RIFF"))
+        self.assertIn(b"ANIM", contents)
+        animation = contents.index(b"ANIM")
+        self.assertEqual(int.from_bytes(contents[animation + 12 : animation + 14], "little"), 0)
+
+    def test_deep_hunt_references_are_loaded_progressively(self):
+        index = REPOSITORY_ROOT / "references" / "deep-hunt.md"
+        passes = (
+            "deep-business-invariants.md",
+            "deep-consumer-propagation.md",
+            "deep-boundary-arithmetic.md",
+            "deep-external-semantics.md",
+            "deep-sequence-interleaving.md",
+            "deep-exploit-composition.md",
+            "deep-economic-closure.md",
+        )
+        self.assertLess(index.stat().st_size, 4_000)
+        for name in passes:
+            path = REPOSITORY_ROOT / "references" / name
+            self.assertTrue(path.is_file(), name)
+            self.assertLess(path.stat().st_size, 2_500, name)
+            self.assertIn(name, index.read_text(encoding="utf-8"))
+        skill = (REPOSITORY_ROOT / "SKILL.md").read_text(encoding="utf-8")
+        description = skill.split("description: ", 1)[1].splitlines()[0]
+        self.assertIn("explicitly requests", description)
+        self.assertNotIn("Codex, Claude Code", description)
+        self.assertLess(len(description), 400)
+
+    def test_meridian_archive_names_unreachable_freeze_identifiers(self):
+        benchmark = (REPOSITORY_ROOT / "BENCHMARKS.md").read_text(encoding="utf-8")
+        for commit in (
+            "158651792f770f5e827c1f0c363ea91f916cb1b8",
+            "31ea4b7367a42fb1d87d486e945e54361a8d0ca3",
+            "c1e2b8cd7bd098098a05bb7010277c81e3ae9aed",
+            "d07b5ed83def43f6293bd41eaf51e97dc2fec501",
+        ):
+            self.assertIn(commit, benchmark)
+        self.assertIn("not reachable as commit objects", benchmark)
+
     def test_readme_validated_example_contains_every_default_gate(self):
         readme = (REPOSITORY_ROOT / "README.md").read_text(encoding="utf-8")
         example = readme.split("### Validate a candidate", 1)[1].split("### Pause", 1)[0]

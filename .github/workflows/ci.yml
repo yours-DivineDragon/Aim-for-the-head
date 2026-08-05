@@ -22,7 +22,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Compile helper and tests
-        run: python -m py_compile scripts/goal_state.py tests/test_goal_state.py
+        run: python -m py_compile scripts/*.py tests/*.py
       - name: Run unit tests
         env:
           PYTHONDONTWRITEBYTECODE: "1"
@@ -41,6 +41,8 @@ jobs:
           test -f SKILL.md
           test -f LICENSE
           test -f BENCHMARKS.md
+          test -f references/benchmark-protocol.md
+          test -x scripts/benchmark_protocol.py
           test ! -e benchmarks
           test -f assets/aim-for-the-head-walkthrough-preview.webp
           test "$(wc -c < assets/aim-for-the-head-walkthrough-preview.webp)" -lt 1000000

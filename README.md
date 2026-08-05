@@ -195,7 +195,9 @@ package or follow a Markdown playbook.
 Benchmark payloads are not part of the installable skill. The original corpus is
 preserved on the `archive/benchmarks-2026-08-05` branch and pinned by exact
 commit; see [BENCHMARKS.md](BENCHMARKS.md) for links, chronology, limitations,
-and the protocol required for future headline results.
+and the protocol required for future headline results. The generic
+[pre-seal and staged-publication checker](references/benchmark-protocol.md)
+operationalizes that protocol without bundling a vulnerable target.
 
 The Aster benchmark is the stronger result: its sealed target and commitment
 were published in commit `75d19f5` before the hunter submission in `2818814`.
@@ -1107,12 +1109,15 @@ Aim-for-the-head/
 │   ├── deep-economic-closure.md     Final system-impact pass
 │   ├── goal-contract.md           Contract schema and red-team checklist
 │   ├── hunt-strategies.md         Mode-specific investigation strategies
+│   ├── benchmark-protocol.md      Pre-seal coverage and ordered-publication checks
 │   ├── portability.md             Host-specific installation and fallback notes
 │   └── research-basis.md          Primary sources and design synthesis
 ├── scripts/
-│   └── goal_state.py              Dependency-free durable state helper
+│   ├── goal_state.py              Dependency-free durable state helper
+│   └── benchmark_protocol.py      Benchmark pre-seal and publication checker
 └── tests/
-    └── test_goal_state.py         Lifecycle, integrity, and terminal-state tests
+    ├── test_goal_state.py         Lifecycle, integrity, and terminal-state tests
+    └── test_benchmark_protocol.py Pre-seal and Git-publication protocol tests
 ```
 
 `SKILL.md` stays compact enough for an agent to load at runtime. This README is

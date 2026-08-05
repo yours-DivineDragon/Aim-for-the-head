@@ -20,7 +20,8 @@ installation keeps the exact skill revision reviewable with the target.
 Example project install from the repository root:
 
 ```bash
-git clone https://github.com/yours-DivineDragon/Aim-for-the-head.git \
+git clone --depth 1 --single-branch --branch main \
+  https://github.com/yours-DivineDragon/Aim-for-the-head.git \
   .agents/skills/aim-for-the-head
 ```
 
@@ -84,7 +85,8 @@ python3 "<skill-root>/scripts/goal_state.py" transition \
 ```
 
 The helper is coordination state, not a security oracle. It rejects incomplete
-metadata; it cannot decide whether evidence is true.
+metadata and evidence paths that do not identify local regular files; it cannot
+decide whether the preserved bytes prove the security claim.
 
 ## State-directory contract
 
@@ -104,6 +106,14 @@ Keep referenced logs, traces, corpora, proofs, and reports in an adjacent eviden
 directory. State entries should point to artifacts rather than embedding large
 outputs.
 
+Every `--evidence` path and candidate `--gate NAME=PATH` is resolved relative to
+the state directory's parent unless it is absolute. The helper opens the file
+without following a final symlink, requires a regular file, records its size,
+mode, modification timestamp, and SHA-256 digest, then repeats the stat and hash
+during later integrity and terminal checks. Missing, replaced, or modified
+artifacts make the state invalid. Use a locally attested retrieval manifest when
+the underlying evidence must live in an approved external store.
+
 ## Manual fallback
 
 If Python cannot run, create the same files manually. Preserve these invariants:
@@ -122,6 +132,8 @@ If Python cannot run, create the same files manually. Preserve these invariants:
   composition, and closure item recorded as tested with an artifact before a
   validated or exhausted outcome;
 - every optional gate either required or explicitly omitted before activation;
+- every cited evidence file statted and hashed when recorded, with those
+  attestations revalidated before completion;
 - residual risks for non-finding outcomes and an exact unlock for blockers.
 
 Before resuming, read the contract and latest records instead of relying on a

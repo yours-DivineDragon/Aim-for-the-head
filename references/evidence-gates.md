@@ -167,8 +167,12 @@ Maintain a matrix in the candidate report:
 | Duplicate check | Novel or distinct | Search notes | Human checked | pass/fail/N/A |
 | Human review | Final judgment | Review record | Reviewer identity | pass/fail |
 
-Use paths, hashes, commands, or trace identifiers as artifacts. “Reviewed by
-agent” is not an artifact.
+Use preserved files containing paths, hashes, commands, or trace identifiers as
+artifacts. For the state helper, every `--evidence` value and every candidate
+`--gate NAME=PATH` value must name a real regular file. It records file metadata
+and SHA-256 at insertion and revalidates the bytes later. A bare filename,
+nonexistent path, directory, final symlink, or prose such as “reviewed by agent”
+is not an artifact.
 
 ## Build a safe reproduction packet
 

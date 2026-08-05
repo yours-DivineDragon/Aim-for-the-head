@@ -1,6 +1,0 @@
-$ /opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node blind-run/run-case.mjs AFH-006 --verify-only
-cwd=/workspace/scratch/c3ce389a9ee1/Aim-for-the-head/benchmarks/perps-blind-generalization
-exit=0
-
-{"passed":1,"caseIds":["AFH-006"]}
-

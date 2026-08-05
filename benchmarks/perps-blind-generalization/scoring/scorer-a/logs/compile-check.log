@@ -1,7 +1,0 @@
-name=compile-check
-startedAt=2026-08-04T21:06:32.037Z
-command=/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node scoring/scorer-a/compile-check.mjs
-exit=0
-
-{"sourceCount":15,"artifacts":25,"compilerVersion":"0.8.30+commit.73712a01.Emscripten.clang"}
-

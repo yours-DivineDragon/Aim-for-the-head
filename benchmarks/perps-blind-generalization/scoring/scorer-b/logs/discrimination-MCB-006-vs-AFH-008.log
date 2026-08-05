@@ -1,6 +1,0 @@
-$ /opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node blind-run/run-case.mjs AFH-008 --verify-only
-cwd=/tmp/perps-scorer-b-mcb006-vs-afh008-6Qnu1o
-exit=0
-
-{"passed":1,"caseIds":["AFH-008"]}
-

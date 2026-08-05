@@ -73,12 +73,16 @@ $aim-for-the-head
 Prepare an authorized, report-only security investigation of the repository
 currently open in Codex.
 
+Profile: broad-audit.
 Mode: discovery.
 Target revision: current HEAD; resolve and record the exact commit SHA.
 Scope: <INCLUDED_COMPONENTS>.
 Excluded: dependencies, generated artifacts, and <OTHER_EXCLUSIONS>.
-Success: exactly one novel Critical or High severity vulnerability that passes
-every required evidence gate.
+Knowledge policy: inventory local reports, PoCs, verify tests, audit annotations,
+and prior patches; reproduce current issues and label provenance. Do not infer a
+novelty-only objective.
+Success: close the scope-wide baseline and report every Critical or High severity
+vulnerability found that passes every required evidence gate.
 Impact priority: prefer Critical. A High candidate does not finish the goal
 until every mandatory consumer, boundary, integration, sequence, composition,
 and system-impact closure pass is complete.
@@ -100,9 +104,10 @@ Before hunting:
 3. map attacker-mutable values to every downstream consumer;
 4. initialize .goal-hunt;
 5. draft GOAL.md, THREAT_MODEL.md, and contract.json;
-6. retain all workflow-version-2 mandatory passes;
-7. validate the activation contract; and
-8. show me the completed contract for approval.
+6. retain all workflow-version-3 mandatory passes and baseline lenses;
+7. freeze the exact in-scope file manifest;
+8. validate the activation contract; and
+9. show me the completed contract for approval.
 
 Do not begin security experiments until I approve the contract.
 ```
@@ -429,7 +434,8 @@ HUNT_DIR=".security-goals/parser-discovery"
 
 python3 "$SKILL_ROOT/scripts/goal_state.py" init \
   --dir "$HUNT_DIR" \
-  --target "current-repository@PINNED_REVISION" \
+  --target "." \
+  --profile focused-hunt \
   --mode discovery \
   --objective "Find one attacker-reachable parser invariant violation"
 ```
@@ -451,6 +457,15 @@ Replace every `[REPLACE]` marker in:
 The three files should agree. Use a pinned commit, tag, digest, or otherwise
 stable revision rather than “latest.”
 
+Before activation, freeze every exact in-scope source path. For example:
+
+```bash
+python3 "$SKILL_ROOT/scripts/goal_state.py" scope \
+  --dir "$HUNT_DIR" \
+  --component "src/parser.c" \
+  --component "src/archive.c"
+```
+
 ### 4. Validate and activate
 
 ```bash
@@ -464,9 +479,9 @@ python3 "$SKILL_ROOT/scripts/goal_state.py" transition \
   --reason "Authorization, threat model, scope, budget, and evidence policy reviewed"
 ```
 
-Activation records hashes of `contract.json` and `GOAL.md`. If either changes
-later, the helper refuses further candidate work or completion. Start a new goal
-directory when the outcome contract materially changes.
+Activation records hashes of `contract.json`, `GOAL.md`, and the exact scope
+manifest. It also verifies the target file hashes later. Start a new goal
+directory when the contract, scope, or target bytes materially change.
 
 ### 5. Run the loop and record evidence
 
@@ -522,6 +537,8 @@ Before activation, the contract must answer:
 - Who or what authorizes the work?
 - Which repository, revision, components, inputs, and configurations are in
   scope?
+- Which user instruction, competition document, engagement rules, or manifest
+  authorizes that exact scope?
 - Which components, networks, accounts, and actions are excluded?
 - What proof-safety constraints apply?
 
@@ -537,12 +554,15 @@ Before activation, the contract must answer:
 
 ### Acceptance policy
 
+- Is this a focused hunt or a broad audit?
+- Are known results inventoried, explicitly sequestered for blind novelty, or
+  being validated directly?
 - How many validated findings satisfy the goal?
 - Which evidence gates are required?
 - Which gate, if any, may be waived and under what pre-authorized condition?
 - What counts as a safe reproduction and a release-like reproduction?
 - What negative control should distinguish the hypothesized cause from noise?
-- What makes the result novel rather than a known duplicate?
+- If novelty is claimed, what makes the result distinct from known material?
 
 ### Budget and stopping
 
@@ -555,7 +575,13 @@ Before activation, the contract must answer:
 See [`references/goal-contract.md`](references/goal-contract.md) for the full
 contract design and adversarial review questions.
 
-## Hunt modes
+## Profiles and hunt modes
+
+Choose `focused-hunt` for a narrow property, candidate, surface, or requested
+finding count. Choose `broad-audit` for a repository-wide or multi-component
+review. A broad audit cannot finish after its first candidate: it must close the
+component-by-lens baseline in
+[`references/breadth-first-audit.md`](references/breadth-first-audit.md).
 
 Choose one primary mode. A hunt can use techniques from another mode, but its
 success criteria should remain stable.
@@ -599,8 +625,9 @@ Define success, non-success, evidence gates, budget, outputs, and stopping rules
 Red-team the contract: could an agent satisfy its wording with a toy harness,
 debug-only behavior, dead code, an unrealistic configuration, or a duplicate?
 If so, tighten it before activation.
-New contracts use workflow version 2 and retain all mandatory business,
+New contracts use workflow version 3 and retain all mandatory business,
 consumer, boundary, integration, sequence, composition, and closure passes.
+They also freeze exact target bytes and the policy for known-result material.
 
 ### Phase 3 — Map and rank surfaces
 
@@ -615,6 +642,10 @@ Create a queue of roughly three to seven surfaces. Rank them using:
 
 Prioritization is revisable. Record why a surface moves up, moves down, or leaves
 the queue.
+
+For `broad-audit`, complete the baseline lens matrix across every in-scope
+component before deep candidate work crowds out simple boundary checks. A
+validated candidate closes only the rows its evidence actually supports.
 
 ### Phase 4 — Execute falsifiable experiments
 
@@ -711,7 +742,7 @@ activated contract.
 | `downstream-impact` | What is the strongest supported effect after every direct consumer and system delta is traced? |
 | `composition-review` | Which primitive joins were reproduced or ruled out by identity, state, timing, funding, and cleanup? |
 
-The workflow-version-2 generated contract requires all thirteen gates. The ten
+The workflow-version-2+ generated contract requires all thirteen gates. The ten
 core gates—
 `attacker-control`, `reachability`, `defense-analysis`, `security-impact`,
 `realistic-configuration`, `safe-reproduction`, `release-reproduction`, and
@@ -753,7 +784,8 @@ validation packet and reporting guidance.
 ## Coverage accounting
 
 Coverage here means accountable investigation breadth, not merely executed lines.
-The helper tracks fifteen dimensions in workflow version 2:
+The helper tracks fifteen deep dimensions in workflow version 2+ and, for a
+workflow-v3 broad audit, an additional component-by-baseline matrix:
 
 | Dimension | What to account for |
 | --- | --- |
@@ -783,8 +815,10 @@ Each `(dimension, item)` has a current status:
 The log is revisioned: updating an item appends a new record rather than deleting
 the old one. An `exhausted` outcome is rejected if any current item is
 `uninspected` or `blocked`, any dimension is absent, or any candidate remains a
-live lead. A workflow-version-2 `validated` or `exhausted` result also requires
-all eight exact deep-hunt item records and concrete evidence artifacts.
+live lead. A workflow-version-2+ `validated` or `exhausted` result also requires
+all eight exact deep-hunt item records and concrete evidence artifacts. A v3
+`broad-audit` additionally requires every scoped component to close every
+configured baseline lens as `tested` or evidenced `reasoned-not-applicable`.
 
 ## Durable state and command reference
 
@@ -795,13 +829,15 @@ directory per goal.
 
 | File | Purpose |
 | --- | --- |
-| `contract.json` | Machine-checked authority, target, mode, evidence policy, novelty policy, budget, stopping rules, and outputs |
+| `contract.json` | Machine-checked authority, profile, target, scope basis, knowledge policy, evidence policy, budget, stopping rules, and outputs |
+| `scope-manifest.json` | Exact in-scope file identities and frozen target hashes |
+| `audit-matrix.json` | Append-only broad-audit component-by-lens results and evidence |
 | `GOAL.md` | Concise human- and agent-readable goal suitable for a native goal runtime |
 | `THREAT_MODEL.md` | Full target, adversary, asset, boundary, invariant, and assumption analysis |
 | `state.json` | Current lifecycle state, activation fingerprint, counters, blocker, and terminal result |
 | `events.jsonl` | Append-only mappings, hypotheses, experiments, observations, pivots, failures, reviews, transitions, and notes |
 | `candidates.jsonl` | Append-only revisions of leads, rejections, and validated candidates |
-| `coverage.json` | Revisioned coverage items across the fifteen workflow-version-2 dimensions |
+| `coverage.json` | Revisioned coverage items across the fifteen workflow-version-2+ dimensions |
 | `evidence-locations.jsonl` | Append-only, digest-preserving evidence relocation records |
 
 Keep large raw artifacts in the evidence directory named by `contract.json`
@@ -965,8 +1001,8 @@ python3 "$SKILL_ROOT/scripts/goal_state.py" transition \
 
 | Outcome | Meaning | Required state and evidence |
 | --- | --- | --- |
-| `validated` | The contract's required number of candidates passed every applicable gate. | Finish from `active`; name a validated candidate, provide terminal evidence, and complete every mandatory deep-hunt pass. |
-| `exhausted` | The prioritized queue and all coverage obligations are complete without enough validated findings. | Finish from `active`; no open coverage items or leads, all required dimensions and deep-hunt items represented, residual risks recorded, and obligation attestations exactly match the contract. |
+| `validated` | The contract's required number of candidates passed every applicable gate. | Finish from `active`; name a validated candidate, provide terminal evidence, complete every mandatory deep-hunt pass, and close the baseline matrix for `broad-audit`. |
+| `exhausted` | The prioritized queue and all coverage obligations are complete without enough validated findings. | Finish from `active`; no open coverage items or leads, all required dimensions and deep-hunt items represented, the broad-audit matrix closed when applicable, residual risks recorded, and obligation attestations exactly match the contract. |
 | `budget-limited` | The deadline, experiment limit, or wall-clock hour limit arrived before exhaustion. | Finish from `active` or `paused`; a declared bound must actually be reached, with substantive hunt evidence, coverage records, and residual risks. |
 | `blocked` | A concrete external prerequisite prevents progress. | Transition to `blocked`, then finish with evidence and the exact unlock needed. |
 
@@ -1099,6 +1135,7 @@ Aim-for-the-head/
 │   └── aim-for-the-head-walkthrough-preview.webp  Lightweight looping README preview
 ├── references/
 │   ├── evidence-gates.md          Validation and reproduction requirements
+│   ├── breadth-first-audit.md     Scope lock and component baseline profile
 │   ├── deep-hunt.md               Compact pass index and completion contract
 │   ├── deep-business-invariants.md  Business model and conservation pass
 │   ├── deep-consumer-propagation.md Mutable-value consumer pass

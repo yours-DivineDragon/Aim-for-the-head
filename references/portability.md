@@ -95,6 +95,8 @@ The helper creates:
 | File | Role | Mutation model |
 | --- | --- | --- |
 | `contract.json` | Approved scope, threat model, gates, budget, stop rules | Human-edited before activation; then stable |
+| `scope-manifest.json` | Workflow-v3 exact in-scope file hashes and scope authority | Helper-generated before activation; then stable |
+| `audit-matrix.json` | Workflow-v3 append-only broad-audit component/lens results | Atomic replacement by helper |
 | `GOAL.md` | Human-readable completion contract | Human-edited before activation; then stable |
 | `THREAT_MODEL.md` | Assets, adversary, boundaries, invariants | Updated when verified assumptions change |
 | `state.json` | Lifecycle and terminal record | Atomic replacement by helper |
@@ -142,7 +144,7 @@ If Python cannot run, create the same files manually. Preserve these invariants:
 - explicit `draft`, `active`, `paused`, `blocked`, and `completed` states;
 - only `validated`, `exhausted`, `budget-limited`, or `blocked` terminal outcomes;
 - every validated candidate mapped to contract-required gates;
-- every workflow-version-2 candidate mapped to downstream-impact and
+- every workflow-version-2+ candidate mapped to downstream-impact and
   composition-review evidence;
 - every mandatory business, consumer, boundary, external-semantic, sequence,
   composition, and closure item recorded as tested with an artifact before a
@@ -150,6 +152,10 @@ If Python cannot run, create the same files manually. Preserve these invariants:
 - every optional gate either required or explicitly omitted before activation;
 - distinct evidence digests for gates and mandatory passes unless an exact
   preactivated sharing exception names the claims and reason;
+- every workflow-v3 target bound to an exact scope manifest and explicit
+  known-material policy;
+- every workflow-v3 broad audit closed across the full component-by-baseline
+  matrix before a validated or exhausted outcome;
 - every cited evidence file statted and hashed when recorded, with those
   attestations revalidated before completion;
 - residual risks for non-finding outcomes and an exact unlock for blockers.

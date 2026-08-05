@@ -135,9 +135,12 @@ After the trigger and root cause are technically stable, search allowed issue
 trackers, advisories, changelogs, commits, reports, and known-findings lists.
 Compare affected component, mechanism, trigger, impact, and fix—not only titles.
 
-If the contract does not claim novelty, record this gate in `omitted_gates` with
-a reason before activation. Otherwise reject exact duplicates and clearly label
-closely related variants.
+Apply the activated knowledge policy. In `inventory` mode, an exact duplicate is
+still a technically valid current issue: label it `known/reproduced`, cite its
+provenance, and do not make a novelty claim. In `blind-novelty` mode, reject an
+exact duplicate from the novelty count but retain it in the post-hunt known-risk
+inventory. If the contract makes no novelty or provenance claim, record this gate
+in `omitted_gates` with a reason before activation.
 
 ### `human-review`
 
@@ -209,12 +212,17 @@ Classify each experiment as one of:
 Only a correctly configured discriminating experiment can produce a negative
 result. Do not turn `tool-failure` or `inconclusive` into evidence of absence.
 
-## Keep discovery and duplicate review independent
+## Keep discovery and duplicate review policy-correct
 
-When novelty matters, avoid current issue titles, reports, and expected answers
-during initial discovery. This reduces anchoring and benchmark contamination.
-Once the candidate has a stable input, path, root-cause statement, and impact,
-perform the duplicate check and record search scope and date.
+For broad audits, default to inventorying reports, tests, PoCs, audit annotations,
+and prior fixes during mapping. They are evidence about current risk and coverage,
+not noise to suppress. Reproduce technically valid issues and label provenance.
+
+When novelty explicitly matters, avoid current issue titles, reports, and
+expected answers during initial discovery. Record the blindness basis and
+sequestered sources. Once the candidate has a stable input, path, root-cause
+statement, and impact, perform the duplicate check and later emit a known-risk
+inventory so duplicates remain visible without contaminating the novelty score.
 
 For independent technical review, provide raw artifacts first. Reveal the
 hunter's report only after the reviewer records its own result. Resolve

@@ -134,6 +134,40 @@ reproduction remains correlated opinion, not evidence.
 This is a design inference from the Patch the Planet process rather than a claim
 that model diversity alone guarantees independence.
 
+## Broad audits need scope-wide baselines before candidate convergence
+
+OWASP's secure-code-review guidance distinguishes baseline review of an entire
+codebase from diff review, starts baseline work with application boundaries and
+entry points, and recommends tracking manual coverage gaps. The OWASP Smart
+Contract Security checklist likewise uses scoping, entry-point mapping, state
+changes, math/precision, business logic, oracles, and integrations as structured
+audit coverage. NIST IR 8397 recommends multiple complementary verification
+techniques rather than treating one technique or result as sufficient.
+
+These sources support a workflow inference: candidate evidence can prove one
+finding deeply, but it cannot satisfy the breadth obligation of a repository-wide
+audit. The v3 broad-audit profile therefore requires an exact scope manifest and
+a component-by-lens baseline before a terminal result.
+
+Sources: [OWASP Secure Code Review Cheat
+Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Secure_Code_Review_Cheat_Sheet.html),
+[OWASP Smart Contract Security
+Checklist](https://scs.owasp.org/checklists/), and [NIST IR
+8397](https://csrc.nist.gov/pubs/ir/8397/final).
+
+NIST's combinatorial-testing guidance recommends equivalence partitions and
+boundary values rather than arbitrary low/medium/high samples. EIP-1014 makes a
+CREATE2 address depend on deployer, salt, and init-code hash, and explicitly
+specifies collision failure. Together with ERC-4626's unit and rounding rules,
+these sources support mandatory baseline questions for zero/one/extreme states,
+units and decimals, lifecycle transitions, identity domains, and deterministic
+deployment collisions.
+
+Sources: [NIST testing do's and
+don'ts](https://csrc.nist.gov/projects/automated-combinatorial-testing-for-software/software-testing-methodology/dos-and-don-ts-of-testing),
+[EIP-1014](https://eips.ethereum.org/EIPS/eip-1014), and
+[ERC-4626](https://eips.ethereum.org/EIPS/eip-4626).
+
 ## Portability follows the open skill layout
 
 The Agent Skills specification defines a `SKILL.md` package with optional scripts,
@@ -175,3 +209,9 @@ The evidence above leads to these deliberate choices:
     joins before closing the surface.
 14. Require arithmetic boundary cases and a final attacker/system/third-party
     impact ledger before calling a composed result.
+15. Distinguish focused finding-count hunts from broad scope-wide audits.
+16. Freeze exact scope bytes and the authority used to select them.
+17. Default broad audits to a visible known-material inventory; blind novelty
+    must be explicit and must not erase known current risk.
+18. Require every broad-audit component to close the simple baseline lenses
+    before one deep candidate can terminate the run.

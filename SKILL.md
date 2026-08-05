@@ -1,6 +1,6 @@
 ---
 name: aim-for-the-head
-description: Run a bounded, authorized, evidence-backed security hunt or validate a concrete security finding. Use when the user explicitly requests repository vulnerability discovery, variant analysis, invariant or differential security testing, deep business-logic or composed-exploit research, or reproducible validation with durable goal state.
+description: Run a bounded, authorized, evidence-backed broad security audit, focused vulnerability hunt, or concrete finding validation. Use when the user explicitly requests repository vulnerability discovery, variant analysis, invariant or differential security testing, deep business-logic or composed-exploit research, or reproducible validation with durable goal state.
 ---
 
 # Aim for the Head
@@ -28,8 +28,11 @@ bounded terminal condition is proved.
   evidence gates.
 - Preserve commands, raw outputs, negative results, and rejected hypotheses.
   Never rewrite failed experiments into a clean success story.
-- Stop after the requested outcome, defaulting to exactly one validated finding.
-  When the outcome prefers the highest-impact or Critical result, do not treat a
+- Distinguish a focused hunt from a broad audit. Default an explicit narrow hunt
+  to one validated finding. Never let one candidate terminate a repository-wide
+  audit before its scope-wide baseline closes. Report every validated current
+  issue encountered, including known issues with provenance.
+- When the outcome prefers the highest-impact or Critical result, do not treat a
   lower-impact finding as terminal until its mandatory consumer, composition,
   and closure passes are complete.
 - Never translate `exhausted`, `budget-limited`, or `blocked` into “secure.”
@@ -44,7 +47,9 @@ Read linked files completely when their condition applies:
   or reporting a candidate.
 - Read [hunt-strategies.md](references/hunt-strategies.md) before prioritizing
   attack surfaces, selecting techniques, splitting work, or assessing coverage.
-- For workflow version 2, read the compact
+- Read [breadth-first-audit.md](references/breadth-first-audit.md) for every
+  repository-wide, multi-component, competition, or full-scope audit request.
+- For workflow version 2+, read the compact
   [deep-hunt pass index](references/deep-hunt.md) while planning. It routes seven
   pass-specific references; load each only when its stated condition applies.
 - Read [portability.md](references/portability.md) when installing the skill,
@@ -56,13 +61,18 @@ Read linked files completely when their condition applies:
 
 1. Confirm authorization from the request, repository context, program scope,
    or an explicit statement. Ask only when authority is genuinely unclear.
-2. Record the exact target and revision, included and excluded components,
-   allowed network access, permitted modifications, time or token budget, and
-   proof-safety limits.
-3. Default to read-only analysis of production source. Place harnesses, corpora,
+2. Resolve scope from the user's boundaries and every supplied competition,
+   engagement, audit, or repository scope source. Record the exact revision,
+   included and excluded components, scope authority, allowed access,
+   modifications, budget, and proof-safety limits.
+3. Select a knowledge policy. Default broad audits to inventorying local reports,
+   PoCs, verify tests, audit annotations, and prior patches. Use blind novelty
+   only when explicitly requested; record its basis and inventory known material
+   after the blind pass.
+4. Default to read-only analysis of production source. Place harnesses, corpora,
    queries, state, and reports in an isolated work area unless integration was
    requested.
-4. Replace unsafe live exploitation with source analysis, local reproduction,
+5. Replace unsafe live exploitation with source analysis, local reproduction,
    regression tests, or mitigation work that stays inside the authorization.
 
 ## Phase 1: inspect context and capabilities
@@ -105,8 +115,14 @@ dangerous sinks, historical defect density, and testing gaps. Mapping is
 successful when it produces a decision-ready queue; it does not need to find a
 bug.
 
+For a broad audit, inventory every in-scope component and entry point, then run
+the component-by-lens baseline from
+[breadth-first-audit.md](references/breadth-first-audit.md) before converging on
+a complex candidate. A source read, one finding, or a candidate-specific deep
+pass closes only the exact matrix rows its evidence supports.
+
 Keep source, attack-surface, trust-boundary, state, runtime, configuration,
-history, and falsification coverage separate. Workflow version 2 additionally
+history, and falsification coverage separate. Workflow version 2+ additionally
 tracks the seven business, consumer, boundary, external-semantic, sequence,
 composition, and closure passes from the index.
 
@@ -116,25 +132,28 @@ measures reached code, not whether a security condition was triggered.
 
 ## Phase 3: draft and attack one goal contract
 
-Select one mode:
+Select one profile and one mode. Use `broad-audit` for repository-wide or
+multi-component review. Use `focused-hunt` for an explicitly narrow property,
+candidate, surface, or finding count. Then select one mode:
 
-- `discovery`: find one previously unreported vulnerability meeting the threat
-  model and impact floor;
+- `discovery`: find qualifying vulnerabilities meeting the active profile,
+  threat model, impact floor, and knowledge policy;
 - `variant`: find one distinct occurrence of an abstract known-bug family;
 - `invariant`: produce one reachable counterexample to a security property;
 - `differential`: produce one security-relevant divergence between versions,
   implementations, configurations, or compilers;
 - `validation`: prove or reject one existing candidate or alert.
 
-Define one outcome containing the target, scope, attacker capabilities and
-non-capabilities, required impact, realistic configuration, novelty policy,
+Define one outcome containing the profile, target, scope, scope authority,
+knowledge policy, attacker capabilities and non-capabilities, required impact,
+realistic configuration,
 acceptance evidence, negative control, finding count, budget, stopping rule,
 blocked rule, and output path. Define what does **not** count, including dead or
 test-only code, unsupported configurations, invalid API use, privileged
 preconditions outside the threat model, theoretical paths without a trigger,
 harmless crashes, duplicates, and tool-only claims.
 
-Use workflow version 2 for new contracts. Keep all mandatory deep-hunt pass
+Use workflow version 3 for new contracts. Keep all mandatory deep-hunt pass
 items in `search_requirements`. Add a primitive-escalation policy and, when the
 objective prefers Critical or highest impact, an impact-priority policy. Do not
 let one successful candidate mark a whole surface or interaction class closed.
@@ -145,7 +164,8 @@ Ask the active model to attack its own draft. Close shortcuts involving:
 - scanner deference or tool failure presented as a negative result;
 - unreachable, debug-only, or modified-target proofs;
 - missing negative controls or release-like reproduction;
-- duplicate findings, premature blocking, or self-approval;
+- duplicate findings hidden instead of provenance-labeled, premature blocking,
+  broad-audit completion after one candidate, or self-approval;
 - repeated cosmetic prompt changes instead of a real strategy pivot.
 
 Ask the user only when a missing choice materially changes authority, safety,
@@ -161,12 +181,14 @@ available, initialize state outside production source or in an ignored path:
 python3 "<skill-root>/scripts/goal_state.py" init \
   --dir .goal-hunt \
   --target . \
+  --profile broad-audit \
   --mode discovery \
-  --objective "Find exactly one vulnerability satisfying the approved contract"
+  --objective "Audit the approved scope and report every validated issue found within the bounded coverage contract"
 ```
 
 Complete `.goal-hunt/contract.json`, `.goal-hunt/THREAT_MODEL.md`, and
-`.goal-hunt/GOAL.md`, then run:
+`.goal-hunt/GOAL.md`. Freeze every exact in-scope source file with the `scope`
+command from the breadth-first reference, then run:
 
 ```bash
 python3 "<skill-root>/scripts/goal_state.py" check \
@@ -206,7 +228,11 @@ Repeat while the contract is active and within budget:
 9. **Update.** Record the result, candidate disposition, coverage vector,
    unresolved assumptions, and next experiment.
 10. **Pivot.** When attempts stop producing information, change the surface,
-   abstraction level, configuration, or technique.
+    abstraction level, configuration, or technique.
+
+For a broad audit, record each component/lens result with the `baseline` command.
+Do not spend the audit's search budget fully validating the first complex lead
+while simple high-signal rows remain untested across the rest of the scope.
 
 Run exact boundary tests from
 [deep-boundary-arithmetic.md](references/deep-boundary-arithmetic.md) when math
@@ -257,9 +283,10 @@ Apply every required gate from [evidence-gates.md](references/evidence-gates.md)
 5. Give raw artifacts to an independent reviewer or fresh context before
    showing the hunter's conclusion. Prefer a different model family. A second
    model vote without reproduction is not evidence.
-6. Check scope, severity, and duplicates only after the candidate is technically
-   anchored. Keep initial discovery blind to issue trackers when novelty or
-   benchmark integrity matters.
+6. Recheck scope and severity after the candidate is technically anchored. Apply
+   the activated knowledge policy: inventory mode records known/reproduced
+   findings with provenance; blind-novelty mode delays comparison until the
+   fingerprint is stable and rejects duplicates only from the novelty count.
 7. Require human security judgment before disclosure, live testing, final
    severity claims, or a claim of a previously unknown vulnerability.
 
@@ -298,9 +325,11 @@ a blocker, transition the lifecycle to `blocked` and state exactly what would
 unlock progress. For exhaustion, attest every contract exhaustion obligation
 with repeated `--obligation` arguments. Finalize and machine-check:
 
-For workflow-version-2 `validated` or `exhausted` outcomes, first record every
+For workflow-version-2+ `validated` or `exhausted` outcomes, first record every
 mandatory item from `deep-hunt.md` as tested coverage with a concrete artifact.
 The helper rejects missing, blocked, merely inspected, or evidence-free passes.
+For workflow-version-3 `broad-audit`, also close the entire component-by-baseline
+matrix. One validated candidate cannot bypass this terminal check.
 
 ```bash
 python3 "<skill-root>/scripts/goal_state.py" finish \
@@ -315,11 +344,12 @@ Do not mark a native goal complete until the terminal check passes.
 
 ## Deliver the result
 
-Lead with the outcome and confidence. Include the exact target revision and
-configuration; accepted finding or honest non-finding state; positive and
-negative evidence; rejections; coverage; tool failures; assumptions; duplicate
-and independent-review status; residual risk; and the next action. For workflow
-version 2, include the seven pass artifacts named in the index.
+Lead with the outcome and confidence. Include the profile, exact target revision,
+scope authority, knowledge policy, and configuration; accepted findings or
+honest non-finding state; positive and negative evidence; rejections; baseline
+and deep coverage; tool failures; assumptions; duplicate provenance and
+independent-review status; residual risk; and the next action. For workflow
+version 2+, include the seven pass artifacts named in the index.
 
 Keep uncoordinated exploit material private. Never publish, disclose, or contact
 maintainers without explicit user authorization.

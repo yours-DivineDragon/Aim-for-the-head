@@ -1,4 +1,4 @@
 interface:
   display_name: "Aim for the Head"
-  short_description: "Run authorized evidence-backed security hunts"
-  default_prompt: "Use $aim-for-the-head to turn this repository and threat model into one verifiable security-hunting goal."
+  short_description: "Run bounded evidence-backed security audits"
+  default_prompt: "Use $aim-for-the-head to run a scope-locked broad audit or focused security hunt with verifiable evidence."
